@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useChat } from 'ai/react';
+import { useChat } from '@ai-sdk/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -114,7 +114,7 @@ export function ChatInterface() {
             placeholder="Type your message..."
             className="flex-1"
           />
-          <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
+          <Button type="submit" size="icon" disabled={isLoading || !input?.trim()}>
             <Send className="h-4 w-4" />
           </Button>
         </form>
