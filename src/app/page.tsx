@@ -7,12 +7,12 @@ export default function Home() {
       {/* Left Panel: Chat Interface */}
       <div className="w-1/2 min-w-[320px] h-full">
         <ChatInterface />
-      </div>
+        </div>
 
       {/* Right Panel: Block Context Stack */}
       <div className="w-1/2 min-w-[320px] h-full border-l bg-muted/30">
         <BlockList />
-      </div>
+        </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google';
-import { streamText, tool } from 'ai';
+import { streamText } from 'ai';
 import { z } from 'zod';
 
 // Allow streaming responses up to 30 seconds
@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   const { messages, systemPrompt } = await req.json();
 
   const result = streamText({
-    model: google('gemini-1.5-pro-latest'), // or gemini-1.5-flash
+    model: google('gemini-1.5-flash-latest'), // or gemini-1.5-flash
     system: `You are BlockMind, an AI assistant that helps users structure their thoughts using "Context Blocks".
     
     Current Context Blocks:
@@ -24,26 +24,18 @@ export async function POST(req: Request) {
     Always call the relevant tools when context changes. Don't just talk about it, DO it.`,
     messages,
     tools: {
-      createBlock: tool({
+      createBlock: {
         description: 'Create a new context block to store information.',
-        parameters: z.object({
+        inputSchema: z.object({
           type: z.enum(['persona', 'rule', 'data', 'output']).describe('The type of the block'),
           label: z.string().describe('A short label for the block (e.g., "Marketing Persona", "No Emojis Rule")'),
           content: z.string().describe('The full content/prompt of the block'),
         }),
-        execute: async ({ type, label, content }) => {
-          // In a real app with DB, we would save to DB here.
-          // Since we are using client-side store for MVP, we return the instruction 
-          // and let the client handle it via tool invocations (requires client-side handling).
-          // However, Vercel AI SDK 'streamText' executes tools on server.
-          // For client-side state update, we can return a special confirmation string
-          // or use 'onToolCall' in client.
-          // For this MVP, we will rely on the client 'useChat' to receive the tool call info.
-          return { id: Math.random().toString(36).substring(7), type, label, content };
-        },
-      }),
+        // execute는 선택사항입니다. Client-side의 onToolCall에서 처리합니다.
+        // 서버에서는 tool call만 전달하고, 실제 블록 생성은 클라이언트가 담당합니다.
+      },
     },
   });
 
-  return result.toDataStreamResponse();
+  return result.toUIMessageStreamResponse();
 }
