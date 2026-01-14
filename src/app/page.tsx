@@ -1,18 +1,21 @@
-import { ChatInterface } from '@/components/chat/chat-interface';
-import { BlockList } from '@/components/block/block-list';
+import { Navbar } from '@/components/layout/navbar';
+import { HeroSection } from '@/components/landing/hero-section';
+import { DemoSection } from '@/components/landing/demo-section';
+import { FeaturesSection } from '@/components/landing/features-section';
+import { IntegrationSection } from '@/components/landing/integration-section';
+import { Footer } from '@/components/landing/footer';
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className="flex h-screen w-full overflow-hidden">
-      {/* Left Panel: Chat Interface */}
-      <div className="w-1/2 min-w-[320px] h-full">
-        <ChatInterface />
-        </div>
-
-      {/* Right Panel: Block Context Stack */}
-      <div className="w-1/2 min-w-[320px] h-full border-l bg-muted/30">
-        <BlockList />
-        </div>
+    <div className="min-h-screen bg-[#0f1419]">
+      <Navbar />
+      <main>
+        <HeroSection />
+        <DemoSection />
+        <FeaturesSection />
+        <IntegrationSection />
+      </main>
+      <Footer />
     </div>
   );
 }
