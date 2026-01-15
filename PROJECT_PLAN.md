@@ -15,18 +15,30 @@
 - **State Management**: Zustand (Client-side global state)
 - **Drag & Drop**: @dnd-kit/core (Sortable, Modifiers)
 - **AI Integration**: Vercel AI SDK (`ai`), Google Gemini API
-- **Database**: Supabase + Prisma (스키마 정의 완료, 연동 대기 중)
+- **Authentication**: NextAuth.js v5 (Auth.js) + Google OAuth
+- **Database**: Supabase PostgreSQL + Prisma 7 (Adapter 패턴)
 
 ### 🧩 구현된 핵심 기능 (Implemented Features)
-1. **Layout Architecture**: 
+1. **Landing Page** (`/`):
+   - 브랜드 소개 및 기능 설명 (Hero, Features, Integration 섹션)
+   - 채팅 UI 데모 섹션
+   - 네비게이션 바 및 푸터 (BlockMind 로고, Sora 폰트)
+   - "Start Chatting Free" 버튼 → `/chat`으로 라우팅
+2. **Authentication** (`/login`):
+   - Google 소셜 로그인 (NextAuth.js v5)
+   - JWT 세션 전략 (Edge Runtime 호환)
+   - 로그인 페이지 UI (다크 테마)
+   - 미들웨어로 보호된 라우트 (`/chat`)
+3. **Chat App Layout** (`/chat`):
    - 좌측: AI 채팅 인터페이스 (`ChatInterface`)
    - 우측: 맥락 블록 대시보드 (`BlockList`)
-   - 반응형 구조 (Flexbox 기반)
-2. **Context Block System**:
+   - 풀스크린 레이아웃 (채팅 전용)
+   - 로그인 필수 (비로그인 시 `/login`으로 리다이렉트)
+4. **Context Block System**:
    - 블록 타입: `persona`, `rule`, `data`, `output`
    - 기능: 블록 추가, 삭제, 내용 수정, 숨김/보임 토글
    - 인터랙션: 드래그 앤 드롭으로 순서 변경 (우선순위 조정)
-3. **AI Chat & Automation**:
+5. **AI Chat & Automation**:
    - 실시간 채팅: Google Gemini 모델 연동
    - **Context Injection**: 우측 패널의 활성화된 블록들이 자동으로 System Prompt로 주입됨
    - **Tool Calling**: 대화 중 AI가 필요하다고 판단하면 스스로 블록을 생성 (`createBlock`)
@@ -35,20 +47,48 @@
 ```
 src/
 ├── app/
-│   ├── api/chat/route.ts    # AI 통신 및 툴 호출 로직 (Backend)
-│   ├── page.tsx             # 메인 화면 (좌우 분할 레이아웃)
+│   ├── api/
+│   │   ├── auth/[...nextauth]/route.ts  # NextAuth API 라우트
+│   │   └── chat/route.ts                # AI 통신 및 툴 호출 로직
+│   ├── chat/
+│   │   ├── layout.tsx                   # 채팅 앱 전용 레이아웃
+│   │   └── page.tsx                     # /chat - 채팅 + 블록 2-Column 화면
+│   ├── login/
+│   │   └── page.tsx                     # /login - 로그인 페이지
+│   ├── layout.tsx                       # 루트 레이아웃 (SessionProvider)
+│   └── page.tsx                         # / - 랜딩 페이지
 ├── components/
-│   ├── block/               # 블록 관련 UI (List, Item)
-│   ├── chat/                # 채팅 관련 UI
-│   └── ui/                  # Shadcn UI 기본 컴포넌트
+│   ├── block/                           # 블록 도메인 UI
+│   │   ├── block-item.tsx
+│   │   └── block-list.tsx
+│   ├── chat/                            # 채팅 도메인 UI
+│   │   └── chat-interface.tsx
+│   ├── landing/                         # 랜딩 페이지 섹션들
+│   │   ├── hero-section.tsx
+│   │   ├── demo-section.tsx
+│   │   ├── features-section.tsx
+│   │   ├── integration-section.tsx
+│   │   └── footer.tsx
+│   ├── layout/                          # 공통 레이아웃 컴포넌트
+│   │   └── navbar.tsx                   # (로그인 상태 반영)
+│   ├── providers/
+│   │   └── session-provider.tsx         # NextAuth SessionProvider
+│   └── ui/                              # Shadcn UI 기본 컴포넌트
 ├── lib/
-│   └── supabase/            # DB 연결 유틸리티
+│   ├── prisma.ts                        # Prisma 7 클라이언트 (Adapter 패턴)
+│   ├── supabase/                        # (레거시 - 향후 정리)
+│   └── utils.ts                         # 일반 유틸리티
 ├── store/
-│   └── block-store.ts       # 전역 상태 관리 (Zustand)
-└── types/
-    └── block.ts             # 데이터 타입 정의
+│   ├── block-store.ts                   # 블록 상태 관리 (Zustand)
+│   └── chat-store.ts                    # 채팅 상태 관리 (Zustand)
+├── types/
+│   └── block.ts                         # 데이터 타입 정의
+├── auth.ts                              # NextAuth 설정 (Node.js Runtime)
+├── auth.config.ts                       # NextAuth 설정 (Edge Runtime)
+└── middleware.ts                        # 라우트 보호 미들웨어
 prisma/
-└── schema.prisma            # 데이터베이스 모델링
+├── schema.prisma                        # DB 모델 (User, Account, Session, Block 등)
+└── prisma.config.ts                     # Prisma 7 설정
 ```
 
 ---
@@ -70,17 +110,24 @@ BlockMind는 단순한 채팅앱이 아닙니다. LLM(거대언어모델)이 겪
 
 비전공자 초보 개발자도 쉽게 따라갈 수 있도록 단계별로 구성했습니다.
 
-### [Phase 1: 데이터 영속성 (Persistence)] - **현재 단계**
+### [Phase 1: 데이터 영속성 (Persistence)] - **진행 중**
 > **목표**: 새로고침해도 블록과 채팅 내역이 사라지지 않게 한다.
 
-- [ ] **Supabase Auth 연동**
-  - 로그인/회원가입 페이지 구현 (`/login`)
-  - Google 소셜 로그인 설정
-  - 미들웨어(`middleware.ts`)로 보호된 라우트 설정
-- [ ] **DB 데이터 동기화**
-  - Zustand 스토어 수정: 로컬 상태가 변경될 때마다 DB에 자동 저장 (Sync Logic)
-  - 채팅 기록(`ChatSession`, `Message`) 저장 로직 구현
-  - 사이드바 추가: 과거 채팅/블록 세션 불러오기 기능
+- [x] **인증 시스템 구현**
+  - [x] NextAuth.js v5 설정 (Google OAuth)
+  - [x] 로그인 페이지 구현 (`/login`)
+  - [x] JWT 세션 전략 (Edge Runtime 호환)
+  - [x] 미들웨어로 보호된 라우트 설정 (`/chat`)
+  - [x] Navbar 로그인/로그아웃 UI
+- [x] **Prisma 7 + Supabase PostgreSQL 연동**
+  - [x] Prisma Adapter 패턴 설정
+  - [x] User, Account, Session 모델 정의
+  - [x] DB 마이그레이션 완료
+- [ ] **DB 데이터 동기화** ← 다음 단계
+  - [ ] Zustand 스토어 수정: 로컬 상태가 변경될 때마다 DB에 자동 저장
+  - [ ] 채팅 기록(`ChatSession`, `Message`) 저장 로직 구현
+  - [ ] 블록(`Block`) 저장 로직 구현
+  - [ ] 사이드바 추가: 과거 채팅/블록 세션 불러오기 기능
 
 ### [Phase 2: UX 고도화 (Refining Experience)]
 > **목표**: 사용자가 더 편하게 느끼도록 디테일을 잡는다.
@@ -116,5 +163,10 @@ BlockMind는 단순한 채팅앱이 아닙니다. LLM(거대언어모델)이 겪
    - 파일 하나가 200줄이 넘어가면 분리를 고려한다.
    - 재사용되는 UI는 `components/ui`에, 로직이 포함된 큰 덩어리는 `components/도메인`에 둔다.
 
+4. **인증 아키텍처 (NextAuth v5)**
+   - `auth.config.ts`: Edge Runtime용 설정 (Prisma 제외)
+   - `auth.ts`: Node.js Runtime용 설정 (Prisma 포함)
+   - `middleware.ts`: `auth.config.ts`만 사용
+
 ---
-*Last Updated: 2026-01-10*
+*Last Updated: 2026-01-15*
