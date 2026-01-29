@@ -6,7 +6,6 @@ import { DefaultChatTransport, isTextUIPart } from 'ai';
 import type { ToolCall } from '@ai-sdk/provider-utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useSession } from 'next-auth/react';
 import {
@@ -165,7 +164,10 @@ export function ChatInterface() {
       </div>
 
       {/* Messages Area */}
-      <ScrollArea className="flex-1 px-6" viewportRef={scrollRef}>
+      <div 
+        ref={scrollRef}
+        className="flex-1 px-6 overflow-y-auto"
+      >
         <div className="py-6 space-y-6 max-w-3xl mx-auto">
           {messages.length === 0 && (
             <div className="text-center text-gray-400 py-20">
@@ -273,7 +275,7 @@ export function ChatInterface() {
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
 
       {/* Input Area */}
       <div className="px-6 py-4 border-t border-white/10">
