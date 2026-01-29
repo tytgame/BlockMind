@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google';
-import { streamText } from 'ai';
+import { convertToModelMessages, streamText } from 'ai';
 import { z } from 'zod';
 
 // Allow streaming responses up to 30 seconds
@@ -8,8 +8,11 @@ export const maxDuration = 30;
 export async function POST(req: Request) {
   const { messages, systemPrompt } = await req.json();
 
+  // UIMessage[] → ModelMessage[] 변환
+  const modelMessages = await convertToModelMessages(messages);
+
   const result = streamText({
-    model: google('gemini-1.5-flash-latest'), // or gemini-1.5-flash
+    model: google('gemini-2.0-flash'),
     system: `You are BlockMind, an AI assistant that helps users structure their thoughts using "Context Blocks".
     
     Current Context Blocks:
@@ -22,7 +25,7 @@ export async function POST(req: Request) {
     - If the user specifies an output format, create an 'output' block.
     
     Always call the relevant tools when context changes. Don't just talk about it, DO it.`,
-    messages,
+    messages: modelMessages,
     tools: {
       createBlock: {
         description: 'Create a new context block to store information.',
