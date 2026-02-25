@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, isTextUIPart } from 'ai';
-import type { ToolCall } from '@ai-sdk/provider-utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -20,6 +19,16 @@ import {
 import { useBlockStore } from '@/store/block-store';
 import { useChatStore } from '@/store/chat-store';
 import { cn } from '@/lib/utils';
+
+type ExtractedBlock = {
+  type: 'persona' | 'rule' | 'data' | 'output';
+  label: string;
+  content: string;
+};
+
+type ExtractBlocksResponse = {
+  blocks?: ExtractedBlock[];
+};
 
 export function ChatInterface() {
   const { data: session } = useSession();
@@ -47,24 +56,97 @@ export function ChatInterface() {
     [systemPrompt]
   );
 
+  const applyExtractedBlocks = React.useCallback((extractedBlocks: ExtractedBlock[]) => {
+    const { blocks: currentBlocks, addBlock } = useBlockStore.getState();
+
+    const existingKeys = new Set(
+      currentBlocks.map(
+        (block) =>
+          `${block.type}::${block.label.trim().toLowerCase()}::${block.content.trim().toLowerCase()}`
+      )
+    );
+
+    extractedBlocks.forEach((block) => {
+      const normalizedBlock = {
+        type: block.type,
+        label: block.label.trim(),
+        content: block.content.trim(),
+      };
+
+      if (!normalizedBlock.label || !normalizedBlock.content) return;
+
+      const blockKey = `${normalizedBlock.type}::${normalizedBlock.label.toLowerCase()}::${normalizedBlock.content.toLowerCase()}`;
+
+      if (existingKeys.has(blockKey)) return;
+
+      addBlock({
+        ...normalizedBlock,
+        color: '',
+      });
+      existingKeys.add(blockKey);
+    });
+  }, []);
+
   // useChat 훅 사용
   const { messages, sendMessage, status } = useChat({
     transport,
-    onToolCall: async ({ toolCall }) => {
-      if (toolCall.toolName === 'createBlock') {
-        const tc = toolCall as ToolCall<
-          string,
-          { type: string; label: string; content: string }
-        >;
-        const { type, label, content } = tc.input;
+    onFinish: ({ message, messages: allMessages }) => {
+      if (message.role !== 'assistant') return;
 
-        const { addBlock } = useBlockStore.getState();
-        addBlock({
-          type: type as 'persona' | 'rule' | 'data' | 'output',
-          label,
-          content,
-        });
-      }
+      const assistantMessage = message.parts
+        .filter(isTextUIPart)
+        .map((part) => part.text)
+        .join('')
+        .trim();
+
+      if (!assistantMessage) return;
+
+      const latestUserMessage = [...allMessages]
+        .reverse()
+        .find((chatMessage) => chatMessage.role === 'user');
+
+      const userMessage = latestUserMessage
+        ? latestUserMessage.parts
+            .filter(isTextUIPart)
+            .map((part) => part.text)
+            .join('')
+            .trim()
+        : '';
+
+      if (!userMessage) return;
+
+      const { blocks: currentBlocks } = useBlockStore.getState();
+      const existingBlocks = currentBlocks.map((block) => ({
+        type: block.type,
+        label: block.label,
+        content: block.content,
+      }));
+
+      void (async () => {
+        try {
+          const response = await fetch('/api/blocks/extract', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userMessage,
+              assistantMessage,
+              existingBlocks,
+            }),
+          });
+
+          if (!response.ok) return;
+
+          const data = (await response.json()) as ExtractBlocksResponse;
+
+          if (!data.blocks || data.blocks.length === 0) return;
+
+          applyExtractedBlocks(data.blocks);
+        } catch {
+          // Silent fail: memory extraction should not affect chat UX.
+        }
+      })();
     },
   });
 

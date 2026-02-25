@@ -15,27 +15,30 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// 더미 데이터 - 나중에 DB 연동 시 교체
-const recentChats = [
-  { id: '1', title: 'Gangnam Dinner Date', icon: '🍽️', time: '2 hours ago' },
-  { id: '2', title: 'Weekly Meal Prep', icon: '📋', time: '5 hours ago' },
-  { id: '3', title: 'Birthday Gift Ideas', icon: '🎁', time: 'Yesterday' },
-];
+type RecentChat = {
+  id: string;
+  title: string;
+  icon: string;
+};
 
-const pinnedChats = [
-  { id: '4', title: 'Travel Itinerary', icon: '✈️' },
-  { id: '5', title: 'Restaurant Bucket List', icon: '🍜' },
-];
+type PinnedChat = {
+  id: string;
+  title: string;
+};
 
-const folders = [
-  { id: '1', name: 'Lifestyle', count: 5 },
-  { id: '2', name: 'Personal Projects', count: 3 },
-];
+type ChatFolder = {
+  id: string;
+  name: string;
+};
+
+const recentChats: RecentChat[] = [];
+const pinnedChats: PinnedChat[] = [];
+const folders: ChatFolder[] = [];
 
 export function ChatSidebar() {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [activeChat, setActiveChat] = React.useState<string | null>('1');
+  const [activeChat, setActiveChat] = React.useState<string | null>(null);
 
   return (
     <div className="flex flex-col h-full bg-[#1a1d21] text-white">

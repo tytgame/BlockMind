@@ -1,4 +1,4 @@
-# 📋 BlockMind Project Plan
+#  BlockMind Project Plan
 
 > **"AI의 사고 과정을 블록으로 조립하여 완벽한 맥락을 설계하다"**
 >
@@ -6,7 +6,7 @@
 
 ---
 
-## 1. 🔍 현재 상황 분석 (Current Status)
+## 1.  현재 상황 분석 (Current Status)
 
 ### 🛠 기술 스택 (Tech Stack)
 - **Framework**: Next.js 16.1.1 (App Router)
@@ -18,7 +18,7 @@
 - **Authentication**: NextAuth.js v5 (Auth.js) + Google OAuth
 - **Database**: Supabase PostgreSQL + Prisma 7 (Adapter 패턴)
 
-### 🧩 구현된 핵심 기능 (Implemented Features)
+###  구현된 핵심 기능 (Implemented Features)
 1. **Landing Page** (`/`):
    - 브랜드 소개 및 기능 설명 (Hero, Features, Integration 섹션)
    - 채팅 UI 데모 섹션
@@ -43,7 +43,7 @@
    - **Context Injection**: 우측 패널의 활성화된 블록들이 자동으로 System Prompt로 주입됨
    - **Tool Calling**: 대화 중 AI가 필요하다고 판단하면 스스로 블록을 생성 (`createBlock`)
 
-### 📂 현재 파일 구조 (Key Files)
+### 현재 파일 구조 (Key Files)
 ```
 src/
 ├── app/
@@ -93,7 +93,7 @@ prisma/
 
 ---
 
-## 2. 🎯 프로젝트 목표 (Project Goal)
+## 2. 프로젝트 목표 (Project Goal)
 
 **"사용자가 AI의 뇌 구조를 직접 눈으로 보고 손으로 만진다"**
 
@@ -106,7 +106,7 @@ BlockMind는 단순한 채팅앱이 아닙니다. LLM(거대언어모델)이 겪
 
 ---
 
-## 3. 🛣️ 향후 개발 로드맵 (Roadmap)
+## 3. 향후 개발 로드맵 (Roadmap)
 
 비전공자 초보 개발자도 쉽게 따라갈 수 있도록 단계별로 구성했습니다.
 
@@ -192,7 +192,7 @@ BlockMind는 단순한 채팅앱이 아닙니다. LLM(거대언어모델)이 겪
 
 ---
 
-## 4. 💡 개발 가이드라인 (Convention)
+## 4. 개발 가이드라인 (Convention)
 
 1. **복잡함 피하기 (Keep it Simple)**
    - 과도한 추상화나 디자인 패턴보다는, 코드를 읽었을 때 흐름이 바로 보이는 "직관적인 코드"를 작성한다.
