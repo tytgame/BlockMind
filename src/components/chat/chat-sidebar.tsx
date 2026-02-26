@@ -1,6 +1,8 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +14,8 @@ import {
   Settings,
   Pin,
   Folder,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -35,23 +39,145 @@ const recentChats: RecentChat[] = [];
 const pinnedChats: PinnedChat[] = [];
 const folders: ChatFolder[] = [];
 
-export function ChatSidebar() {
+interface ChatSidebarProps {
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+}
+
+const iconRailButtonClass =
+  'h-10 w-10 text-gray-300 hover:text-white hover:bg-white/10';
+
+export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeChat, setActiveChat] = React.useState<string | null>(null);
 
+  if (collapsed) {
+    return (
+      <div className="flex h-full flex-col bg-[#1a1d21] text-white">
+        <div className="flex items-center justify-center border-b border-white/10 p-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={iconRailButtonClass}
+            onClick={onToggleCollapse}
+            aria-label="Expand sidebar"
+            title="Expand sidebar"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </div>
+
+        <div className="flex flex-1 flex-col items-center gap-2 px-2 py-3">
+          <Link
+            href="/"
+            className="mb-2 h-10 w-10 rounded-xl border border-white/10 bg-[#252830] flex items-center justify-center hover:bg-[#2a2f3a] transition-colors"
+            aria-label="Go to home"
+            title="Go to home"
+          >
+            <Image
+              src="/blockmind_logo_noBackGround.png"
+              alt="BlockMind"
+              width={28}
+              height={28}
+              className="h-7 w-7 object-contain"
+            />
+          </Link>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className={iconRailButtonClass}
+            title="New Chat"
+            aria-label="New Chat"
+          >
+            <Plus className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={iconRailButtonClass}
+            title="Search"
+            aria-label="Search"
+          >
+            <Search className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={iconRailButtonClass}
+            title="Pinned"
+            aria-label="Pinned"
+          >
+            <Pin className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={iconRailButtonClass}
+            title="Folders"
+            aria-label="Folders"
+          >
+            <Folder className="h-5 w-5" />
+          </Button>
+        </div>
+
+        <div className="border-t border-white/10 p-2">
+          <div className="flex flex-col items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className={iconRailButtonClass}
+              title="Settings"
+              aria-label="Settings"
+            >
+              <Settings className="h-5 w-5" />
+            </Button>
+            {session?.user ? (
+              <Avatar className="h-10 w-10 border border-white/10">
+                <AvatarImage src={session.user.image || ''} />
+                <AvatarFallback className="bg-gradient-to-br from-orange-400 to-pink-500 text-white text-xs">
+                  {session.user.name?.charAt(0) || 'U'}
+                </AvatarFallback>
+              </Avatar>
+            ) : (
+              <div className="h-10 w-10 rounded-full bg-white/10" />
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-[#1a1d21] text-white">
-      {/* Header - Logo & Workspace */}
+      {/* Header - Logo */}
       <div className="p-4 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">B</span>
-          </div>
-          <div className="flex-1">
-            <h1 className="font-semibold text-sm">BlockMind</h1>
-            <p className="text-xs text-gray-400">Pro Plan Workspace</p>
-          </div>
+        <div className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="h-10 w-10 rounded-xl border border-white/10 bg-[#252830] flex items-center justify-center hover:bg-[#2a2f3a] transition-colors"
+            aria-label="Go to home"
+            title="Go to home"
+          >
+            <Image
+              src="/blockmind_logo_noBackGround.png"
+              alt="BlockMind"
+              width={30}
+              height={30}
+              className="h-7 w-7 object-contain"
+            />
+          </Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
+            onClick={onToggleCollapse}
+            aria-label="Collapse sidebar"
+            title="Collapse sidebar"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
@@ -84,6 +210,9 @@ export function ChatSidebar() {
             Recents
           </h3>
           <div className="space-y-1">
+            {recentChats.length === 0 && (
+              <p className="px-2 py-1 text-xs text-gray-500">No recent chats</p>
+            )}
             {recentChats.map((chat) => (
               <button
                 key={chat.id}
@@ -111,6 +240,9 @@ export function ChatSidebar() {
             Pinned
           </h3>
           <div className="space-y-1">
+            {pinnedChats.length === 0 && (
+              <p className="px-2 py-1 text-xs text-gray-500">No pinned chats</p>
+            )}
             {pinnedChats.map((chat) => (
               <button
                 key={chat.id}
@@ -138,6 +270,9 @@ export function ChatSidebar() {
             Folders
           </h3>
           <div className="space-y-1">
+            {folders.length === 0 && (
+              <p className="px-2 py-1 text-xs text-gray-500">No folders</p>
+            )}
             {folders.map((folder) => (
               <button
                 key={folder.id}

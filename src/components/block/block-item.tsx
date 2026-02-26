@@ -4,12 +4,17 @@ import * as React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { GripVertical, X, Eye, EyeOff, ChevronDown, ChevronRight } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { GripVertical, X, Eye, EyeOff } from 'lucide-react';
 import { Block, BlockType } from '@/types/block';
 import { useBlockStore } from '@/store/block-store';
 import { cn } from '@/lib/utils';
+import { BlockDetailDialog } from './block-detail-dialog';
 
 interface BlockItemProps {
   block: Block;
@@ -22,17 +27,10 @@ const typeColors: Record<BlockType, string> = {
   output: 'bg-purple-500',
 };
 
-const typeDescriptions: Record<BlockType, string> = {
-  persona: 'AI personality context.',
-  rule: 'Behavioral constraint.',
-  data: 'Reference information.',
-  output: 'Response format specification.',
-};
-
 export function BlockItem({ block }: BlockItemProps) {
   const { updateBlock, removeBlock } = useBlockStore();
-  const [isExpanded, setIsExpanded] = React.useState(false);
-  const [isEditing, setIsEditing] = React.useState(false);
+  const [isDetailOpen, setIsDetailOpen] = React.useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = React.useState(false);
 
   const {
     attributes,
@@ -68,12 +66,24 @@ export function BlockItem({ block }: BlockItemProps) {
         />
 
         {/* Main Content */}
-        <div className="pl-4 pr-2 py-3">
+        <div
+          className="pl-4 pr-2 py-3 cursor-pointer"
+          role="button"
+          tabIndex={0}
+          onClick={() => setIsDetailOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setIsDetailOpen(true);
+            }
+          }}
+        >
           <div className="flex items-start gap-2">
             {/* Drag Handle - Hidden by default, show on hover */}
             <div
               {...attributes}
               {...listeners}
+              onClick={(e) => e.stopPropagation()}
               className="cursor-grab active:cursor-grabbing p-1 -ml-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/5 rounded"
             >
               <GripVertical className="h-4 w-4 text-gray-500" />
@@ -81,26 +91,7 @@ export function BlockItem({ block }: BlockItemProps) {
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              {isEditing ? (
-                <Input
-                  value={block.label}
-                  onChange={(e) => updateBlock(block.id, { label: e.target.value })}
-                  onBlur={() => setIsEditing(false)}
-                  onKeyDown={(e) => e.key === 'Enter' && setIsEditing(false)}
-                  autoFocus
-                  className="h-6 text-sm font-medium bg-transparent border-white/20 text-white px-1"
-                />
-              ) : (
-                <h4
-                  className="text-sm font-medium text-white cursor-pointer hover:text-blue-400 transition-colors truncate"
-                  onClick={() => setIsEditing(true)}
-                >
-                  {block.label}
-                </h4>
-              )}
-              <p className="text-xs text-gray-400 mt-0.5 truncate">
-                {block.content || typeDescriptions[block.type]}
-              </p>
+              <h4 className="text-sm font-medium text-white truncate">{block.label}</h4>
             </div>
 
             {/* Actions */}
@@ -109,19 +100,10 @@ export function BlockItem({ block }: BlockItemProps) {
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6 text-gray-500 hover:text-white hover:bg-white/10"
-                onClick={() => setIsExpanded(!isExpanded)}
-              >
-                {isExpanded ? (
-                  <ChevronDown className="h-3 w-3" />
-                ) : (
-                  <ChevronRight className="h-3 w-3" />
-                )}
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 text-gray-500 hover:text-white hover:bg-white/10"
-                onClick={() => updateBlock(block.id, { isVisible: !block.isVisible })}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updateBlock(block.id, { isVisible: !block.isVisible });
+                }}
               >
                 {block.isVisible ? (
                   <Eye className="h-3 w-3" />
@@ -133,26 +115,56 @@ export function BlockItem({ block }: BlockItemProps) {
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6 text-gray-500 hover:text-red-400 hover:bg-red-500/10"
-                onClick={() => removeBlock(block.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsDeleteConfirmOpen(true);
+                }}
               >
                 <X className="h-3 w-3" />
               </Button>
             </div>
           </div>
-
-          {/* Expanded Content Editor */}
-          {isExpanded && (
-            <div className="mt-3 pl-5">
-              <Textarea
-                value={block.content}
-                onChange={(e) => updateBlock(block.id, { content: e.target.value })}
-                className="min-h-[80px] text-sm resize-none bg-[#1a1d21] border-white/10 text-gray-200 placeholder:text-gray-500 focus-visible:ring-blue-500"
-                placeholder="Enter context prompt..."
-              />
-            </div>
-          )}
         </div>
       </div>
+
+      <BlockDetailDialog
+        block={block}
+        open={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+      />
+
+      <Dialog open={isDeleteConfirmOpen} onOpenChange={setIsDeleteConfirmOpen}>
+        <DialogContent className="max-w-md border-white/10 bg-[#1a1d21] text-white">
+          <div className="space-y-4">
+            <DialogTitle className="text-lg font-semibold text-white">
+              정말 삭제하시겠습니까?
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-400">
+              이 작업은 되돌릴 수 없습니다. 블록{' '}
+              <span className="font-medium text-gray-200">&quot;{block.label}&quot;</span>
+              이(가) 삭제됩니다.
+            </DialogDescription>
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <Button
+                variant="ghost"
+                className="text-gray-300 hover:bg-white/10 hover:text-white"
+                onClick={() => setIsDeleteConfirmOpen(false)}
+              >
+                취소
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  removeBlock(block.id);
+                  setIsDeleteConfirmOpen(false);
+                }}
+              >
+                삭제
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

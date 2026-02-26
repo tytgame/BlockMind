@@ -3,6 +3,8 @@ import { generateObject } from 'ai';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
+const MAX_BLOCKS_PER_CYCLE = 1;
+
 const blockTypeSchema = z.enum(['persona', 'rule', 'data', 'output']);
 
 const extractRequestSchema = z.object({
@@ -28,7 +30,7 @@ const extractResponseSchema = z.object({
         content: z.string().min(1).max(500),
       })
     )
-    .max(3),
+    .max(MAX_BLOCKS_PER_CYCLE),
 });
 
 export async function POST(req: Request) {
@@ -52,6 +54,7 @@ Rules:
 - Return only durable context that should persist across future turns.
 - Do not include one-off requests, temporary tasks, or time-sensitive search intents.
 - Do not duplicate existing blocks.
+- Create at most one block for this chat cycle.
 - Keep labels short and specific.
 - Keep content precise and reusable.
 - If nothing should be stored, return an empty "blocks" array.
@@ -67,7 +70,9 @@ Assistant answer:
 ${assistantMessage}`,
     });
 
-    return NextResponse.json(result.object);
+    return NextResponse.json({
+      blocks: result.object.blocks.slice(0, MAX_BLOCKS_PER_CYCLE),
+    });
   } catch {
     return NextResponse.json({ blocks: [] }, { status: 200 });
   }
