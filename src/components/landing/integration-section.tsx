@@ -1,35 +1,26 @@
 'use client';
 
 import { User, FileText, Database, FileOutput } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
-const blockTypes = [
-  {
-    icon: User,
-    name: 'Persona',
-    description: 'AI의 역할과 성격 정의',
-    color: 'from-purple-600 to-purple-700',
-  },
-  {
-    icon: FileText,
-    name: 'Rule',
-    description: '대화 규칙과 가이드라인',
-    color: 'from-blue-600 to-blue-700',
-  },
-  {
-    icon: Database,
-    name: 'Data',
-    description: '참조할 데이터와 컨텍스트',
-    color: 'from-green-600 to-green-700',
-  },
-  {
-    icon: FileOutput,
-    name: 'Output',
-    description: '출력 형식과 스타일',
-    color: 'from-orange-600 to-orange-700',
-  },
+const BLOCK_ICONS = [User, FileText, Database, FileOutput];
+const BLOCK_COLORS = [
+  'from-purple-600 to-purple-700',
+  'from-blue-600 to-blue-700',
+  'from-green-600 to-green-700',
+  'from-orange-600 to-orange-700',
 ];
 
 export function IntegrationSection() {
+  const t = useTranslations('integration');
+  const blocks = t.raw('blocks') as Array<{ name: string; description: string }>;
+  const blockTypes = blocks.map((block, i) => ({
+    icon: BLOCK_ICONS[i],
+    color: BLOCK_COLORS[i],
+    name: block.name,
+    description: block.description,
+  }));
+
   return (
     <section className="py-24 px-6 relative">
       {/* Background decoration */}
@@ -41,10 +32,10 @@ export function IntegrationSection() {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Build with Blocks
+            {t('sectionTitle')}
           </h2>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            네 가지 블록 타입으로 AI의 완벽한 맥락을 구성하세요. 각 블록은 독립적으로 작동하며 조합됩니다.
+            {t('sectionSubtitle')}
           </p>
         </div>
 
@@ -82,7 +73,7 @@ export function IntegrationSection() {
         {/* Additional Info */}
         <div className="mt-12 text-center">
           <p className="text-gray-500 text-sm">
-            각 블록은 드래그하여 순서를 변경하고, 클릭하여 활성화/비활성화할 수 있습니다.
+            {t('tip')}
           </p>
         </div>
       </div>

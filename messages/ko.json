@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "home": "홈",
+    "features": "기능",
+    "pricing": "가격",
+    "goToChat": "채팅하기",
+    "login": "로그인",
+    "getStarted": "시작하기",
+    "signOut": "로그아웃"
+  },
+  "hero": {
+    "badge": "BlockMind 1.0 출시",
+    "headingLine1": "직접 경험해보세요",
+    "headingLine2prefix": "",
+    "headingLine2suffix": "의 힘을",
+    "subtitle": "AI의 맥락을 블록으로 조립하여 완벽한 대화를 설계하세요. 페르소나, 규칙, 데이터를 시각적으로 제어하며 AI와 소통하는 새로운 방법.",
+    "startChatting": "무료로 시작하기",
+    "viewDocs": "API 문서"
+  },
+  "features": {
+    "sectionTitle": "핵심 기능",
+    "sectionSubtitle": "BlockMind를 가장 진보된 AI 맥락 관리 플랫폼으로 만드는 핵심 기능들을 알아보세요.",
+    "items": [
+      {
+        "title": "Context Block System",
+        "description": "페르소나, 규칙, 데이터, 출력 형식을 독립적인 블록으로 구성하여 AI의 맥락을 명확하게 관리하세요. 블록을 추가하고 제거하며 실시간으로 AI 동작을 조정할 수 있습니다."
+      },
+      {
+        "title": "Visual Control",
+        "description": "드래그 앤 드롭으로 블록의 우선순위를 변경하고, 토글로 활성화/비활성화를 제어하세요. AI가 현재 어떤 맥락을 따르고 있는지 시각적으로 확인할 수 있습니다."
+      },
+      {
+        "title": "AI Tool Calling",
+        "description": "AI가 대화 흐름을 분석하여 필요한 블록을 자동으로 생성합니다. 사용자가 직접 입력하지 않아도 AI가 맥락을 이해하고 최적의 블록 구조를 제안합니다."
+      }
+    ]
+  },
+  "integration": {
+    "sectionTitle": "블록으로 구성하기",
+    "sectionSubtitle": "네 가지 블록 타입으로 AI의 완벽한 맥락을 구성하세요. 각 블록은 독립적으로 작동하며 조합됩니다.",
+    "blocks": [
+      { "name": "Persona", "description": "AI의 역할과 성격 정의" },
+      { "name": "Rule", "description": "대화 규칙과 가이드라인" },
+      { "name": "Data", "description": "참조할 데이터와 컨텍스트" },
+      { "name": "Output", "description": "출력 형식과 스타일" }
+    ],
+    "tip": "각 블록은 드래그하여 순서를 변경하고, 클릭하여 활성화/비활성화할 수 있습니다."
+  },
+  "footer": {
+    "description": "AI의 맥락을 블록으로 조립하여 완벽한 대화를 설계하는 차세대 플랫폼",
+    "product": {
+      "title": "제품",
+      "features": "기능",
+      "pricing": "가격",
+      "docs": "문서",
+      "api": "API 레퍼런스"
+    },
+    "company": {
+      "title": "회사",
+      "about": "소개",
+      "contact": "연락처",
+      "blog": "블로그",
+      "careers": "채용"
+    },
+    "legal": {
+      "title": "법률",
+      "privacy": "개인정보처리방침",
+      "terms": "이용약관",
+      "cookies": "쿠키 정책"
+    },
+    "copyright": "© 2026 BlockMind. All rights reserved.",
+    "privacyPolicy": "개인정보처리방침",
+    "termsOfService": "이용약관"
+  },
+  "demo": {
+    "placeholder": "BlockMind에게 메시지 보내기..."
+  },
+  "localeConfig": {
+    "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },
+    "en": { "flag": "🇺🇸", "label": "English", "short": "EN" },
+    "zh": { "flag": "🇨🇳", "label": "中文", "short": "ZH" },
+    "ja": { "flag": "🇯🇵", "label": "日本語", "short": "JA" }
+  }
+}

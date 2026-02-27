@@ -2,11 +2,17 @@
 
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
+import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
 export default function LoginPage() {
+  const params = useParams();
+  const locale = (params.locale as string) ?? 'ko';
+
   const handleGoogleSignIn = () => {
-    signIn('google', { callbackUrl: '/chat' });
+    // as-needed: 한국어는 /chat, 나머지는 /en/chat 등
+    const callbackUrl = locale === 'ko' ? '/chat' : `/${locale}/chat`;
+    signIn('google', { callbackUrl });
   };
 
   return (
@@ -33,7 +39,7 @@ export default function LoginPage() {
           <div className="relative p-8 rounded-2xl border border-gray-800 bg-gradient-to-br from-gray-900/80 to-gray-950/80 backdrop-blur-xl shadow-2xl">
             {/* Background decoration */}
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-600/5 to-purple-600/5" />
-            
+
             <div className="relative z-10">
               {/* Title */}
               <div className="text-center mb-8">

@@ -1,38 +1,41 @@
 'use client';
 
-import Link from 'next/link';
 import { Github, Twitter, Linkedin } from 'lucide-react';
-
-const footerLinks = [
-  {
-    title: 'Product',
-    links: [
-      { label: 'Features', href: '#features' },
-      { label: 'Pricing', href: '#' },
-      { label: 'Documentation', href: '#' },
-      { label: 'API Reference', href: '#' },
-    ],
-  },
-  {
-    title: 'Company',
-    links: [
-      { label: 'About Us', href: '#' },
-      { label: 'Contact', href: '#' },
-      { label: 'Blog', href: '#' },
-      { label: 'Careers', href: '#' },
-    ],
-  },
-  {
-    title: 'Legal',
-    links: [
-      { label: 'Privacy Policy', href: '#' },
-      { label: 'Terms of Service', href: '#' },
-      { label: 'Cookie Policy', href: '#' },
-    ],
-  },
-];
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 export function Footer() {
+  const t = useTranslations('footer');
+
+  const footerColumns = [
+    {
+      title: t('product.title'),
+      links: [
+        { label: t('product.features'), href: '/#features' },
+        { label: t('product.pricing'), href: '/#' },
+        { label: t('product.docs'), href: '/#' },
+        { label: t('product.api'), href: '/#' },
+      ],
+    },
+    {
+      title: t('company.title'),
+      links: [
+        { label: t('company.about'), href: '/#' },
+        { label: t('company.contact'), href: '/#' },
+        { label: t('company.blog'), href: '/#' },
+        { label: t('company.careers'), href: '/#' },
+      ],
+    },
+    {
+      title: t('legal.title'),
+      links: [
+        { label: t('legal.privacy'), href: '/#' },
+        { label: t('legal.terms'), href: '/#' },
+        { label: t('legal.cookies'), href: '/#' },
+      ],
+    },
+  ];
+
   return (
     <footer className="relative border-t border-gray-800 bg-gray-950">
       <div className="container mx-auto px-6 py-12">
@@ -52,25 +55,25 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-gray-400 text-sm mb-4 max-w-xs">
-              AI의 맥락을 블록으로 조립하여 완벽한 대화를 설계하는 차세대 플랫폼
+              {t('description')}
             </p>
 
             {/* Social Links */}
             <div className="flex gap-3">
               <Link
-                href="#"
+                href="/#"
                 className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
               >
                 <Github className="w-5 h-5" />
               </Link>
               <Link
-                href="#"
+                href="/#"
                 className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
               >
                 <Twitter className="w-5 h-5" />
               </Link>
               <Link
-                href="#"
+                href="/#"
                 className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
               >
                 <Linkedin className="w-5 h-5" />
@@ -79,7 +82,7 @@ export function Footer() {
           </div>
 
           {/* Link Columns */}
-          {footerLinks.map((column, index) => (
+          {footerColumns.map((column, index) => (
             <div key={index}>
               <h3 className="text-white font-semibold mb-4">{column.title}</h3>
               <ul className="space-y-2">
@@ -100,15 +103,13 @@ export function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} BlockMind. All rights reserved.
-          </p>
+          <p className="text-gray-500 text-sm">{t('copyright')}</p>
           <div className="flex gap-6">
-            <Link href="#" className="text-gray-500 hover:text-gray-400 text-sm transition-colors">
-              Privacy Policy
+            <Link href="/#" className="text-gray-500 hover:text-gray-400 text-sm transition-colors">
+              {t('privacyPolicy')}
             </Link>
-            <Link href="#" className="text-gray-500 hover:text-gray-400 text-sm transition-colors">
-              Terms of Service
+            <Link href="/#" className="text-gray-500 hover:text-gray-400 text-sm transition-colors">
+              {t('termsOfService')}
             </Link>
           </div>
         </div>

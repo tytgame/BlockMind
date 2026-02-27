@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(npm install react-markdown remark-gfm)",
-      "Bash(npx tsc --noEmit)"
+      "Bash(npx tsc --noEmit)",
+      "Bash(xargs ls -la)",
+      "Bash(npm install next-intl --legacy-peer-deps)"
     ]
   }
 }

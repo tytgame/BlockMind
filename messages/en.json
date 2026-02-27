@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "pricing": "Pricing",
+    "goToChat": "Go to Chat",
+    "login": "Log in",
+    "getStarted": "Get Started",
+    "signOut": "Sign out"
+  },
+  "hero": {
+    "badge": "BlockMind 1.0 is now available",
+    "headingLine1": "Experience the Power",
+    "headingLine2prefix": "of ",
+    "headingLine2suffix": "",
+    "subtitle": "Design perfect conversations by assembling AI context with blocks. A new way to communicate with AI through visual control of personas, rules, and data.",
+    "startChatting": "Start Chatting Free",
+    "viewDocs": "View API Docs"
+  },
+  "features": {
+    "sectionTitle": "Key Features",
+    "sectionSubtitle": "Discover the core features that make BlockMind the most advanced AI context management platform.",
+    "items": [
+      {
+        "title": "Context Block System",
+        "description": "Organize personas, rules, data, and output formats as independent blocks for clear AI context management. Add or remove blocks to adjust AI behavior in real time."
+      },
+      {
+        "title": "Visual Control",
+        "description": "Reorder blocks by priority with drag and drop, and toggle activation with a click. Visually confirm exactly which context your AI is currently following."
+      },
+      {
+        "title": "AI Tool Calling",
+        "description": "AI analyzes the conversation flow and automatically generates the blocks you need. Even without manual input, AI understands context and suggests the optimal block structure."
+      }
+    ]
+  },
+  "integration": {
+    "sectionTitle": "Build with Blocks",
+    "sectionSubtitle": "Build perfect AI context with four block types. Each block works independently and combines seamlessly.",
+    "blocks": [
+      { "name": "Persona", "description": "Define AI role and personality" },
+      { "name": "Rule", "description": "Conversation rules and guidelines" },
+      { "name": "Data", "description": "Reference data and context" },
+      { "name": "Output", "description": "Output format and style" }
+    ],
+    "tip": "Drag blocks to reorder them, and click to activate or deactivate."
+  },
+  "footer": {
+    "description": "The next-generation platform for designing perfect conversations by assembling AI context with blocks.",
+    "product": {
+      "title": "Product",
+      "features": "Features",
+      "pricing": "Pricing",
+      "docs": "Documentation",
+      "api": "API Reference"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About Us",
+      "contact": "Contact",
+      "blog": "Blog",
+      "careers": "Careers"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy"
+    },
+    "copyright": "© 2026 BlockMind. All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
+  },
+  "demo": {
+    "placeholder": "Message BlockMind..."
+  },
+  "localeConfig": {
+    "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },
+    "en": { "flag": "🇺🇸", "label": "English", "short": "EN" },
+    "zh": { "flag": "🇨🇳", "label": "中文", "short": "ZH" },
+    "ja": { "flag": "🇯🇵", "label": "日本語", "short": "JA" }
+  }
+}

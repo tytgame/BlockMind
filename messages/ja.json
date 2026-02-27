@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "home": "ホーム",
+    "features": "機能",
+    "pricing": "料金",
+    "goToChat": "チャットへ",
+    "login": "ログイン",
+    "getStarted": "始める",
+    "signOut": "ログアウト"
+  },
+  "hero": {
+    "badge": "BlockMind 1.0 リリース",
+    "headingLine1": "体験しよう",
+    "headingLine2prefix": "",
+    "headingLine2suffix": "の力を",
+    "subtitle": "AIのコンテキストをブロックで組み立てて、完璧な会話を設計しましょう。ペルソナ、ルール、データを視覚的に制御し、AIと新しい方法でコミュニケーションを。",
+    "startChatting": "無料で始める",
+    "viewDocs": "APIドキュメント"
+  },
+  "features": {
+    "sectionTitle": "主要機能",
+    "sectionSubtitle": "BlockMindを最も先進的なAIコンテキスト管理プラットフォームにする機能をご覧ください。",
+    "items": [
+      {
+        "title": "Context Block System",
+        "description": "ペルソナ、ルール、データ、出力形式を独立したブロックとして整理し、AIコンテキストを明確に管理。ブロックの追加・削除でリアルタイムにAIの動作を調整できます。"
+      },
+      {
+        "title": "Visual Control",
+        "description": "ドラッグ＆ドロップでブロックの優先順位を変更し、クリックで有効/無効を切り替え。AIが現在どのコンテキストに従っているかを視覚的に確認できます。"
+      },
+      {
+        "title": "AI Tool Calling",
+        "description": "AIが会話の流れを分析し、必要なブロックを自動生成します。手動入力なしでもAIがコンテキストを理解し、最適なブロック構造を提案します。"
+      }
+    ]
+  },
+  "integration": {
+    "sectionTitle": "ブロックで構成する",
+    "sectionSubtitle": "4種類のブロックタイプでAIの完璧なコンテキストを構成しましょう。各ブロックは独立して動作し、組み合わせられます。",
+    "blocks": [
+      { "name": "Persona", "description": "AIの役割とキャラクターを定義" },
+      { "name": "Rule", "description": "会話ルールとガイドライン" },
+      { "name": "Data", "description": "参照データとコンテキスト" },
+      { "name": "Output", "description": "出力形式とスタイル" }
+    ],
+    "tip": "ブロックをドラッグして並べ替え、クリックで有効/無効を切り替えできます。"
+  },
+  "footer": {
+    "description": "AIのコンテキストをブロックで組み立てて完璧な会話を設計する次世代プラットフォーム",
+    "product": {
+      "title": "製品",
+      "features": "機能",
+      "pricing": "料金",
+      "docs": "ドキュメント",
+      "api": "API リファレンス"
+    },
+    "company": {
+      "title": "会社",
+      "about": "会社概要",
+      "contact": "お問い合わせ",
+      "blog": "ブログ",
+      "careers": "採用情報"
+    },
+    "legal": {
+      "title": "法務",
+      "privacy": "プライバシーポリシー",
+      "terms": "利用規約",
+      "cookies": "Cookieポリシー"
+    },
+    "copyright": "© 2026 BlockMind. All rights reserved.",
+    "privacyPolicy": "プライバシーポリシー",
+    "termsOfService": "利用規約"
+  },
+  "demo": {
+    "placeholder": "BlockMindにメッセージを送る..."
+  },
+  "localeConfig": {
+    "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },
+    "en": { "flag": "🇺🇸", "label": "English", "short": "EN" },
+    "zh": { "flag": "🇨🇳", "label": "中文", "short": "ZH" },
+    "ja": { "flag": "🇯🇵", "label": "日本語", "short": "JA" }
+  }
+}

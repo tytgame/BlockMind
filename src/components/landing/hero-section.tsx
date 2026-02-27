@@ -1,10 +1,13 @@
 'use client';
 
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Link } from '@/i18n/navigation';
 
 export function HeroSection() {
+  const t = useTranslations('hero');
+
   return (
     <section className="relative pt-32 pb-20 px-6 overflow-hidden">
       {/* Background gradients */}
@@ -21,25 +24,25 @@ export function HeroSection() {
           >
             <span className="inline-flex items-center gap-2">
               <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-              BlockMind 1.0 is now available
+              {t('badge')}
             </span>
           </Badge>
         </div>
 
         {/* Main Heading */}
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-center text-white mb-6 leading-tight">
-          Experience the Power
+          {t('headingLine1')}
           <br />
-          of{' '}
+          {t('headingLine2prefix')}
           <span className="bg-gradient-to-r from-blue-500 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
             BlockMind
           </span>
+          {t('headingLine2suffix')}
         </h1>
 
         {/* Subtitle */}
         <p className="text-lg md:text-xl text-gray-400 text-center max-w-3xl mx-auto mb-10 leading-relaxed">
-          AI의 맥락을 블록으로 조립하여 완벽한 대화를 설계하세요. 
-          페르소나, 규칙, 데이터를 시각적으로 제어하며 AI와 소통하는 새로운 방법.
+          {t('subtitle')}
         </p>
 
         {/* CTA Buttons */}
@@ -49,7 +52,7 @@ export function HeroSection() {
             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg font-semibold shadow-lg shadow-blue-600/30"
             asChild
           >
-            <Link href="/chat">Start Chatting Free</Link>
+            <Link href="/chat">{t('startChatting')}</Link>
           </Button>
           <Button
             size="lg"
@@ -57,7 +60,7 @@ export function HeroSection() {
             className="border-gray-700 bg-gray-800/50 hover:bg-gray-800 text-white px-8 py-6 text-lg"
             asChild
           >
-            <Link href="#">View API Docs</Link>
+            <Link href="/#">{t('viewDocs')}</Link>
           </Button>
         </div>
       </div>

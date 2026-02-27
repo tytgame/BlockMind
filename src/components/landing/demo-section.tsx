@@ -4,8 +4,10 @@ import { User, Bot, Send } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
 
 export function DemoSection() {
+  const t = useTranslations('demo');
   return (
     <section className="py-12 px-6">
       <div className="container mx-auto max-w-4xl">
@@ -87,7 +89,7 @@ export function DemoSection() {
           <div className="p-4 border-t border-gray-800 bg-gray-900/50">
             <div className="flex gap-2">
               <Input
-                placeholder="Message BlockMind..."
+                placeholder={t('placeholder')}
                 className="flex-1 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
                 disabled
               />

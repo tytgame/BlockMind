@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "home": "首页",
+    "features": "功能",
+    "pricing": "价格",
+    "goToChat": "开始聊天",
+    "login": "登录",
+    "getStarted": "立即开始",
+    "signOut": "退出登录"
+  },
+  "hero": {
+    "badge": "BlockMind 1.0 正式发布",
+    "headingLine1": "体验",
+    "headingLine2prefix": "",
+    "headingLine2suffix": "的强大能力",
+    "subtitle": "通过将 AI 上下文组装成块来设计完美的对话。通过对角色、规则和数据的可视化控制，以全新方式与 AI 沟通。",
+    "startChatting": "免费开始聊天",
+    "viewDocs": "查看 API 文档"
+  },
+  "features": {
+    "sectionTitle": "核心功能",
+    "sectionSubtitle": "探索让 BlockMind 成为最先进 AI 上下文管理平台的核心功能。",
+    "items": [
+      {
+        "title": "Context Block System",
+        "description": "将角色、规则、数据和输出格式组织为独立的块，清晰管理 AI 上下文。实时添加或删除块来调整 AI 行为。"
+      },
+      {
+        "title": "Visual Control",
+        "description": "通过拖放按优先级重新排列块，通过点击切换激活状态。直观确认 AI 当前正在遵循的上下文。"
+      },
+      {
+        "title": "AI Tool Calling",
+        "description": "AI 分析对话流程并自动生成所需的块。即使没有手动输入，AI 也能理解上下文并建议最优的块结构。"
+      }
+    ]
+  },
+  "integration": {
+    "sectionTitle": "用块构建",
+    "sectionSubtitle": "使用四种块类型构建完美的 AI 上下文。每个块独立运作，无缝组合。",
+    "blocks": [
+      { "name": "Persona", "description": "定义 AI 角色和个性" },
+      { "name": "Rule", "description": "对话规则和指南" },
+      { "name": "Data", "description": "参考数据和上下文" },
+      { "name": "Output", "description": "输出格式和风格" }
+    ],
+    "tip": "拖动块可重新排序，点击可激活或停用。"
+  },
+  "footer": {
+    "description": "通过将 AI 上下文组装成块来设计完美对话的下一代平台。",
+    "product": {
+      "title": "产品",
+      "features": "功能",
+      "pricing": "价格",
+      "docs": "文档",
+      "api": "API 参考"
+    },
+    "company": {
+      "title": "公司",
+      "about": "关于我们",
+      "contact": "联系我们",
+      "blog": "博客",
+      "careers": "招聘"
+    },
+    "legal": {
+      "title": "法律",
+      "privacy": "隐私政策",
+      "terms": "服务条款",
+      "cookies": "Cookie 政策"
+    },
+    "copyright": "© 2026 BlockMind. 保留所有权利。",
+    "privacyPolicy": "隐私政策",
+    "termsOfService": "服务条款"
+  },
+  "demo": {
+    "placeholder": "向 BlockMind 发送消息..."
+  },
+  "localeConfig": {
+    "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },
+    "en": { "flag": "🇺🇸", "label": "English", "short": "EN" },
+    "zh": { "flag": "🇨🇳", "label": "中文", "short": "ZH" },
+    "ja": { "flag": "🇯🇵", "label": "日本語", "short": "JA" }
+  }
+}

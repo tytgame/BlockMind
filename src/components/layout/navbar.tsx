@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
+import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -11,11 +11,58 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, User, MessageSquare } from 'lucide-react';
+import { LogOut, User, MessageSquare, Globe, Check } from 'lucide-react';
+import { Link, useRouter, usePathname } from '@/i18n/navigation';
+import { LOCALE_CONFIG } from '@/i18n/locales';
+import { cn } from '@/lib/utils';
+
+function LanguageSelector() {
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const current = LOCALE_CONFIG.find((l) => l.code === locale) ?? LOCALE_CONFIG[0];
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center gap-1.5 text-gray-300 hover:text-white hover:bg-white/10 px-2.5"
+        >
+          <Globe className="w-4 h-4" />
+          <span className="text-xs font-medium tracking-wide">{current.short}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        className="w-36 bg-gray-900 border-gray-800 text-white"
+      >
+        {LOCALE_CONFIG.map((l) => (
+          <DropdownMenuItem
+            key={l.code}
+            onClick={() => router.replace(pathname, { locale: l.code })}
+            className={cn(
+              'cursor-pointer flex items-center justify-between',
+              locale === l.code && 'text-blue-400'
+            )}
+          >
+            <span className="flex items-center gap-2">
+              <span>{l.flag}</span>
+              <span className="text-sm">{l.label}</span>
+            </span>
+            {locale === l.code && <Check className="w-3.5 h-3.5" />}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function Navbar() {
   const { data: session, status } = useSession();
   const isLoading = status === 'loading';
+  const t = useTranslations('nav');
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[#0f1419]/80 backdrop-blur-xl">
@@ -40,29 +87,29 @@ export function Navbar() {
               href="/"
               className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
             >
-              Home
+              {t('home')}
             </Link>
             <Link
-              href="#features"
+              href="/#features"
               className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
             >
-              Features
+              {t('features')}
             </Link>
             <Link
-              href="#"
+              href="/#"
               className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
             >
-              Pricing
+              {t('pricing')}
             </Link>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <LanguageSelector />
+
             {isLoading ? (
-              // 로딩 상태
               <div className="w-8 h-8 rounded-full bg-gray-700 animate-pulse" />
             ) : session ? (
-              // 로그인 상태
               <>
                 <Button
                   size="sm"
@@ -71,7 +118,7 @@ export function Navbar() {
                 >
                   <Link href="/chat">
                     <MessageSquare className="w-4 h-4 mr-2" />
-                    Go to Chat
+                    {t('goToChat')}
                   </Link>
                 </Button>
                 <DropdownMenu>
@@ -116,13 +163,12 @@ export function Navbar() {
                       onClick={() => signOut({ callbackUrl: '/' })}
                     >
                       <LogOut className="mr-2 h-4 w-4" />
-                      Log out
+                      {t('signOut')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </>
             ) : (
-              // 로그아웃 상태
               <>
                 <Button
                   variant="ghost"
@@ -130,14 +176,14 @@ export function Navbar() {
                   className="text-gray-300 hover:text-white hover:bg-white/10"
                   asChild
                 >
-                  <Link href="/login">Log in</Link>
+                  <Link href="/login">{t('login')}</Link>
                 </Button>
                 <Button
                   size="sm"
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                   asChild
                 >
-                  <Link href="/chat">Get Started</Link>
+                  <Link href="/chat">{t('getStarted')}</Link>
                 </Button>
               </>
             )}

@@ -15,16 +15,21 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnChat = nextUrl.pathname.startsWith('/chat');
-      const isOnLogin = nextUrl.pathname.startsWith('/login');
+      const pathname = nextUrl.pathname;
 
-      if (isOnChat) {
-        if (isLoggedIn) return true;
-        return false; // Redirect to login
+      // as-needed: 한국어는 prefix 없음 (/chat), 나머지는 prefix 있음 (/en/chat)
+      const isOnChat = pathname === '/chat' || /^\/(en|zh|ja)\/chat/.test(pathname);
+      const isOnLogin = pathname === '/login' || /^\/(en|zh|ja)\/login/.test(pathname);
+
+      const localeMatch = pathname.match(/^\/(en|zh|ja)\//);
+      const prefix = localeMatch ? `/${localeMatch[1]}` : '';
+
+      if (isOnChat && !isLoggedIn) {
+        return Response.redirect(new URL(`${prefix}/login`, nextUrl));
       }
 
       if (isOnLogin && isLoggedIn) {
-        return Response.redirect(new URL('/chat', nextUrl));
+        return Response.redirect(new URL(`${prefix}/chat`, nextUrl));
       }
 
       return true;
