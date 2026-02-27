@@ -6,7 +6,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Block, BlockType } from '@/types/block';
+import { Block } from '@/types/block';
 import { cn } from '@/lib/utils';
 
 interface BlockDetailDialogProps {
@@ -14,20 +14,6 @@ interface BlockDetailDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-const typeColors: Record<BlockType, string> = {
-  persona: 'bg-blue-500',
-  rule: 'bg-red-500',
-  data: 'bg-green-500',
-  output: 'bg-purple-500',
-};
-
-const typeDescriptions: Record<BlockType, string> = {
-  persona: 'AI personality context.',
-  rule: 'Behavioral constraint.',
-  data: 'Reference information.',
-  output: 'Response format specification.',
-};
 
 export function BlockDetailDialog({
   block,
@@ -41,10 +27,10 @@ export function BlockDetailDialog({
           <div className="border-b border-white/10 bg-[#252830] px-6 py-5">
             <div className="flex items-center gap-2">
               <span
-                className={cn('h-2.5 w-2.5 rounded-full', typeColors[block.type])}
+                className={cn('h-2.5 w-2.5 rounded-full', block.color)}
               />
               <span className="text-xs uppercase tracking-[0.14em] text-gray-400">
-                {block.type}
+                memory
               </span>
             </div>
             <DialogTitle className="mt-3 text-xl font-semibold text-white break-words leading-tight">
@@ -68,7 +54,7 @@ export function BlockDetailDialog({
                 세부 내용
               </p>
               <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-gray-200 max-h-[45vh] overflow-y-auto pr-1">
-                {block.content || typeDescriptions[block.type]}
+                {block.content}
               </p>
             </section>
           </div>

@@ -5,15 +5,12 @@ import { z } from 'zod';
 
 const MAX_BLOCKS_PER_CYCLE = 1;
 
-const blockTypeSchema = z.enum(['persona', 'rule', 'data', 'output']);
-
 const extractRequestSchema = z.object({
   userMessage: z.string().min(1),
   assistantMessage: z.string().min(1),
   existingBlocks: z
     .array(
       z.object({
-        type: blockTypeSchema,
         label: z.string(),
         content: z.string(),
       })
@@ -25,7 +22,6 @@ const extractResponseSchema = z.object({
   blocks: z
     .array(
       z.object({
-        type: blockTypeSchema,
         label: z.string().min(1).max(40),
         content: z.string().min(1).max(500),
       })

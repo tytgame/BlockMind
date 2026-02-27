@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { GripVertical, X, Eye, EyeOff } from 'lucide-react';
-import { Block, BlockType } from '@/types/block';
+import { Block } from '@/types/block';
 import { useBlockStore } from '@/store/block-store';
 import { cn } from '@/lib/utils';
 import { BlockDetailDialog } from './block-detail-dialog';
@@ -19,13 +19,6 @@ import { BlockDetailDialog } from './block-detail-dialog';
 interface BlockItemProps {
   block: Block;
 }
-
-const typeColors: Record<BlockType, string> = {
-  persona: 'bg-blue-500',
-  rule: 'bg-red-500',
-  data: 'bg-green-500',
-  output: 'bg-purple-500',
-};
 
 export function BlockItem({ block }: BlockItemProps) {
   const { updateBlock, removeBlock } = useBlockStore();
@@ -61,7 +54,7 @@ export function BlockItem({ block }: BlockItemProps) {
         <div
           className={cn(
             'absolute left-0 top-0 bottom-0 w-1',
-            typeColors[block.type]
+            block.color
           )}
         />
 

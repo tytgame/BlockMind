@@ -1,17 +1,17 @@
-export type BlockType = 'persona' | 'rule' | 'data' | 'output';
+export type BlockType = 'data';
 
 export interface Block {
   id: string;
   type: BlockType;
   label: string;
   content: string;
-  color?: string;
+  color: string;
   isVisible: boolean;
 }
 
 export type BlockState = {
   blocks: Block[];
-  addBlock: (block: Omit<Block, 'id' | 'isVisible'>) => void;
+  addBlock: (block: Omit<Block, 'id' | 'isVisible' | 'color'>) => void;
   updateBlock: (id: string, updates: Partial<Block>) => void;
   removeBlock: (id: string) => void;
   reorderBlocks: (activeId: string, overId: string) => void;

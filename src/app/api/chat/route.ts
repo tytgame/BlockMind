@@ -1,5 +1,6 @@
 import { google } from '@ai-sdk/google';
 import { convertToModelMessages, streamText } from 'ai';
+import { NextResponse } from 'next/server';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -33,17 +34,43 @@ Current Memory Blocks:
 ${memoryContext}`;
 }
 
+function isQuotaError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const msg = error.message.toLowerCase();
+  return (
+    msg.includes('resource_exhausted') ||
+    msg.includes('quota') ||
+    msg.includes('rate limit') ||
+    msg.includes('rate_limit') ||
+    msg.includes('too many requests') ||
+    ('statusCode' in error && error.statusCode === 429)
+  );
+}
+
 export async function POST(req: Request) {
-  const { messages, systemPrompt } = await req.json();
+  try {
+    const { messages, systemPrompt } = await req.json();
 
-  // UIMessage[] → ModelMessage[] 변환
-  const modelMessages = await convertToModelMessages(messages);
+    // UIMessage[] → ModelMessage[] 변환
+    const modelMessages = await convertToModelMessages(messages);
 
-  const result = streamText({
-    model: google("gemini-2.5-flash"),
-    system: buildSystemPrompt(systemPrompt),
-    messages: modelMessages,
-  });
+    const result = streamText({
+      model: google('gemini-3-flash-preview'),
+      system: buildSystemPrompt(systemPrompt),
+      messages: modelMessages,
+    });
 
-  return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse();
+  } catch (error) {
+    if (isQuotaError(error)) {
+      return NextResponse.json(
+        { error: 'QUOTA_EXCEEDED' },
+        { status: 429 }
+      );
+    }
+    return NextResponse.json(
+      { error: 'INTERNAL_ERROR' },
+      { status: 500 }
+    );
+  }
 }

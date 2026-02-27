@@ -13,13 +13,15 @@ import {
   Plus,
   Image as ImageIcon,
   Mic,
+  AlertTriangle,
+  X,
 } from 'lucide-react';
 import { useBlockStore } from '@/store/block-store';
 import { useChatStore } from '@/store/chat-store';
+import { MessageContent } from './message-content';
 import { cn } from '@/lib/utils';
 
 type ExtractedBlock = {
-  type: 'persona' | 'rule' | 'data' | 'output';
   label: string;
   content: string;
 };
@@ -34,6 +36,7 @@ export function ChatInterface() {
   const { data: session } = useSession();
   const { blocks } = useBlockStore();
   const { input, setInput, resetInput } = useChatStore();
+  const [apiError, setApiError] = React.useState<string | null>(null);
 
   // 시스템 프롬프트 구성: 활성화된 블록들의 내용을 합칩니다.
   const systemPrompt = React.useMemo(() => {
@@ -61,7 +64,7 @@ export function ChatInterface() {
     const existingKeys = new Set(
       currentBlocks.map(
         (block) =>
-          `${block.type}::${block.label.trim().toLowerCase()}::${block.content.trim().toLowerCase()}`
+          `${block.label.trim().toLowerCase()}::${block.content.trim().toLowerCase()}`
       )
     );
 
@@ -69,22 +72,16 @@ export function ChatInterface() {
     for (const block of extractedBlocks) {
       if (addedCount >= MAX_BLOCKS_PER_CYCLE) break;
 
-      const normalizedBlock = {
-        type: block.type,
-        label: block.label.trim(),
-        content: block.content.trim(),
-      };
+      const label = block.label.trim();
+      const content = block.content.trim();
 
-      if (!normalizedBlock.label || !normalizedBlock.content) continue;
+      if (!label || !content) continue;
 
-      const blockKey = `${normalizedBlock.type}::${normalizedBlock.label.toLowerCase()}::${normalizedBlock.content.toLowerCase()}`;
+      const blockKey = `${label.toLowerCase()}::${content.toLowerCase()}`;
 
       if (existingKeys.has(blockKey)) continue;
 
-      addBlock({
-        ...normalizedBlock,
-        color: '',
-      });
+      addBlock({ type: 'data', label, content });
       existingKeys.add(blockKey);
       addedCount += 1;
     }
@@ -93,6 +90,26 @@ export function ChatInterface() {
   // useChat 훅 사용
   const { messages, sendMessage, status } = useChat({
     transport,
+    onError: (error) => {
+      let errorCode: string | null = null;
+      try {
+        const parsed = JSON.parse(error.message) as { error?: string };
+        errorCode = parsed.error ?? null;
+      } catch {
+        // JSON이 아닌 경우 raw message 사용
+      }
+      if (
+        errorCode === 'QUOTA_EXCEEDED' ||
+        error.message.includes('429') ||
+        error.message.toLowerCase().includes('quota')
+      ) {
+        setApiError(
+          'API 사용량 한도를 초과했습니다. 잠시 후 다시 시도해 주세요.'
+        );
+      } else {
+        setApiError('오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+      }
+    },
     onFinish: ({ message, messages: allMessages }) => {
       if (message.role !== 'assistant') return;
 
@@ -120,7 +137,6 @@ export function ChatInterface() {
 
       const { blocks: currentBlocks } = useBlockStore.getState();
       const existingBlocks = currentBlocks.map((block) => ({
-        type: block.type,
         label: block.label,
         content: block.content,
       }));
@@ -164,6 +180,7 @@ export function ChatInterface() {
     e.preventDefault();
     if (!input.trim()) return;
 
+    setApiError(null);
     const userMessage = input;
     resetInput();
 
@@ -191,6 +208,21 @@ export function ChatInterface() {
       hour12: true,
     });
   };
+
+  const renderErrorBanner = () =>
+    apiError ? (
+      <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-3">
+        <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
+        <p className="text-sm text-red-300 flex-1">{apiError}</p>
+        <button
+          onClick={() => setApiError(null)}
+          className="text-red-400 hover:text-red-300 transition-colors flex-shrink-0"
+          aria-label="닫기"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    ) : null;
 
   const renderInputComposer = (inputClassName?: string) => (
     <form onSubmit={handleSubmit} className={cn('relative', inputClassName)}>
@@ -304,18 +336,15 @@ export function ChatInterface() {
                           </div>
                         )}
 
-                        <div
-                          className={cn(
-                            'rounded-2xl px-4 py-3 text-sm',
-                            isUser
-                              ? 'bg-blue-600 text-white rounded-tr-md'
-                              : 'bg-[#1a1d21] text-gray-100 rounded-tl-md'
-                          )}
-                        >
-                          <p className="whitespace-pre-wrap leading-relaxed">
-                            {textContent}
-                          </p>
-                        </div>
+                        {isUser ? (
+                          <div className="rounded-2xl rounded-tr-md bg-blue-600 px-4 py-3 text-white">
+                            <MessageContent content={textContent} isUser={true} />
+                          </div>
+                        ) : (
+                          <div className="py-1">
+                            <MessageContent content={textContent} isUser={false} />
+                          </div>
+                        )}
 
                         {isUser && (
                           <span className="text-xs text-gray-500 mt-1">You</span>
@@ -348,6 +377,7 @@ export function ChatInterface() {
           {/* Input Area - Docked Bottom */}
           <div className="px-6 py-4 border-t border-white/10">
             <div className="max-w-3xl mx-auto">
+              {renderErrorBanner()}
               {renderInputComposer()}
               <p className="text-xs text-gray-500 text-center mt-3">
                 BlockMind may display inaccurate info, including about people, so
@@ -370,6 +400,7 @@ export function ChatInterface() {
             </div>
 
             <div className="w-full">
+              {renderErrorBanner()}
               {renderInputComposer()}
               <p className="text-xs text-gray-500 text-center mt-3">
                 BlockMind may display inaccurate info, including about people, so

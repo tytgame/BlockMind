@@ -20,7 +20,7 @@ import { BlockItem } from './block-item';
 import { BlockDetailDialog } from './block-detail-dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { BlockType, type Block } from '@/types/block';
+import { type Block } from '@/types/block';
 import { ChevronLeft, ChevronRight, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -28,13 +28,6 @@ interface BlockListProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
 }
-
-const typeBadgeColors: Record<BlockType, string> = {
-  persona: 'bg-blue-500',
-  rule: 'bg-red-500',
-  data: 'bg-green-500',
-  output: 'bg-purple-500',
-};
 
 export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
   const { blocks, reorderBlocks } = useBlockStore();
@@ -100,7 +93,7 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
                 <span
                   className={cn(
                     'absolute top-0 left-0 right-0 h-1 rounded-t-md',
-                    typeBadgeColors[block.type]
+                    block.color
                   )}
                 />
                 <span className="text-[10px] font-semibold uppercase text-gray-200">
