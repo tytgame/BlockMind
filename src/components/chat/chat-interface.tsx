@@ -20,6 +20,7 @@ import { useBlockStore } from '@/store/block-store';
 import { useChatStore } from '@/store/chat-store';
 import { MessageContent } from './message-content';
 import { cn } from '@/lib/utils';
+import { useTranslations, useLocale } from 'next-intl';
 
 type ExtractedBlock = {
   label: string;
@@ -37,6 +38,8 @@ export function ChatInterface() {
   const { blocks } = useBlockStore();
   const { input, setInput, resetInput } = useChatStore();
   const [apiError, setApiError] = React.useState<string | null>(null);
+  const t = useTranslations('chatInterface');
+  const locale = useLocale();
 
   // 시스템 프롬프트 구성: 활성화된 블록들의 내용을 합칩니다.
   const systemPrompt = React.useMemo(() => {
@@ -46,7 +49,7 @@ export function ChatInterface() {
       .join('\n\n');
   }, [blocks]);
 
-  // HTTP Transport 생성 (타입 안전하게)
+  // HTTP Transport 생성
   const transport = React.useMemo(
     () =>
       new DefaultChatTransport({
@@ -103,11 +106,9 @@ export function ChatInterface() {
         error.message.includes('429') ||
         error.message.toLowerCase().includes('quota')
       ) {
-        setApiError(
-          'API 사용량 한도를 초과했습니다. 잠시 후 다시 시도해 주세요.'
-        );
+        setApiError(t('errorQuota'));
       } else {
-        setApiError('오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+        setApiError(t('errorGeneral'));
       }
     },
     onFinish: ({ message, messages: allMessages }) => {
@@ -200,12 +201,11 @@ export function ChatInterface() {
     }
   }, [messages]);
 
-  // 시간 포맷팅
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
+    return date.toLocaleTimeString(locale, {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true,
+      hour12: locale === 'en',
     });
   };
 
@@ -257,7 +257,7 @@ export function ChatInterface() {
         <Input
           value={input}
           onChange={handleInputChange}
-          placeholder="Message BlockMind..."
+          placeholder={t('placeholder')}
           className="flex-1 border-0 bg-transparent text-white placeholder:text-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0"
         />
 
@@ -292,11 +292,10 @@ export function ChatInterface() {
 
                 return (
                   <div key={m.id}>
-                    {/* Date separator - only show for first message or new day */}
                     {index === 0 && (
                       <div className="flex justify-center mb-6">
                         <span className="text-xs text-gray-500 bg-[#1a1d21] px-3 py-1 rounded-full">
-                          Today, {formatTime(messageTime)}
+                          {t('today')}, {formatTime(messageTime)}
                         </span>
                       </div>
                     )}
@@ -347,7 +346,7 @@ export function ChatInterface() {
                         )}
 
                         {isUser && (
-                          <span className="text-xs text-gray-500 mt-1">You</span>
+                          <span className="text-xs text-gray-500 mt-1">{t('you')}</span>
                         )}
                       </div>
                     </div>
@@ -366,7 +365,7 @@ export function ChatInterface() {
                     </div>
                     <div className="bg-[#1a1d21] rounded-2xl rounded-tl-md px-4 py-3 flex items-center gap-2">
                       <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
-                      <span className="text-sm text-gray-400">Thinking...</span>
+                      <span className="text-sm text-gray-400">{t('thinking')}</span>
                     </div>
                   </div>
                 </div>
@@ -380,8 +379,7 @@ export function ChatInterface() {
               {renderErrorBanner()}
               {renderInputComposer()}
               <p className="text-xs text-gray-500 text-center mt-3">
-                BlockMind may display inaccurate info, including about people, so
-                double-check its responses.
+                {t('disclaimer')}
               </p>
             </div>
           </div>
@@ -394,17 +392,16 @@ export function ChatInterface() {
                 <span className="text-white font-bold text-2xl">B</span>
               </div>
               <p className="text-4xl font-medium text-white mb-3">
-                How can I help you today?
+                {t('greeting')}
               </p>
-              <p className="text-base">Start chatting to build your context!</p>
+              <p className="text-base">{t('greetingSubtitle')}</p>
             </div>
 
             <div className="w-full">
               {renderErrorBanner()}
               {renderInputComposer()}
               <p className="text-xs text-gray-500 text-center mt-3">
-                BlockMind may display inaccurate info, including about people, so
-                double-check its responses.
+                {t('disclaimer')}
               </p>
             </div>
           </div>

@@ -75,6 +75,47 @@
   "demo": {
     "placeholder": "BlockMindにメッセージを送る..."
   },
+  "chatInterface": {
+    "placeholder": "BlockMindにメッセージを送る...",
+    "errorQuota": "API使用量の上限を超えました。しばらくしてからもう一度お試しください。",
+    "errorGeneral": "エラーが発生しました。しばらくしてからもう一度お試しください。",
+    "today": "今日",
+    "you": "あなた",
+    "thinking": "考え中...",
+    "greeting": "今日は何をお手伝いしましょうか？",
+    "greetingSubtitle": "チャットを始めてコンテキストを作りましょう！",
+    "disclaimer": "BlockMindは人物に関する情報を含め、不正確な情報を表示する可能性があります。回答をご確認ください。"
+  },
+  "chatSidebar": {
+    "expandSidebar": "サイドバーを展開",
+    "collapseSidebar": "サイドバーを折りたたむ",
+    "goToHome": "ホームへ",
+    "newChat": "新しいチャット",
+    "search": "検索",
+    "searchPlaceholder": "会話を検索...",
+    "pinned": "固定済み",
+    "folders": "フォルダ",
+    "settings": "設定",
+    "recents": "最近",
+    "noRecentChats": "最近のチャットはありません",
+    "noPinnedChats": "固定されたチャットはありません",
+    "noFolders": "フォルダはありません"
+  },
+  "blockList": {
+    "expandSidebar": "ブロックパネルを展開",
+    "collapseSidebar": "ブロックパネルを折りたたむ",
+    "currentBlocks": "現在のブロック",
+    "activeMemory": "アクティブメモリ",
+    "settings": "設定",
+    "noBlocks": "ブロックがありません。",
+    "noBlocksSubtitle": "チャットを始めてコンテキストを生成しましょう。"
+  },
+  "blockItem": {
+    "deleteConfirmTitle": "本当に削除しますか？",
+    "deleteConfirmDescription": "この操作は元に戻せません。ブロック \"{label}\" が削除されます。",
+    "cancel": "キャンセル",
+    "delete": "削除"
+  },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },
     "en": { "flag": "🇺🇸", "label": "English", "short": "EN" },

@@ -75,6 +75,47 @@
   "demo": {
     "placeholder": "向 BlockMind 发送消息..."
   },
+  "chatInterface": {
+    "placeholder": "向 BlockMind 发送消息...",
+    "errorQuota": "API 配额已超出，请稍后再试。",
+    "errorGeneral": "发生错误，请稍后再试。",
+    "today": "今天",
+    "you": "你",
+    "thinking": "思考中...",
+    "greeting": "今天有什么可以帮您？",
+    "greetingSubtitle": "开始聊天以构建您的上下文！",
+    "disclaimer": "BlockMind 可能会显示不准确的信息，包括有关人物的信息，请仔细核实其回答。"
+  },
+  "chatSidebar": {
+    "expandSidebar": "展开侧边栏",
+    "collapseSidebar": "收起侧边栏",
+    "goToHome": "回到主页",
+    "newChat": "新对话",
+    "search": "搜索",
+    "searchPlaceholder": "搜索对话...",
+    "pinned": "置顶",
+    "folders": "文件夹",
+    "settings": "设置",
+    "recents": "最近",
+    "noRecentChats": "暂无最近对话",
+    "noPinnedChats": "暂无置顶对话",
+    "noFolders": "暂无文件夹"
+  },
+  "blockList": {
+    "expandSidebar": "展开块面板",
+    "collapseSidebar": "收起块面板",
+    "currentBlocks": "当前块",
+    "activeMemory": "活跃记忆",
+    "settings": "设置",
+    "noBlocks": "暂无块。",
+    "noBlocksSubtitle": "开始聊天以生成上下文。"
+  },
+  "blockItem": {
+    "deleteConfirmTitle": "确定要删除吗？",
+    "deleteConfirmDescription": "此操作无法撤销。块 \"{label}\" 将被删除。",
+    "cancel": "取消",
+    "delete": "删除"
+  },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },
     "en": { "flag": "🇺🇸", "label": "English", "short": "EN" },

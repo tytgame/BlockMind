@@ -75,6 +75,47 @@
   "demo": {
     "placeholder": "BlockMind에게 메시지 보내기..."
   },
+  "chatInterface": {
+    "placeholder": "BlockMind에게 메시지 보내기...",
+    "errorQuota": "API 사용량 한도를 초과했습니다. 잠시 후 다시 시도해 주세요.",
+    "errorGeneral": "오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+    "today": "오늘",
+    "you": "나",
+    "thinking": "생각 중...",
+    "greeting": "무엇을 도와드릴까요?",
+    "greetingSubtitle": "채팅을 시작해서 맥락을 만들어보세요!",
+    "disclaimer": "BlockMind는 사람에 관한 정보를 포함해 부정확한 정보를 표시할 수 있으므로, 답변을 다시 확인해 주세요."
+  },
+  "chatSidebar": {
+    "expandSidebar": "사이드바 펼치기",
+    "collapseSidebar": "사이드바 접기",
+    "goToHome": "홈으로",
+    "newChat": "새 채팅",
+    "search": "검색",
+    "searchPlaceholder": "대화 검색...",
+    "pinned": "고정됨",
+    "folders": "폴더",
+    "settings": "설정",
+    "recents": "최근",
+    "noRecentChats": "최근 대화 없음",
+    "noPinnedChats": "고정된 대화 없음",
+    "noFolders": "폴더 없음"
+  },
+  "blockList": {
+    "expandSidebar": "블록 패널 펼치기",
+    "collapseSidebar": "블록 패널 접기",
+    "currentBlocks": "현재 블록",
+    "activeMemory": "활성 메모리",
+    "settings": "설정",
+    "noBlocks": "블록이 없습니다.",
+    "noBlocksSubtitle": "채팅을 시작해서 맥락을 생성해 보세요."
+  },
+  "blockItem": {
+    "deleteConfirmTitle": "정말 삭제하시겠습니까?",
+    "deleteConfirmDescription": "이 작업은 되돌릴 수 없습니다. 블록 \"{label}\"이(가) 삭제됩니다.",
+    "cancel": "취소",
+    "delete": "삭제"
+  },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },
     "en": { "flag": "🇺🇸", "label": "English", "short": "EN" },

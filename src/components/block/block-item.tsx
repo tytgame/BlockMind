@@ -15,6 +15,7 @@ import { Block } from '@/types/block';
 import { useBlockStore } from '@/store/block-store';
 import { cn } from '@/lib/utils';
 import { BlockDetailDialog } from './block-detail-dialog';
+import { useTranslations } from 'next-intl';
 
 interface BlockItemProps {
   block: Block;
@@ -24,6 +25,7 @@ export function BlockItem({ block }: BlockItemProps) {
   const { updateBlock, removeBlock } = useBlockStore();
   const [isDetailOpen, setIsDetailOpen] = React.useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = React.useState(false);
+  const t = useTranslations('blockItem');
 
   const {
     attributes,
@@ -130,12 +132,10 @@ export function BlockItem({ block }: BlockItemProps) {
         <DialogContent className="max-w-md border-white/10 bg-[#1a1d21] text-white">
           <div className="space-y-4">
             <DialogTitle className="text-lg font-semibold text-white">
-              정말 삭제하시겠습니까?
+              {t('deleteConfirmTitle')}
             </DialogTitle>
             <DialogDescription className="text-sm text-gray-400">
-              이 작업은 되돌릴 수 없습니다. 블록{' '}
-              <span className="font-medium text-gray-200">&quot;{block.label}&quot;</span>
-              이(가) 삭제됩니다.
+              {t('deleteConfirmDescription', { label: block.label })}
             </DialogDescription>
             <div className="flex items-center justify-end gap-2 pt-2">
               <Button
@@ -143,7 +143,7 @@ export function BlockItem({ block }: BlockItemProps) {
                 className="text-gray-300 hover:bg-white/10 hover:text-white"
                 onClick={() => setIsDeleteConfirmOpen(false)}
               >
-                취소
+                {t('cancel')}
               </Button>
               <Button
                 variant="destructive"
@@ -152,7 +152,7 @@ export function BlockItem({ block }: BlockItemProps) {
                   setIsDeleteConfirmOpen(false);
                 }}
               >
-                삭제
+                {t('delete')}
               </Button>
             </div>
           </div>

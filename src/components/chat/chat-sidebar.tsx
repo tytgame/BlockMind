@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +17,8 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 type RecentChat = {
   id: string;
@@ -51,6 +52,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeChat, setActiveChat] = React.useState<string | null>(null);
+  const t = useTranslations('chatSidebar');
 
   if (collapsed) {
     return (
@@ -61,8 +63,8 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
             size="icon"
             className={iconRailButtonClass}
             onClick={onToggleCollapse}
-            aria-label="Expand sidebar"
-            title="Expand sidebar"
+            aria-label={t('expandSidebar')}
+            title={t('expandSidebar')}
           >
             <ChevronRight className="h-5 w-5" />
           </Button>
@@ -72,8 +74,8 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
           <Link
             href="/"
             className="mb-2 h-10 w-10 rounded-xl border border-white/10 bg-[#252830] flex items-center justify-center hover:bg-[#2a2f3a] transition-colors"
-            aria-label="Go to home"
-            title="Go to home"
+            aria-label={t('goToHome')}
+            title={t('goToHome')}
           >
             <Image
               src="/blockmind_logo_noBackGround.png"
@@ -88,8 +90,8 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
             variant="ghost"
             size="icon"
             className={iconRailButtonClass}
-            title="New Chat"
-            aria-label="New Chat"
+            title={t('newChat')}
+            aria-label={t('newChat')}
           >
             <Plus className="h-5 w-5" />
           </Button>
@@ -97,8 +99,8 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
             variant="ghost"
             size="icon"
             className={iconRailButtonClass}
-            title="Search"
-            aria-label="Search"
+            title={t('search')}
+            aria-label={t('search')}
           >
             <Search className="h-5 w-5" />
           </Button>
@@ -106,8 +108,8 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
             variant="ghost"
             size="icon"
             className={iconRailButtonClass}
-            title="Pinned"
-            aria-label="Pinned"
+            title={t('pinned')}
+            aria-label={t('pinned')}
           >
             <Pin className="h-5 w-5" />
           </Button>
@@ -115,8 +117,8 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
             variant="ghost"
             size="icon"
             className={iconRailButtonClass}
-            title="Folders"
-            aria-label="Folders"
+            title={t('folders')}
+            aria-label={t('folders')}
           >
             <Folder className="h-5 w-5" />
           </Button>
@@ -128,8 +130,8 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
               variant="ghost"
               size="icon"
               className={iconRailButtonClass}
-              title="Settings"
-              aria-label="Settings"
+              title={t('settings')}
+              aria-label={t('settings')}
             >
               <Settings className="h-5 w-5" />
             </Button>
@@ -157,8 +159,8 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
           <Link
             href="/"
             className="h-10 w-10 rounded-xl border border-white/10 bg-[#252830] flex items-center justify-center hover:bg-[#2a2f3a] transition-colors"
-            aria-label="Go to home"
-            title="Go to home"
+            aria-label={t('goToHome')}
+            title={t('goToHome')}
           >
             <Image
               src="/blockmind_logo_noBackGround.png"
@@ -173,8 +175,8 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
             size="icon"
             className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
             onClick={onToggleCollapse}
-            aria-label="Collapse sidebar"
-            title="Collapse sidebar"
+            aria-label={t('collapseSidebar')}
+            title={t('collapseSidebar')}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -185,7 +187,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
       <div className="p-3">
         <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white gap-2">
           <Plus className="h-4 w-4" />
-          New Chat
+          {t('newChat')}
         </Button>
       </div>
 
@@ -194,7 +196,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search conversations..."
+            placeholder={t('searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus-visible:ring-blue-500"
@@ -207,11 +209,11 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
         {/* Recents */}
         <div className="mb-4">
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">
-            Recents
+            {t('recents')}
           </h3>
           <div className="space-y-1">
             {recentChats.length === 0 && (
-              <p className="px-2 py-1 text-xs text-gray-500">No recent chats</p>
+              <p className="px-2 py-1 text-xs text-gray-500">{t('noRecentChats')}</p>
             )}
             {recentChats.map((chat) => (
               <button
@@ -237,11 +239,11 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
         <div className="mb-4">
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2 flex items-center gap-1">
             <Pin className="h-3 w-3" />
-            Pinned
+            {t('pinned')}
           </h3>
           <div className="space-y-1">
             {pinnedChats.length === 0 && (
-              <p className="px-2 py-1 text-xs text-gray-500">No pinned chats</p>
+              <p className="px-2 py-1 text-xs text-gray-500">{t('noPinnedChats')}</p>
             )}
             {pinnedChats.map((chat) => (
               <button
@@ -267,11 +269,11 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
         <div className="mb-4">
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2 flex items-center gap-1">
             <Folder className="h-3 w-3" />
-            Folders
+            {t('folders')}
           </h3>
           <div className="space-y-1">
             {folders.length === 0 && (
-              <p className="px-2 py-1 text-xs text-gray-500">No folders</p>
+              <p className="px-2 py-1 text-xs text-gray-500">{t('noFolders')}</p>
             )}
             {folders.map((folder) => (
               <button
@@ -290,13 +292,11 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
 
       {/* Bottom Section - Settings & User */}
       <div className="border-t border-white/10 p-3 space-y-2">
-        {/* Settings */}
         <button className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-left text-gray-300 hover:bg-white/5 transition-colors">
           <Settings className="h-4 w-4" />
-          <span className="text-sm">Settings</span>
+          <span className="text-sm">{t('settings')}</span>
         </button>
 
-        {/* User Profile */}
         {session?.user && (
           <div className="flex items-center gap-3 px-2 py-2 rounded-lg bg-white/5">
             <Avatar className="h-8 w-8">

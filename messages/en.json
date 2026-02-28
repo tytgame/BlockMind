@@ -75,6 +75,47 @@
   "demo": {
     "placeholder": "Message BlockMind..."
   },
+  "chatInterface": {
+    "placeholder": "Message BlockMind...",
+    "errorQuota": "API quota exceeded. Please try again later.",
+    "errorGeneral": "An error occurred. Please try again later.",
+    "today": "Today",
+    "you": "You",
+    "thinking": "Thinking...",
+    "greeting": "How can I help you today?",
+    "greetingSubtitle": "Start chatting to build your context!",
+    "disclaimer": "BlockMind may display inaccurate info, including about people, so double-check its responses."
+  },
+  "chatSidebar": {
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "goToHome": "Go to home",
+    "newChat": "New Chat",
+    "search": "Search",
+    "searchPlaceholder": "Search conversations...",
+    "pinned": "Pinned",
+    "folders": "Folders",
+    "settings": "Settings",
+    "recents": "Recents",
+    "noRecentChats": "No recent chats",
+    "noPinnedChats": "No pinned chats",
+    "noFolders": "No folders"
+  },
+  "blockList": {
+    "expandSidebar": "Expand blocks panel",
+    "collapseSidebar": "Collapse blocks panel",
+    "currentBlocks": "Current Blocks",
+    "activeMemory": "Active Memory",
+    "settings": "Settings",
+    "noBlocks": "No blocks yet.",
+    "noBlocksSubtitle": "Start chatting to generate context."
+  },
+  "blockItem": {
+    "deleteConfirmTitle": "Are you sure?",
+    "deleteConfirmDescription": "This action cannot be undone. Block \"{label}\" will be deleted.",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },
     "en": { "flag": "🇺🇸", "label": "English", "short": "EN" },

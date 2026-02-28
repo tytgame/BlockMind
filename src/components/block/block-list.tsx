@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { type Block } from '@/types/block';
 import { ChevronLeft, ChevronRight, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface BlockListProps {
   collapsed: boolean;
@@ -33,6 +34,7 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
   const { blocks, reorderBlocks } = useBlockStore();
   const [selectedBlock, setSelectedBlock] = React.useState<Block | null>(null);
   const [isDetailOpen, setIsDetailOpen] = React.useState(false);
+  const t = useTranslations('blockList');
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -68,8 +70,8 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
             size="icon"
             className="h-10 w-10 text-gray-300 hover:text-white hover:bg-white/10"
             onClick={onToggleCollapse}
-            aria-label="Expand blocks sidebar"
-            title="Expand blocks sidebar"
+            aria-label={t('expandSidebar')}
+            title={t('expandSidebar')}
           >
             <ChevronLeft className="h-5 w-5" />
           </Button>
@@ -113,8 +115,8 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
             variant="ghost"
             size="icon"
             className="h-10 w-10 text-gray-300 hover:text-white hover:bg-white/10"
-            title="Settings"
-            aria-label="Settings"
+            title={t('settings')}
+            aria-label={t('settings')}
           >
             <Settings className="h-5 w-5" />
           </Button>
@@ -133,7 +135,7 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
     <div className="h-full flex flex-col bg-[#1a1d21]">
       {/* Header */}
       <div className="px-4 py-4 border-b border-white/10 flex justify-between items-center">
-        <h2 className="font-semibold text-white">Current Blocks</h2>
+        <h2 className="font-semibold text-white">{t('currentBlocks')}</h2>
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
@@ -147,8 +149,8 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
             size="icon"
             className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
             onClick={onToggleCollapse}
-            aria-label="Collapse blocks sidebar"
-            title="Collapse blocks sidebar"
+            aria-label={t('collapseSidebar')}
+            title={t('collapseSidebar')}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -158,7 +160,7 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
       {/* Active Memory Label */}
       <div className="px-4 py-3">
         <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-          Active Memory
+          {t('activeMemory')}
         </h3>
       </div>
 
@@ -178,8 +180,8 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
             ))}
             {blocks.length === 0 && (
               <div className="text-center py-10 text-gray-500 border-2 border-dashed border-white/10 rounded-lg">
-                <p className="text-sm">No blocks yet.</p>
-                <p className="text-xs mt-1">Start chatting to generate context.</p>
+                <p className="text-sm">{t('noBlocks')}</p>
+                <p className="text-xs mt-1">{t('noBlocksSubtitle')}</p>
               </div>
             )}
           </SortableContext>
