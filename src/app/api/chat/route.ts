@@ -1,6 +1,8 @@
 import { google } from '@ai-sdk/google';
-import { convertToModelMessages, streamText } from 'ai';
+import { convertToModelMessages, streamText, type UIMessage } from 'ai';
 import { NextResponse } from 'next/server';
+import { sliceMessagesByReset } from '@/lib/slice-messages-by-reset';
+
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -49,10 +51,18 @@ function isQuotaError(error: unknown): boolean {
 
 export async function POST(req: Request) {
   try {
-    const { messages, systemPrompt } = await req.json();
+    const { messages, systemPrompt, pivotIndex } = await req.json() as {
+      messages: UIMessage[];
+      systemPrompt?: string;
+      pivotIndex?: number | null;
+    };
+
+    // pivotIndex 이후 메시지만 전달 — 블록 visibility 변경/삭제 이전 대화는 제외
+    // UI에서는 대화가 그대로 보이지만, AI는 리셋 시점 이후 메시지만 인식함
+    const slicedMessages = sliceMessagesByReset(messages, pivotIndex);
 
     // UIMessage[] → ModelMessage[] 변환
-    const modelMessages = await convertToModelMessages(messages);
+    const modelMessages = await convertToModelMessages(slicedMessages);
 
     const result = streamText({
       model: google('gemini-3-flash-preview'),

@@ -21,6 +21,7 @@ import { useChatStore } from '@/store/chat-store';
 import { MessageContent } from './message-content';
 import { cn } from '@/lib/utils';
 import { useTranslations, useLocale } from 'next-intl';
+import { buildSystemPrompt } from '@/lib/build-system-prompt';
 
 type ExtractedBlock = {
   label: string;
@@ -35,30 +36,37 @@ const MAX_BLOCKS_PER_CYCLE = 1;
 
 export function ChatInterface() {
   const { data: session } = useSession();
-  const { blocks } = useBlockStore();
   const { input, setInput, resetInput } = useChatStore();
   const [apiError, setApiError] = React.useState<string | null>(null);
   const t = useTranslations('chatInterface');
   const locale = useLocale();
 
-  // 시스템 프롬프트 구성: 활성화된 블록들의 내용을 합칩니다.
-  const systemPrompt = React.useMemo(() => {
-    return blocks
-      .filter((b) => b.isVisible)
-      .map((b) => `[${b.type.toUpperCase()} - ${b.label}]\n${b.content}`)
-      .join('\n\n');
-  }, [blocks]);
+  // lastResetAt을 React selector로 구독 — 변경 시 이 컴포넌트가 리렌더됨
+  // (블록 토글/삭제 시에만 변경되므로 추가 렌더 비용 미미)
+  const lastResetAt = useBlockStore((state) => state.lastResetAt);
 
-  // HTTP Transport 생성
+  // lastResetAt이 바뀐 직후 렌더의 messages.length를 pivotIndex로 저장
+  // effect는 렌더 완료 후 실행되므로 messages는 항상 최신값 — ref 불필요
+  React.useEffect(() => {
+    if (lastResetAt === null) return;
+    useBlockStore.getState().setPivotIndex(messages.length);
+    // messages는 의도적으로 deps 제외:
+    // 메시지가 추가될 때마다 pivotIndex가 덮어쓰여선 안 됨
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastResetAt]);
+
+  // Transport는 한 번만 생성.
+  // body()는 useBlockStore.getState()로만 읽어 ref 접근 없이 lint-safe
   const transport = React.useMemo(
     () =>
       new DefaultChatTransport({
         api: '/api/chat',
-        body: {
-          systemPrompt,
+        body: () => {
+          const { blocks, pivotIndex } = useBlockStore.getState();
+          return { systemPrompt: buildSystemPrompt(blocks), pivotIndex };
         },
       }),
-    [systemPrompt]
+    []
   );
 
   const applyExtractedBlocks = React.useCallback((extractedBlocks: ExtractedBlock[]) => {

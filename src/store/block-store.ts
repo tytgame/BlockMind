@@ -12,6 +12,8 @@ const BLOCK_COLORS = [
 
 export const useBlockStore = create<BlockState>((set) => ({
   blocks: [],
+  lastResetAt: null,
+  pivotIndex: null,
   addBlock: (blockData) =>
     set((state) => ({
       blocks: [
@@ -25,14 +27,24 @@ export const useBlockStore = create<BlockState>((set) => ({
       ],
     })),
   updateBlock: (id, updates) =>
-    set((state) => ({
-      blocks: state.blocks.map((block) =>
-        block.id === id ? { ...block, ...updates } : block
-      ),
-    })),
+    set((state) => {
+      // isVisible 변경 시에만 lastResetAt 갱신 (레이블/내용 수정은 리셋 불필요)
+      const target = state.blocks.find((b) => b.id === id);
+      const isVisibilityChange =
+        updates.isVisible !== undefined && target?.isVisible !== updates.isVisible;
+
+      return {
+        blocks: state.blocks.map((block) =>
+          block.id === id ? { ...block, ...updates } : block
+        ),
+        ...(isVisibilityChange ? { lastResetAt: Date.now() } : {}),
+      };
+    }),
   removeBlock: (id) =>
     set((state) => ({
       blocks: state.blocks.filter((block) => block.id !== id),
+      // 블록 삭제 시 항상 리셋 (삭제된 블록 관련 대화도 AI가 더 이상 보면 안 됨)
+      lastResetAt: Date.now(),
     })),
   reorderBlocks: (activeId, overId) =>
     set((state) => {
@@ -43,4 +55,5 @@ export const useBlockStore = create<BlockState>((set) => ({
       };
     }),
   setBlocks: (blocks) => set({ blocks }),
+  setPivotIndex: (index) => set({ pivotIndex: index }),
 }));

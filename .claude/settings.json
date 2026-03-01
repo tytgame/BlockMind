@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm test)",
+      "Bash(npm install -D ts-node --legacy-peer-deps)",
+      "Bash(npm test -- src/__tests__/unit/block-store.test.ts)",
+      "Bash(npx jest --testPathPattern=\"block-store\" --no-coverage)",
+      "Bash(npx jest --testPathPatterns=\"block-store\" --no-coverage)",
+      "Bash(npx jest --no-coverage)",
+      "Bash(npx jest --testPathPattern=\"slice-messages-by-reset|block-store|build-system-prompt\" --no-coverage)",
+      "Bash(npx jest --testPathPatterns=\"slice-messages-by-reset|block-store|build-system-prompt\" --no-coverage)"
+    ]
+  }
+}
