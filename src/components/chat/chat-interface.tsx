@@ -4,15 +4,12 @@ import * as React from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, isTextUIPart } from 'ai';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useSession } from 'next-auth/react';
 import {
-  Send,
   Loader2,
   Plus,
-  Image as ImageIcon,
-  Mic,
+  Settings,
   AlertTriangle,
   X,
 } from 'lucide-react';
@@ -236,21 +233,34 @@ export function ChatInterface() {
   const isLoading = status === 'streaming' || status === 'submitted';
   const hasMessages = messages.length > 0;
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
+    // 자동 높이 조절
+    e.target.style.height = 'auto';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      void handleSubmit(e as unknown as React.FormEvent);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
 
     setApiError(null);
     const userMessage = input;
     resetInput();
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
 
-    await sendMessage({
-      text: userMessage,
-    });
+    await sendMessage({ text: userMessage });
   };
 
   const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -289,50 +299,36 @@ export function ChatInterface() {
 
   const renderInputComposer = (inputClassName?: string) => (
     <form onSubmit={handleSubmit} className={cn('relative', inputClassName)}>
-      <div className="flex items-center gap-2 bg-[#1a1d21] rounded-xl border border-white/10 px-4 py-2">
-        {/* Left Icons */}
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
-        >
-          <Plus className="h-5 w-5" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
-        >
-          <ImageIcon className="h-5 w-5" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
-        >
-          <Mic className="h-5 w-5" />
-        </Button>
-
-        {/* Input */}
-        <Input
+      <div className="bg-[#1a1d21] rounded-2xl border border-white/10 px-4 pt-4 pb-3">
+        {/* 텍스트 입력 영역 */}
+        <textarea
+          ref={textareaRef}
           value={input}
-          onChange={handleInputChange}
+          onChange={handleTextareaChange}
+          onKeyDown={handleKeyDown}
           placeholder={t('placeholder')}
-          className="flex-1 border-0 bg-transparent text-white placeholder:text-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0"
+          rows={1}
+          className="w-full bg-transparent text-white placeholder:text-gray-500 resize-none outline-none text-sm leading-relaxed mb-3 max-h-48 overflow-y-auto"
         />
-
-        {/* Send Button */}
-        <Button
-          type="submit"
-          size="icon"
-          disabled={isLoading || !input?.trim()}
-          className="h-9 w-9 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-        >
-          <Send className="h-4 w-4" />
-        </Button>
+        {/* 하단 아이콘 행 */}
+        <div className="flex items-center justify-between">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
+          >
+            <Plus className="h-5 w-5" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </form>
   );
@@ -451,9 +447,6 @@ export function ChatInterface() {
         <div className="flex-1 px-6">
           <div className="h-full max-w-3xl mx-auto flex flex-col items-center justify-center pb-16">
             <div className="text-center text-gray-400 mb-8">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-4">
-                <span className="text-white font-bold text-2xl">B</span>
-              </div>
               <p className="text-4xl font-medium text-white mb-3">
                 {t('greeting')}
               </p>

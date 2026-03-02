@@ -124,3 +124,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* 전역 커스텀 스크롤바 — 얇고 다크 테마에 맞는 색감 */
+/* scrollbar-color: thumb track (Firefox) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) #0f1419;
+}
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+/* 트랙을 transparent 대신 명시적 다크색으로 — body 흰색 배경 비침 방지 */
+*::-webkit-scrollbar-track {
+  background: #0f1419;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
