@@ -97,7 +97,14 @@ export function BlockItem({ block }: BlockItemProps) {
                 className="h-6 w-6 text-gray-500 hover:text-white hover:bg-white/10"
                 onClick={(e) => {
                   e.stopPropagation();
-                  updateBlock(block.id, { isVisible: !block.isVisible });
+                  const newVisibility = !block.isVisible;
+                  updateBlock(block.id, { isVisible: newVisibility });
+                  // fire-and-forget: UI는 이미 즉각 반영됨
+                  void fetch(`/api/blocks/${block.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isVisible: newVisibility }),
+                  });
                 }}
               >
                 {block.isVisible ? (
@@ -150,6 +157,8 @@ export function BlockItem({ block }: BlockItemProps) {
                 onClick={() => {
                   removeBlock(block.id);
                   setIsDeleteConfirmOpen(false);
+                  // fire-and-forget: UI는 이미 즉각 반영됨
+                  void fetch(`/api/blocks/${block.id}`, { method: 'DELETE' });
                 }}
               >
                 {t('delete')}

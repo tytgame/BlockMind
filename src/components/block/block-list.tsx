@@ -48,6 +48,13 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
 
     if (over && active.id !== over.id) {
       reorderBlocks(active.id as string, over.id as string);
+      // fire-and-forget: 재정렬 후 순서를 DB에 반영
+      const { blocks: reordered } = useBlockStore.getState();
+      void fetch('/api/blocks/reorder', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderedIds: reordered.map((b) => b.id) }),
+      });
     }
   }
 

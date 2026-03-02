@@ -19,11 +19,12 @@ import {
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { useChatStore, RestoredMessage } from '@/store/chat-store';
 
-type RecentChat = {
+type ChatSessionItem = {
   id: string;
-  title: string;
-  icon: string;
+  title: string | null;
+  updatedAt: string;
 };
 
 type PinnedChat = {
@@ -36,7 +37,6 @@ type ChatFolder = {
   name: string;
 };
 
-const recentChats: RecentChat[] = [];
 const pinnedChats: PinnedChat[] = [];
 const folders: ChatFolder[] = [];
 
@@ -50,9 +50,57 @@ const iconRailButtonClass =
 
 export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
   const { data: session } = useSession();
+  const { sessionId, setSessionId, setPendingMessages, clearPendingMessages, newMountKey } = useChatStore();
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [activeChat, setActiveChat] = React.useState<string | null>(null);
+  const [recentSessions, setRecentSessions] = React.useState<ChatSessionItem[]>([]);
   const t = useTranslations('chatSidebar');
+
+  // 세션 목록 로드 (sessionId가 바뀔 때마다 갱신)
+  React.useEffect(() => {
+    async function loadSessions() {
+      try {
+        const res = await fetch('/api/sessions');
+        if (!res.ok) return;
+        const data = (await res.json()) as ChatSessionItem[];
+        setRecentSessions(data);
+      } catch {
+        // 네트워크 오류 시 빈 목록 유지
+      }
+    }
+    void loadSessions();
+  }, [sessionId]);
+
+  // 세션 선택: DB에서 메시지 fetch → pendingMessages에 저장 → sessionId 변경
+  // chat/page.tsx의 key={sessionId}가 ChatInterface를 리마운트해 메시지 주입
+  async function handleSelectSession(id: string) {
+    if (id === sessionId) return;
+    try {
+      const res = await fetch(`/api/sessions/${id}`);
+      if (!res.ok) return;
+      const data = (await res.json()) as {
+        messages: Array<{ id: string; role: string; content: string }>;
+      };
+      const converted: RestoredMessage[] = data.messages
+        .filter((m) => m.role === 'user' || m.role === 'assistant')
+        .map((m) => ({
+          id: m.id,
+          role: m.role as 'user' | 'assistant',
+          parts: [{ type: 'text' as const, text: m.content }],
+        }));
+      setPendingMessages(converted);
+    } catch {
+      // fetch 실패 시 빈 상태로 세션 전환
+      clearPendingMessages();
+    }
+    setSessionId(id);
+    newMountKey(); // 사용자가 명시적으로 세션을 선택 → ChatInterface 리마운트
+  }
+
+  function handleNewChat() {
+    clearPendingMessages();
+    setSessionId(null);
+    newMountKey(); // 새 채팅 → ChatInterface 리마운트
+  }
 
   if (collapsed) {
     return (
@@ -185,7 +233,10 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
 
       {/* New Chat Button */}
       <div className="p-3">
-        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white gap-2">
+        <Button
+          onClick={handleNewChat}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white gap-2"
+        >
           <Plus className="h-4 w-4" />
           {t('newChat')}
         </Button>
@@ -212,23 +263,24 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
             {t('recents')}
           </h3>
           <div className="space-y-1">
-            {recentChats.length === 0 && (
+            {recentSessions.length === 0 && (
               <p className="px-2 py-1 text-xs text-gray-500">{t('noRecentChats')}</p>
             )}
-            {recentChats.map((chat) => (
+            {recentSessions.map((chat) => (
               <button
                 key={chat.id}
-                onClick={() => setActiveChat(chat.id)}
+                onClick={() => void handleSelectSession(chat.id)}
                 className={cn(
                   'w-full flex items-center gap-3 px-2 py-2 rounded-lg text-left transition-colors',
-                  activeChat === chat.id
+                  sessionId === chat.id
                     ? 'bg-blue-600/20 text-white'
                     : 'text-gray-300 hover:bg-white/5'
                 )}
               >
-                <span className="text-lg">{chat.icon}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{chat.title}</p>
+                  <p className="text-sm font-medium truncate">
+                    {chat.title ?? t('noRecentChats')}
+                  </p>
                 </div>
               </button>
             ))}
@@ -248,10 +300,10 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
             {pinnedChats.map((chat) => (
               <button
                 key={chat.id}
-                onClick={() => setActiveChat(chat.id)}
+                onClick={() => setSessionId(chat.id)}
                 className={cn(
                   'w-full flex items-center gap-3 px-2 py-2 rounded-lg text-left transition-colors',
-                  activeChat === chat.id
+                  sessionId === chat.id
                     ? 'bg-blue-600/20 text-white'
                     : 'text-gray-300 hover:bg-white/5'
                 )}

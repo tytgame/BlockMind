@@ -10,10 +10,14 @@ const BLOCK_COLORS = [
   'bg-amber-500',
 ];
 
+export { BLOCK_COLORS };
+
 export const useBlockStore = create<BlockState>((set) => ({
   blocks: [],
   lastResetAt: null,
   pivotIndex: null,
+  appendBlock: (block) =>
+    set((state) => ({ blocks: [...state.blocks, block] })),
   addBlock: (blockData) =>
     set((state) => ({
       blocks: [

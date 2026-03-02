@@ -16,8 +16,9 @@ import {
   AlertTriangle,
   X,
 } from 'lucide-react';
-import { useBlockStore } from '@/store/block-store';
+import { useBlockStore, BLOCK_COLORS } from '@/store/block-store';
 import { useChatStore } from '@/store/chat-store';
+import { Block } from '@/types/block';
 import { MessageContent } from './message-content';
 import { cn } from '@/lib/utils';
 import { useTranslations, useLocale } from 'next-intl';
@@ -36,7 +37,7 @@ const MAX_BLOCKS_PER_CYCLE = 1;
 
 export function ChatInterface() {
   const { data: session } = useSession();
-  const { input, setInput, resetInput } = useChatStore();
+  const { input, setInput, resetInput, sessionId, setSessionId, pendingMessages, clearPendingMessages } = useChatStore();
   const [apiError, setApiError] = React.useState<string | null>(null);
   const t = useTranslations('chatInterface');
   const locale = useLocale();
@@ -69,8 +70,9 @@ export function ChatInterface() {
     []
   );
 
-  const applyExtractedBlocks = React.useCallback((extractedBlocks: ExtractedBlock[]) => {
-    const { blocks: currentBlocks, addBlock } = useBlockStore.getState();
+  // 블록 생성: API 먼저 → DB id 받아서 store에 추가
+  const applyExtractedBlocks = React.useCallback(async (extractedBlocks: ExtractedBlock[]) => {
+    const { blocks: currentBlocks, appendBlock } = useBlockStore.getState();
 
     const existingKeys = new Set(
       currentBlocks.map(
@@ -80,27 +82,52 @@ export function ChatInterface() {
     );
 
     let addedCount = 0;
-    for (const block of extractedBlocks) {
+    for (const extracted of extractedBlocks) {
       if (addedCount >= MAX_BLOCKS_PER_CYCLE) break;
 
-      const label = block.label.trim();
-      const content = block.content.trim();
+      const label = extracted.label.trim();
+      const content = extracted.content.trim();
 
       if (!label || !content) continue;
 
       const blockKey = `${label.toLowerCase()}::${content.toLowerCase()}`;
-
       if (existingKeys.has(blockKey)) continue;
 
-      addBlock({ type: 'data', label, content });
-      existingKeys.add(blockKey);
-      addedCount += 1;
+      const { blocks } = useBlockStore.getState();
+      const color = BLOCK_COLORS[blocks.length % BLOCK_COLORS.length];
+      const order = blocks.length;
+
+      try {
+        const res = await fetch('/api/blocks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'data', label, content, color, order }),
+        });
+        if (!res.ok) continue;
+        const dbBlock = (await res.json()) as Block;
+        appendBlock(dbBlock);
+        existingKeys.add(blockKey);
+        addedCount += 1;
+      } catch {
+        // 블록 생성 실패는 채팅 UX에 영향 주지 않음
+      }
     }
+  }, []);
+
+  // 세션 복원 시 pendingMessages를 초기값으로 주입 (리마운트 시 1회 소비)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const initialMessages = pendingMessages.length > 0 ? (pendingMessages as any[]) : undefined;
+
+  React.useEffect(() => {
+    if (pendingMessages.length > 0) clearPendingMessages();
+    // 마운트 시 1회만 실행
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // useChat 훅 사용
   const { messages, sendMessage, status } = useChat({
     transport,
+    messages: initialMessages,
     onError: (error) => {
       let errorCode: string | null = null;
       try {
@@ -144,33 +171,61 @@ export function ChatInterface() {
 
       if (!userMessage) return;
 
-      const { blocks: currentBlocks } = useBlockStore.getState();
-      const existingBlocks = currentBlocks.map((block) => ({
-        label: block.label,
-        content: block.content,
-      }));
-
       void (async () => {
+        // ── 1. 세션 생성 또는 기존 세션 id 사용 ──
+        let currentSessionId = useChatStore.getState().sessionId;
+        if (!currentSessionId) {
+          try {
+            // 첫 메시지 앞 40자를 세션 제목으로 사용
+            const title = userMessage.slice(0, 40);
+            const res = await fetch('/api/sessions', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ title }),
+            });
+            if (res.ok) {
+              const created = (await res.json()) as { id: string };
+              currentSessionId = created.id;
+              setSessionId(currentSessionId);
+            }
+          } catch {
+            // 세션 생성 실패해도 채팅 UX에 영향 없음
+          }
+        }
+
+        // ── 2. 메시지 저장 ──
+        if (currentSessionId) {
+          try {
+            await fetch(`/api/sessions/${currentSessionId}/messages`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userMessage, assistantMessage }),
+            });
+          } catch {
+            // 메시지 저장 실패해도 채팅 UX에 영향 없음
+          }
+        }
+
+        // ── 3. 블록 자동 추출 ──
+        const { blocks: currentBlocks } = useBlockStore.getState();
+        const existingBlocks = currentBlocks.map((block) => ({
+          label: block.label,
+          content: block.content,
+        }));
+
         try {
           const response = await fetch('/api/blocks/extract', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              userMessage,
-              assistantMessage,
-              existingBlocks,
-            }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userMessage, assistantMessage, existingBlocks }),
           });
 
           if (!response.ok) return;
 
           const data = (await response.json()) as ExtractBlocksResponse;
-
           if (!data.blocks || data.blocks.length === 0) return;
 
-          applyExtractedBlocks(data.blocks.slice(0, MAX_BLOCKS_PER_CYCLE));
+          await applyExtractedBlocks(data.blocks.slice(0, MAX_BLOCKS_PER_CYCLE));
         } catch {
           // Silent fail: memory extraction should not affect chat UX.
         }

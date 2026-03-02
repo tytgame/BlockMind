@@ -8,7 +8,13 @@
       "Bash(npx jest --testPathPatterns=\"block-store\" --no-coverage)",
       "Bash(npx jest --no-coverage)",
       "Bash(npx jest --testPathPattern=\"slice-messages-by-reset|block-store|build-system-prompt\" --no-coverage)",
-      "Bash(npx jest --testPathPatterns=\"slice-messages-by-reset|block-store|build-system-prompt\" --no-coverage)"
+      "Bash(npx jest --testPathPatterns=\"slice-messages-by-reset|block-store|build-system-prompt\" --no-coverage)",
+      "Bash(ls -la .env*)",
+      "Bash(npx prisma migrate status)",
+      "Bash(npx prisma migrate dev --name \"init_blockmind_schema\")",
+      "Bash(npx prisma migrate reset --force)",
+      "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"응 진행해\" npx prisma migrate reset --force)",
+      "Bash(npx prisma generate)"
     ]
   }
 }

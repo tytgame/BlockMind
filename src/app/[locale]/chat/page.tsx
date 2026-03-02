@@ -4,8 +4,12 @@ import * as React from 'react';
 import { ChatInterface } from '@/components/chat/chat-interface';
 import { ChatSidebar } from '@/components/chat/chat-sidebar';
 import { BlockList } from '@/components/block/block-list';
+import { useBlocksInit } from '@/hooks/use-blocks-init';
+import { useChatStore } from '@/store/chat-store';
 
 export default function ChatPage() {
+  useBlocksInit();
+  const mountKey = useChatStore((state) => state.mountKey);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
   const [isBlockSidebarCollapsed, setIsBlockSidebarCollapsed] =
     React.useState(false);
@@ -25,8 +29,9 @@ export default function ChatPage() {
       </div>
 
       {/* Center Panel: Chat Interface */}
+      {/* key가 바뀌면 리마운트 → pendingMessages가 useChat 초기값으로 주입됨 */}
       <div className="flex-1 min-w-[400px] h-full">
-        <ChatInterface />
+        <ChatInterface key={mountKey} />
       </div>
 
       {/* Right Panel: Block Context Stack */}
