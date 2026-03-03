@@ -1,4 +1,4 @@
-export type BlockType = 'data';
+export type BlockType = 'data' | 'image' | 'file';
 
 export interface Block {
   id: string;
@@ -7,6 +7,19 @@ export interface Block {
   content: string;
   color: string;
   isVisible: boolean;
+
+  // 파일 첨부 (image / file 타입에서 사용)
+  fileUrl?: string;       // Supabase Storage path
+  fileName?: string;
+  fileType?: string;      // MIME type
+  fileSize?: number;      // bytes
+
+  // Gemini Files API (PDF 타입만, 48시간 유효)
+  geminiFileUri?: string;
+  geminiExpiresAt?: string | null; // ISO string
+
+  // 서버가 GET /api/blocks 응답 시 주입 (DB 저장 안 됨)
+  signedUrl?: string;
 }
 
 export type BlockState = {

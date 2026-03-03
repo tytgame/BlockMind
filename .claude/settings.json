@@ -14,7 +14,17 @@
       "Bash(npx prisma migrate dev --name \"init_blockmind_schema\")",
       "Bash(npx prisma migrate reset --force)",
       "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"응 진행해\" npx prisma migrate reset --force)",
-      "Bash(npx prisma generate)"
+      "Bash(npx prisma generate)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm install browser-image-compression mammoth @types/mammoth)",
+      "Bash(npm install browser-image-compression mammoth)",
+      "Bash(npx prisma migrate dev --name add-file-fields-to-block)",
+      "Bash(npx jest --testPathPattern=\"build-system-prompt|upload-url|file-blocks\" --no-coverage)",
+      "Bash(npx jest --testPathPatterns=\"build-system-prompt|upload-url|file-blocks\" --no-coverage)",
+      "Bash(npx jest --testPathPatterns=\"upload-url|file-blocks\" --no-coverage)"
+    ],
+    "additionalDirectories": [
+      "c:\\project\\BlockMind\\src\\app\\api\\blocks\\[id]"
     ]
   }
 }

@@ -81,6 +81,100 @@ describe('buildSystemPrompt — 블록 기억 핵심 로직', () => {
   });
 
   // ──────────────────────────────────────────
+  // 파일 블록 타입 (image / file)
+  // ──────────────────────────────────────────
+  describe('image 블록 포맷', () => {
+    it('[IMAGE - label] 헤더와 Description으로 출력된다', () => {
+      const blocks = [makeBlock({ type: 'image', label: '고양이 사진', content: '귀여운 고양이' })];
+      const result = buildSystemPrompt(blocks);
+      expect(result).toBe('[IMAGE - 고양이 사진]\nDescription: 귀여운 고양이');
+    });
+
+    it('isVisible=false인 image 블록은 제외된다', () => {
+      const blocks = [makeBlock({ type: 'image', label: '사진', content: '이미지 설명', isVisible: false })];
+      expect(buildSystemPrompt(blocks)).toBe('');
+    });
+  });
+
+  describe('file 블록 포맷 — PDF', () => {
+    const PDF_MIME = 'application/pdf';
+
+    it('만료되지 않은 PDF는 Status: Active로 출력된다', () => {
+      const futureDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+      const blocks = [makeBlock({
+        type: 'file', label: '계약서', content: '계약 요약',
+        fileType: PDF_MIME, geminiExpiresAt: futureDate,
+      })];
+      const result = buildSystemPrompt(blocks);
+      expect(result).toContain('[DOCUMENT - 계약서]');
+      expect(result).toContain('Summary: 계약 요약');
+      expect(result).toContain('Status: Active');
+    });
+
+    it('만료된 PDF (과거 날짜)는 Status: Memory expired로 출력된다', () => {
+      const pastDate = new Date(Date.now() - 1000).toISOString();
+      const blocks = [makeBlock({
+        type: 'file', label: '보고서', content: '분기 실적',
+        fileType: PDF_MIME, geminiExpiresAt: pastDate,
+      })];
+      const result = buildSystemPrompt(blocks);
+      expect(result).toContain('Status: Memory expired (text summary only)');
+    });
+
+    it('geminiExpiresAt이 null이면 만료된 것으로 간주한다', () => {
+      const blocks = [makeBlock({
+        type: 'file', label: '문서', content: '내용',
+        fileType: PDF_MIME, geminiExpiresAt: null,
+      })];
+      const result = buildSystemPrompt(blocks);
+      expect(result).toContain('Status: Memory expired (text summary only)');
+    });
+
+    it('geminiExpiresAt이 undefined이면 만료된 것으로 간주한다', () => {
+      const blocks = [makeBlock({
+        type: 'file', label: '문서', content: '내용',
+        fileType: PDF_MIME,
+      })];
+      const result = buildSystemPrompt(blocks);
+      expect(result).toContain('Status: Memory expired (text summary only)');
+    });
+  });
+
+  describe('file 블록 포맷 — docx', () => {
+    const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
+    it('docx 블록은 [DOCUMENT - label] + Content 형식으로 출력된다', () => {
+      const blocks = [makeBlock({
+        type: 'file', label: '회의록', content: '주요 결정사항',
+        fileType: DOCX_MIME,
+      })];
+      const result = buildSystemPrompt(blocks);
+      expect(result).toBe('[DOCUMENT - 회의록]\nContent: 주요 결정사항');
+    });
+
+    it('docx 블록에는 Status 필드가 없다', () => {
+      const blocks = [makeBlock({ type: 'file', label: '회의록', content: '내용', fileType: DOCX_MIME })];
+      const result = buildSystemPrompt(blocks);
+      expect(result).not.toContain('Status:');
+    });
+  });
+
+  describe('혼합 블록 타입', () => {
+    it('data + image + file 블록이 함께 있으면 모두 올바른 형식으로 출력된다', () => {
+      const futureDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+      const blocks = [
+        makeBlock({ id: '1', type: 'data', label: '이름', content: '홍길동' }),
+        makeBlock({ id: '2', type: 'image', label: '프로필', content: '본인 사진' }),
+        makeBlock({ id: '3', type: 'file', label: 'PDF', content: 'PDF 요약', fileType: 'application/pdf', geminiExpiresAt: futureDate }),
+      ];
+      const result = buildSystemPrompt(blocks);
+      expect(result).toContain('[DATA - 이름]\n홍길동');
+      expect(result).toContain('[IMAGE - 프로필]\nDescription: 본인 사진');
+      expect(result).toContain('[DOCUMENT - PDF]\nSummary: PDF 요약\nStatus: Active');
+    });
+  });
+
+  // ──────────────────────────────────────────
   // 출력 포맷 검증
   // ──────────────────────────────────────────
   describe('시스템 프롬프트 포맷', () => {

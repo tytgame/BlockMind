@@ -7,6 +7,20 @@ import { type Block } from '@/types/block';
 export function buildSystemPrompt(blocks: Block[]): string {
   return blocks
     .filter((b) => b.isVisible)
-    .map((b) => `[${b.type.toUpperCase()} - ${b.label}]\n${b.content}`)
+    .map((b) => {
+      if (b.type === 'image') {
+        return `[IMAGE - ${b.label}]\nDescription: ${b.content}`;
+      }
+      if (b.type === 'file') {
+        const isPdf = b.fileType === 'application/pdf';
+        if (isPdf) {
+          const isExpired = b.geminiExpiresAt ? new Date(b.geminiExpiresAt) < new Date() : true;
+          const status = isExpired ? 'Memory expired (text summary only)' : 'Active';
+          return `[DOCUMENT - ${b.label}]\nSummary: ${b.content}\nStatus: ${status}`;
+        }
+        return `[DOCUMENT - ${b.label}]\nContent: ${b.content}`;
+      }
+      return `[${b.type.toUpperCase()} - ${b.label}]\n${b.content}`;
+    })
     .join('\n\n');
 }

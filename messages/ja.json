@@ -114,7 +114,22 @@
     "deleteConfirmTitle": "本当に削除しますか？",
     "deleteConfirmDescription": "この操作は元に戻せません。ブロック \"{label}\" が削除されます。",
     "cancel": "キャンセル",
-    "delete": "削除"
+    "delete": "削除",
+    "memoryActive": "記憶アクティブ中",
+    "memoryExpired": "記憶が期限切れ",
+    "hoursLeft": "{hours}時間残り",
+    "refreshMemory": "再記憶",
+    "refreshing": "アップロード中...",
+    "download": "ダウンロード"
+  },
+  "fileUpload": {
+    "errorSizeImage": "画像は10MB以下にしてください。",
+    "errorSizePdf": "PDFは20MB以下にしてください。",
+    "errorSizeDocx": "文書は10MB以下にしてください。",
+    "errorType": "サポートされていないファイル形式です。（画像、PDF、DOCXのみ）",
+    "errorPdfLimit": "PDFは一度に1つだけ添付できます。",
+    "uploading": "アップロード中...",
+    "uploadError": "ファイルのアップロードに失敗しました。もう一度お試しください。"
   },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },

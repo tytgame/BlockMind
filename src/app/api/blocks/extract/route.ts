@@ -5,6 +5,15 @@ import { z } from 'zod';
 
 const MAX_BLOCKS_PER_CYCLE = 1;
 
+const fileMetadataSchema = z.object({
+  storagePath: z.string(),
+  fileName: z.string(),
+  fileType: z.string(),
+  fileSize: z.number(),
+  geminiFileUri: z.string().optional(),
+  geminiExpiresAt: z.string().nullable().optional(),
+});
+
 const extractRequestSchema = z.object({
   userMessage: z.string().min(1),
   assistantMessage: z.string().min(1),
@@ -16,6 +25,7 @@ const extractRequestSchema = z.object({
       })
     )
     .default([]),
+  fileMetadata: fileMetadataSchema.optional(),
 });
 
 const extractResponseSchema = z.object({
@@ -24,6 +34,7 @@ const extractResponseSchema = z.object({
       z.object({
         label: z.string().min(1).max(40),
         content: z.string().min(1).max(500),
+        attachFile: z.boolean().optional(), // 파일을 이 블록에 첨부할지 여부
       })
     )
     .max(MAX_BLOCKS_PER_CYCLE),
@@ -38,7 +49,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ blocks: [] }, { status: 400 });
     }
 
-    const { userMessage, assistantMessage, existingBlocks } = parsed.data;
+    const { userMessage, assistantMessage, existingBlocks, fileMetadata } = parsed.data;
+
+    const fileContext = fileMetadata
+      ? `\n\nNote: A file was attached to this conversation: "${fileMetadata.fileName}" (${fileMetadata.fileType}). If you create a block for this, set attachFile: true.`
+      : '';
 
     const result = await generateObject({
       model: google('gemini-2.5-flash'),
@@ -53,9 +68,10 @@ Rules:
 - Create at most one block for this chat cycle.
 - Keep labels short and specific.
 - Keep content precise and reusable.
+- If a file was attached and it contains important durable information, set attachFile: true.
 - If nothing should be stored, return an empty "blocks" array.
 
-This process is internal. Never produce user-facing text.`,
+This process is internal. Never produce user-facing text.${fileContext}`,
       prompt: `Existing blocks:
 ${JSON.stringify(existingBlocks, null, 2)}
 
@@ -66,9 +82,21 @@ Assistant answer:
 ${assistantMessage}`,
     });
 
-    return NextResponse.json({
-      blocks: result.object.blocks.slice(0, MAX_BLOCKS_PER_CYCLE),
+    const extractedBlocks = result.object.blocks.slice(0, MAX_BLOCKS_PER_CYCLE);
+
+    // attachFile이 true인 블록에 fileMetadata 주입
+    const blocksWithFile = extractedBlocks.map((block) => {
+      if (block.attachFile && fileMetadata) {
+        return {
+          label: block.label,
+          content: block.content,
+          fileMetadata,
+        };
+      }
+      return { label: block.label, content: block.content };
     });
+
+    return NextResponse.json({ blocks: blocksWithFile });
   } catch {
     return NextResponse.json({ blocks: [] }, { status: 200 });
   }

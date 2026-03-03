@@ -114,7 +114,22 @@
     "deleteConfirmTitle": "确定要删除吗？",
     "deleteConfirmDescription": "此操作无法撤销。块 \"{label}\" 将被删除。",
     "cancel": "取消",
-    "delete": "删除"
+    "delete": "删除",
+    "memoryActive": "记忆活跃中",
+    "memoryExpired": "记忆已过期",
+    "hoursLeft": "剩余{hours}小时",
+    "refreshMemory": "重新记忆",
+    "refreshing": "上传中...",
+    "download": "下载"
+  },
+  "fileUpload": {
+    "errorSizeImage": "图片大小不能超过 10MB。",
+    "errorSizePdf": "PDF 大小不能超过 20MB。",
+    "errorSizeDocx": "文档大小不能超过 10MB。",
+    "errorType": "不支持的文件类型。（仅支持图片、PDF 和 DOCX）",
+    "errorPdfLimit": "每次只能附加一个 PDF。",
+    "uploading": "上传中...",
+    "uploadError": "文件上传失败，请重试。"
   },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },

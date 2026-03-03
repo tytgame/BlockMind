@@ -18,6 +18,12 @@ export async function PATCH(
     content: string;
     isVisible: boolean;
     order: number;
+    fileUrl: string;
+    fileName: string;
+    fileType: string;
+    fileSize: number;
+    geminiFileUri: string;
+    geminiExpiresAt: string | null;
   }>;
 
   // 본인 블록인지 확인
@@ -28,7 +34,12 @@ export async function PATCH(
 
   const updated = await prisma.block.update({
     where: { id },
-    data: body,
+    data: {
+      ...body,
+      geminiExpiresAt: body.geminiExpiresAt !== undefined
+        ? (body.geminiExpiresAt ? new Date(body.geminiExpiresAt) : null)
+        : undefined,
+    },
   });
 
   return NextResponse.json(updated);

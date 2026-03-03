@@ -98,18 +98,28 @@ model Message {
 }
 
 // 유저 레벨 컨텍스트 블록. 모든 채팅 세션에서 공유된다.
-// type: 현재 'data' 단일 종류 (추후 확장 가능)
+// type: 'data' | 'image' | 'file'
 model Block {
   id        String  @id @default(cuid())
   userId    String
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  type      String
+  type      String  @default("data")
   label     String
   content   String  @db.Text
   color     String?
   order     Int     @default(0)
   isVisible Boolean @default(true)
+
+  // 파일 첨부 (image / file 타입에서 사용)
+  fileUrl         String?   // Supabase Storage path (예: userId/timestamp-name.jpg)
+  fileName        String?
+  fileType        String?   // MIME type (예: image/jpeg, application/pdf)
+  fileSize        Int?      // bytes
+
+  // Gemini Files API (PDF 타입만 사용, 48시간 유효)
+  geminiFileUri   String?
+  geminiExpiresAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

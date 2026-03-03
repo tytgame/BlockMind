@@ -114,7 +114,22 @@
     "deleteConfirmTitle": "Are you sure?",
     "deleteConfirmDescription": "This action cannot be undone. Block \"{label}\" will be deleted.",
     "cancel": "Cancel",
-    "delete": "Delete"
+    "delete": "Delete",
+    "memoryActive": "Memory active",
+    "memoryExpired": "Memory expired",
+    "hoursLeft": "{hours}h left",
+    "refreshMemory": "Refresh memory",
+    "refreshing": "Uploading...",
+    "download": "Download"
+  },
+  "fileUpload": {
+    "errorSizeImage": "Images must be 10MB or less.",
+    "errorSizePdf": "PDFs must be 20MB or less.",
+    "errorSizeDocx": "Documents must be 10MB or less.",
+    "errorType": "Unsupported file type. (Images, PDF, and DOCX only)",
+    "errorPdfLimit": "Only one PDF can be attached at a time.",
+    "uploading": "Uploading...",
+    "uploadError": "File upload failed. Please try again."
   },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },

@@ -114,7 +114,22 @@
     "deleteConfirmTitle": "정말 삭제하시겠습니까?",
     "deleteConfirmDescription": "이 작업은 되돌릴 수 없습니다. 블록 \"{label}\"이(가) 삭제됩니다.",
     "cancel": "취소",
-    "delete": "삭제"
+    "delete": "삭제",
+    "memoryActive": "기억 활성 중",
+    "memoryExpired": "기억 만료됨",
+    "hoursLeft": "{hours}시간 남음",
+    "refreshMemory": "다시 기억",
+    "refreshing": "업로드 중...",
+    "download": "다운로드"
+  },
+  "fileUpload": {
+    "errorSizeImage": "이미지는 10MB 이하만 첨부 가능합니다.",
+    "errorSizePdf": "PDF는 20MB 이하만 첨부 가능합니다.",
+    "errorSizeDocx": "문서는 10MB 이하만 첨부 가능합니다.",
+    "errorType": "지원하지 않는 파일 형식입니다. (이미지, PDF, DOCX만 가능)",
+    "errorPdfLimit": "PDF는 한 번에 1개만 첨부 가능합니다.",
+    "uploading": "업로드 중...",
+    "uploadError": "파일 업로드에 실패했습니다. 다시 시도해 주세요."
   },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },
