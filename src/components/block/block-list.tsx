@@ -173,26 +173,26 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
 
       {/* Block List */}
       <ScrollArea className="flex-1 px-4">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={blocks.map((b) => b.id)}
-            strategy={verticalListSortingStrategy}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
           >
-            {blocks.map((block) => (
-              <BlockItem key={block.id} block={block} />
-            ))}
-            {blocks.length === 0 && (
-              <div className="text-center py-10 text-gray-500 border-2 border-dashed border-white/10 rounded-lg">
-                <p className="text-sm">{t('noBlocks')}</p>
-                <p className="text-xs mt-1">{t('noBlocksSubtitle')}</p>
-              </div>
-            )}
-          </SortableContext>
-        </DndContext>
+            <SortableContext
+              items={blocks.map((b) => b.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {blocks.map((block) => (
+                <BlockItem key={block.id} block={block} />
+              ))}
+              {blocks.length === 0 && (
+                <div className="text-center py-10 text-gray-500 border-2 border-dashed border-white/10 rounded-lg">
+                  <p className="text-sm">{t('noBlocks')}</p>
+                  <p className="text-xs mt-1">{t('noBlocksSubtitle')}</p>
+                </div>
+              )}
+            </SortableContext>
+          </DndContext>
       </ScrollArea>
     </div>
   );

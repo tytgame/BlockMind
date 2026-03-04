@@ -67,28 +67,18 @@ export function ChatMessageList({
               )}
 
               <div className={cn('flex gap-3', isUser ? 'flex-row-reverse' : 'flex-row')}>
-                {/* Avatar */}
-                {isUser ? (
+                {/* Avatar — user only */}
+                {isUser && (
                   <Avatar className="h-10 w-10 flex-shrink-0">
                     <AvatarImage src={session?.user?.image || ''} />
                     <AvatarFallback className="bg-gradient-to-br from-orange-400 to-pink-500 text-white">
                       {session?.user?.name?.charAt(0) || 'U'}
                     </AvatarFallback>
                   </Avatar>
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                    <span className="text-white font-bold text-sm">B</span>
-                  </div>
                 )}
 
                 {/* Message Content */}
-                <div className={cn('flex flex-col max-w-[75%]', isUser && 'items-end')}>
-                  {!isUser && (
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-medium text-white">BlockMind</span>
-                      <span className="text-xs text-gray-500">{formatTime(messageTime)}</span>
-                    </div>
-                  )}
+                <div className={cn('flex flex-col', isUser ? 'max-w-[75%] items-end' : 'w-full')}>
 
                   {/* 첨부 파일 카드 (유저 메시지 전용) */}
                   {isUser && msgFiles.length > 0 && (
@@ -157,19 +147,9 @@ export function ChatMessageList({
 
         {/* 스트리밍 로딩 인디케이터 */}
         {isLoading && (
-          <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-sm">B</span>
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-sm font-medium text-white">BlockMind</span>
-              </div>
-              <div className="bg-[#1a1d21] rounded-2xl rounded-tl-md px-4 py-3 flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
-                <span className="text-sm text-gray-400">{t('thinking')}</span>
-              </div>
-            </div>
+          <div className="flex items-center gap-2 py-1">
+            <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
+            <span className="text-sm text-gray-400">{t('thinking')}</span>
           </div>
         )}
       </div>

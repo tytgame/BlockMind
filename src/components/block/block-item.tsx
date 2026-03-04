@@ -85,7 +85,7 @@ export function BlockItem({ block }: BlockItemProps) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="mb-2 group">
+    <div ref={setNodeRef} style={style} className="mb-2 group max-w-72">
       <div
         className={cn(
           'relative rounded-lg bg-[#252830] overflow-hidden transition-all',
