@@ -43,8 +43,8 @@ export function FileAttachmentPreview({ files, onRemove }: FileAttachmentPreview
       {files.map((f) => (
         <div
           key={f.id}
-          className={`relative flex items-center gap-2 rounded-lg border px-2 py-1.5 text-sm bg-background
-            ${f.status === 'error' ? 'border-destructive' : 'border-border'}
+          className={`relative flex items-center gap-2 rounded-lg border px-2 py-1.5 text-sm bg-white/8 text-white
+            ${f.status === 'error' ? 'border-destructive' : 'border-white/20'}
             ${f.status === 'uploading' ? 'opacity-70' : ''}
           `}
         >
@@ -57,19 +57,19 @@ export function FileAttachmentPreview({ files, onRemove }: FileAttachmentPreview
               className="h-10 w-10 rounded object-cover flex-shrink-0"
             />
           ) : f.file.type === 'application/pdf' ? (
-            <div className="flex h-10 w-10 items-center justify-center rounded bg-muted flex-shrink-0">
-              <FileText className="h-5 w-5 text-muted-foreground" />
+            <div className="flex h-10 w-10 items-center justify-center rounded bg-white/10 flex-shrink-0">
+              <FileText className="h-5 w-5 text-gray-300" />
             </div>
           ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded bg-muted flex-shrink-0">
-              <FileType className="h-5 w-5 text-muted-foreground" />
+            <div className="flex h-10 w-10 items-center justify-center rounded bg-white/10 flex-shrink-0">
+              <FileType className="h-5 w-5 text-gray-300" />
             </div>
           )}
 
           {/* 파일 정보 */}
           <div className="flex flex-col min-w-0 max-w-32">
             <span className="truncate text-xs font-medium leading-tight">{f.file.name}</span>
-            <span className="text-xs text-muted-foreground leading-tight">
+            <span className="text-xs text-gray-400 leading-tight">
               {formatBytes(f.file.size)}
             </span>
           </div>

@@ -78,12 +78,13 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
       const res = await fetch(`/api/sessions/${id}`);
       if (!res.ok) return;
       const data = (await res.json()) as {
-        messages: Array<{ id: string; role: string; content: string }>;
+        messages: Array<{ id: string; role: string; content: string; clientId?: string | null }>;
       };
       const converted: RestoredMessage[] = data.messages
         .filter((m) => m.role === 'user' || m.role === 'assistant')
         .map((m) => ({
-          id: m.id,
+          // clientId: AI SDK가 생성한 원본 UUID → messageFilesMap 키 일치에 사용
+          id: m.clientId ?? m.id,
           role: m.role as 'user' | 'assistant',
           parts: [{ type: 'text' as const, text: m.content }],
         }));

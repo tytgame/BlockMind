@@ -23,15 +23,17 @@ export async function POST(
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const { userMessage, assistantMessage } = (await req.json()) as {
+  const { userMessage, assistantMessage, userMessageId } = (await req.json()) as {
     userMessage: string;
     assistantMessage: string;
+    userMessageId?: string;
   };
 
   // user → assistant 순서로 저장
+  // clientId: AI SDK 클라이언트 UUID — 세션 복원 시 messageFilesMap 키 일치에 사용
   await prisma.message.createMany({
     data: [
-      { sessionId, role: 'user', content: userMessage },
+      { sessionId, role: 'user', content: userMessage, clientId: userMessageId },
       { sessionId, role: 'assistant', content: assistantMessage },
     ],
   });

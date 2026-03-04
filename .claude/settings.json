@@ -21,7 +21,9 @@
       "Bash(npx prisma migrate dev --name add-file-fields-to-block)",
       "Bash(npx jest --testPathPattern=\"build-system-prompt|upload-url|file-blocks\" --no-coverage)",
       "Bash(npx jest --testPathPatterns=\"build-system-prompt|upload-url|file-blocks\" --no-coverage)",
-      "Bash(npx jest --testPathPatterns=\"upload-url|file-blocks\" --no-coverage)"
+      "Bash(npx jest --testPathPatterns=\"upload-url|file-blocks\" --no-coverage)",
+      "Bash(npx tsc --noEmit --project tsconfig.json)",
+      "Bash(npx prisma migrate dev --name add-message-client-id)"
     ],
     "additionalDirectories": [
       "c:\\project\\BlockMind\\src\\app\\api\\blocks\\[id]"

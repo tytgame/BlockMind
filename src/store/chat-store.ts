@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { SentFileInfo } from '@/components/chat/file-preview-modal';
 
 // useChat의 messages 옵션에 주입할 최소 형태 (UIMessage 호환)
 export type RestoredMessage = {
@@ -17,6 +18,9 @@ interface ChatState {
   // ChatInterface의 key prop으로 사용. 사용자가 명시적으로 세션을 변경할 때만 갱신.
   // onFinish에서 sessionId가 바뀌어도 mountKey는 변경되지 않으므로 리마운트 없음.
   mountKey: string;
+  // 메시지 ID → 첨부 파일 목록 매핑 (세션 전환 시 리마운트 후에도 카드 유지)
+  // Record를 사용해 직렬화 가능하게 유지 (messageId: UUID → 충돌 없음)
+  messageFilesMap: Record<string, SentFileInfo[]>;
   setInput: (input: string) => void;
   resetInput: () => void;
   setSessionId: (id: string | null) => void;
@@ -24,6 +28,7 @@ interface ChatState {
   clearPendingMessages: () => void;
   // 사용자 명시적 액션 시 호출 → ChatInterface 리마운트 유발
   newMountKey: () => void;
+  setMessageFiles: (messageId: string, files: SentFileInfo[]) => void;
 }
 
 export const useChatStore = create<ChatState>((set) => ({
@@ -31,10 +36,15 @@ export const useChatStore = create<ChatState>((set) => ({
   sessionId: null,
   pendingMessages: [],
   mountKey: 'initial',
+  messageFilesMap: {},
   setInput: (input) => set({ input }),
   resetInput: () => set({ input: '' }),
   setSessionId: (id) => set({ sessionId: id }),
   setPendingMessages: (messages) => set({ pendingMessages: messages }),
   clearPendingMessages: () => set({ pendingMessages: [] }),
   newMountKey: () => set({ mountKey: `mount-${Date.now()}` }),
+  setMessageFiles: (messageId, files) =>
+    set((state) => ({
+      messageFilesMap: { ...state.messageFilesMap, [messageId]: files },
+    })),
 }));
