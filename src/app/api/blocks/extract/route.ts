@@ -84,13 +84,21 @@ ${assistantMessage}`,
 
     const extractedBlocks = result.object.blocks.slice(0, MAX_BLOCKS_PER_CYCLE);
 
-    // attachFile이 true인 블록에 fileMetadata 주입
+    // attachFile이 true인 블록에 파일 필드를 최상위로 주입
+    // applyExtractedBlocks가 type, fileUrl, fileName 등을 최상위 필드로 기대함
     const blocksWithFile = extractedBlocks.map((block) => {
       if (block.attachFile && fileMetadata) {
+        const blockType = fileMetadata.fileType.startsWith('image/') ? 'image' : 'file';
         return {
           label: block.label,
           content: block.content,
-          fileMetadata,
+          type: blockType,
+          fileUrl: fileMetadata.storagePath,
+          fileName: fileMetadata.fileName,
+          fileType: fileMetadata.fileType,
+          fileSize: fileMetadata.fileSize,
+          ...(fileMetadata.geminiFileUri ? { geminiFileUri: fileMetadata.geminiFileUri } : {}),
+          ...(fileMetadata.geminiExpiresAt ? { geminiExpiresAt: fileMetadata.geminiExpiresAt } : {}),
         };
       }
       return { label: block.label, content: block.content };

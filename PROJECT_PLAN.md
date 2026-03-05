@@ -8,55 +8,75 @@
 
 ## 1. 현재 상황 분석 (Current Status)
 
-*Last Updated: 2026-03-03*
+*Last Updated: 2026-03-05*
 
 ### 기술 스택 (Tech Stack)
 
-| 카테고리 | 기술 |
-|---------|------|
-| Framework | Next.js (App Router), TypeScript Strict |
-| UI | Tailwind CSS v4, Shadcn UI (Radix UI 기반) |
-| State | Zustand (`block-store`, `chat-store`, `ui-store`) |
-| DnD | @dnd-kit/core + @dnd-kit/sortable |
-| AI | Vercel AI SDK + Google Gemini 2.5 Flash |
-| Auth | NextAuth.js v5 + Google OAuth (JWT 전략) |
-| DB | Supabase PostgreSQL + Prisma 7 |
-| i18n | next-intl v4 (URL 라우팅, localePrefix: as-needed) |
-| Markdown | react-markdown + remark-gfm |
+
+| 카테고리      | 기술                                                |
+| --------- | ------------------------------------------------- |
+| Framework | Next.js (App Router), TypeScript Strict           |
+| UI        | Tailwind CSS v4, Shadcn UI (Radix UI 기반)          |
+| State     | Zustand (`block-store`, `chat-store`, `ui-store`) |
+| DnD       | @dnd-kit/core + @dnd-kit/sortable                 |
+| AI        | Vercel AI SDK + Google Gemini 2.5 Flash           |
+| Auth      | NextAuth.js v5 + Google OAuth (JWT 전략)            |
+| DB        | Supabase PostgreSQL + Prisma 7                    |
+| i18n      | next-intl v4 (URL 라우팅, localePrefix: as-needed)   |
+| Markdown  | react-markdown + remark-gfm                       |
+
 
 ### 구현된 기능 (Completed)
 
 #### 레이아웃 & UI
+
 - **3-Column 레이아웃**: 좌(채팅 사이드바) | 중(채팅) | 우(블록 패널)
 - 각 사이드바 접힘/펼침 토글 (상태 localStorage 저장, `ui-store`)
 - 다크 테마 (채팅 페이지 전용)
+- AI 메시지 UI: 아바타/이름/시간 없이 텍스트만 표시 (GPT 스타일)
 
 #### 인증
+
 - Google OAuth 로그인 (NextAuth.js v5, JWT 전략)
 - 미들웨어로 `/chat` 라우트 보호
 
 #### 채팅 세션 관리 (DB 연동 완료)
+
 - 채팅 세션 자동 생성 (첫 메시지 전송 시, 제목 = 첫 메시지 40자)
 - 세션 목록 조회, 세션 전환, 삭제
 - 메시지 DB 저장 (fire-and-forget)
 - ChatSidebar에서 세션 목록 표시 및 전환
+- 페이지 복귀 시 활성 세션 메시지 자동 복원
 
 #### 블록 시스템 (DB 연동 완료)
+
 - 블록 타입: `data` (persona/rule/data 통합)
 - AI가 대화 후 자동으로 블록 추출 (`/api/blocks/extract`, MAX_BLOCKS_PER_CYCLE=1)
 - 블록 CRUD: DB 동기화 (Zustand + Supabase)
 - Drag & Drop 재정렬 (`/api/blocks/reorder`)
 - visibility toggle (켜진 블록만 시스템 프롬프트에 포함)
 - 블록 삭제 확인 다이얼로그
+- 블록 hover 시 액션 버튼 표시 (eye toggle, delete)
+- 블록 너비 사이드바 내 고정 (`max-w-72`)
 
 #### AI 채팅
+
 - Gemini 스트리밍 응답 (`/api/chat`)
 - 활성 블록 → 시스템 프롬프트 자동 주입 (`build-system-prompt.ts`)
 - AI 답변 마크다운 렌더링
 - 429 할당량 초과 에러 → UI 배너 표시
 - 블록 visibility 변경 시 pivotIndex 기반 메시지 슬라이싱 (AI 컨텍스트 리셋)
 
+#### 파일 업로드
+
+- 입력창 `+` 버튼으로 이미지/PDF/파일 첨부
+- Gemini multimodal 활용 (이미지, PDF 등)
+- 파일 미리보기 모달
+- Supabase Storage 연동, signed URL 만료 처리 (PDF 새로고침 버튼)
+- 파일/이미지 정보 Zustand 관리
+
 #### 다국어 (i18n)
+
 - next-intl v4, URL 라우팅 방식 (`localePrefix: as-needed`)
 - 지원 언어: ko(기본), en, zh, ja
 - 한국어: `/chat`, 영어: `/en/chat`
@@ -83,11 +103,15 @@ src/
 │   ├── chat/
 │   │   ├── chat-interface.tsx         # useChat, onFinish에서 추출 호출
 │   │   ├── chat-sidebar.tsx           # 세션 목록 (DB 연동)
+│   │   ├── chat-message-list.tsx      # 메시지 렌더링
+│   │   ├── chat-input-composer.tsx    # 입력창 + 파일 첨부
+│   │   ├── file-attachment-preview.tsx # 첨부 파일 미리보기
+│   │   ├── file-preview-modal.tsx     # 파일 상세 모달
 │   │   └── message-content.tsx        # 마크다운 렌더링
 │   └── block/
 │       ├── block-list.tsx             # DnD 컨텍스트
 │       ├── block-item.tsx             # 블록 카드 (drag, toggle, delete)
-│       └── block-detail-dialog.tsx    # 블록 상세 (현재 read-only)
+│       └── block-detail-dialog.tsx    # 블록 상세 (read-only)
 ├── store/
 │   ├── block-store.ts                 # 블록 CRUD, reorder, pivotIndex
 │   ├── chat-store.ts                  # sessionId, pendingMessages, mountKey
@@ -111,7 +135,7 @@ messages/
 
 **"사용자가 AI의 뇌 구조를 직접 눈으로 보고 손으로 만진다"**
 
-BlockMind는 단순한 채팅앱이 아닙니다. LLM의 고질적인 문제인 **맥락 소실(Context Loss)** 과 **환각(Hallucination)** 을 해결하기 위한 도구입니다.
+BlockMind는 단순한 채팅앱이 아닙니다. LLM의 고질적인 문제인 **맥락 소실**과 **환각**을 해결하기 위한 도구입니다.
 
 ### 핵심 철학
 
@@ -121,49 +145,47 @@ BlockMind는 단순한 채팅앱이 아닙니다. LLM의 고질적인 문제인 
 
 ---
 
-## 3. 향후 개발 로드맵 (Roadmap)
+## 3. 남은 작업 (Remaining Tasks)
 
-### [Phase 2: 블록 편집 기능] - 다음 단계
+### [우선순위 높음]
 
-> **목표**: 사용자가 AI가 추출한 블록을 직접 수정할 수 있도록 한다.
+#### 채팅 사이드바 고도화
 
-- **BlockDetailDialog 편집 기능 추가**
-  - 현재: read-only (제목, 내용 표시만)
-  - 목표: 제목/내용 인라인 수정 + 저장 버튼
-  - 저장 시 PATCH `/api/blocks/[id]` + Zustand 동기화
-  - 색상 변경 (color picker)
+- 대화 검색 기능 (현재 UI만 있음, 동작 없음)
+- 세션 제목 인라인 수정
+- 대화 핀(Pin) 기능 — DB 스키마(`isPinned` 컬럼) 추가 필요
+- 폴더 관리 — DB 스키마 추가 필요
 
-### [Phase 2: 채팅 사이드바 고도화]
+#### 블록 UX
 
-> **목표**: 대화 목록을 더 효과적으로 관리할 수 있게 한다.
-> 채팅 헤더는 구현하지 않음 (사이드바 개선에 집중)
+- 블록 추가 시 애니메이션 (새 블록이 아래에서 슬라이드인)
 
-- **현재 구현된 것**
-  - 세션 목록 표시, 세션 전환, 삭제
-- **추가 예정**
-  - 대화 검색 기능 (현재 UI만 있음)
-  - 대화 핀(Pin) 기능 (DB 스키마 추가 필요)
-  - 폴더 관리 (DB 스키마 추가 필요)
-  - 세션 제목 인라인 수정
+#### 랜딩페이지
 
-### [Phase 2: 파일 업로드]
+- 현재 랜딩페이지 내용 및 디자인 개선
 
-> **목표**: 채팅 입력창에서 파일/이미지를 첨부할 수 있도록 한다.
+#### LLM 비용 최적화
 
-- 현재 `feat/file-uploads` 브랜치에서 작업 중
-- 입력창의 `+` 버튼 연동
-- Gemini multimodal 활용 (이미지, PDF 등)
+- 사용자 증가 대비 모델 전략 검토 (Gemini Flash → 더 저렴한 모델 티어 고려)
+- 토큰 사용량 모니터링 / 블록 주입 시스템 프롬프트 길이 최적화
 
-### [Phase 3: UX 고도화]
+### [우선순위 중간]
 
-- **토스트 알림**: 블록 저장/삭제 시 피드백 (`sonner`)
-- **모바일 대응**: 3-Column → 탭 형태 전환
-- **블록 템플릿**: 자주 쓰는 블록 저장 및 불러오기
+- 토스트 알림 — 블록 저장/삭제 시 피드백 (`sonner`)
+- 입력창 `Settings(⚙)` 버튼 기능 구현
+- 블록 패널 헤더 `Settings(⚙)` 버튼 기능 구현
 
-### [Phase 4: AI 기능 확장]
+### [우선순위 낮음 / 미정]
 
-- **블록 자동 수정**: AI가 기존 블록 내용을 대화 흐름에 따라 업데이트
-- **맥락 추천**: "이 대화에는 'Python 전문가' 블록이 필요해 보입니다" 제안
+- 모바일 대응 — 3-Column → 탭 형태 전환
+- 블록 템플릿 — 자주 쓰는 블록 저장 및 불러오기
+- Supabase RLS(Row Level Security) 정책 점검
+- 프로덕션 배포 설정 (Vercel, 환경변수 정리)
+
+### [계획 없음 (Not Planned)]
+
+- ~~BlockDetailDialog 편집 기능~~ — read-only 유지
+- ~~채팅 헤더~~ — 구현하지 않음
 
 ---
 
@@ -175,26 +197,29 @@ BlockMind는 단순한 채팅앱이 아닙니다. LLM의 고질적인 문제인 
 4. **블록 추가 방식**: 수동 추가 없음, AI 자동 추출만 지원
 5. **DB 패턴**: UI는 Zustand로 즉각 반영, DB는 fire-and-forget (UX 우선)
 6. **인증**:
-   - `auth.config.ts`: Edge Runtime (Prisma 제외)
-   - `auth.ts`: Node.js Runtime (Prisma 포함)
-   - `middleware.ts`: `auth.config.ts`만 사용
+  - `auth.config.ts`: Edge Runtime (Prisma 제외)
+  - `auth.ts`: Node.js Runtime (Prisma 포함)
+  - `middleware.ts`: `auth.config.ts`만 사용
 
 ---
 
 ## 5. API 엔드포인트 전체 목록
 
-| 엔드포인트 | 메서드 | 기능 |
-|-----------|--------|------|
-| `/api/chat` | POST | Gemini 스트리밍 응답 |
-| `/api/blocks` | GET | 블록 목록 조회 |
-| `/api/blocks` | POST | 블록 생성 |
-| `/api/blocks/[id]` | PATCH | 블록 수정 |
-| `/api/blocks/[id]` | DELETE | 블록 삭제 |
-| `/api/blocks/extract` | POST | 블록 자동 추출 |
-| `/api/blocks/reorder` | PATCH | 재정렬 일괄 업데이트 |
-| `/api/sessions` | GET | 세션 목록 |
-| `/api/sessions` | POST | 세션 생성 |
-| `/api/sessions/[id]` | GET | 세션 메시지 로드 |
-| `/api/sessions/[id]` | PATCH | 제목 수정 |
-| `/api/sessions/[id]` | DELETE | 세션 삭제 |
-| `/api/sessions/[id]/messages` | POST | 메시지 저장 |
+
+| 엔드포인트                         | 메서드    | 기능             |
+| ----------------------------- | ------ | -------------- |
+| `/api/chat`                   | POST   | Gemini 스트리밍 응답 |
+| `/api/blocks`                 | GET    | 블록 목록 조회       |
+| `/api/blocks`                 | POST   | 블록 생성          |
+| `/api/blocks/[id]`            | PATCH  | 블록 수정          |
+| `/api/blocks/[id]`            | DELETE | 블록 삭제          |
+| `/api/blocks/extract`         | POST   | 블록 자동 추출       |
+| `/api/blocks/reorder`         | PATCH  | 재정렬 일괄 업데이트    |
+| `/api/sessions`               | GET    | 세션 목록          |
+| `/api/sessions`               | POST   | 세션 생성          |
+| `/api/sessions/[id]`          | GET    | 세션 메시지 로드      |
+| `/api/sessions/[id]`          | PATCH  | 제목 수정          |
+| `/api/sessions/[id]`          | DELETE | 세션 삭제          |
+| `/api/sessions/[id]/messages` | POST   | 메시지 저장         |
+
+

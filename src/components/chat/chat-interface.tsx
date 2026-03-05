@@ -49,6 +49,9 @@ export function ChatInterface() {
     pendingFileMetaRef,
   } = useFileAttachment({ onError: setApiError });
 
+  // DB 저장용 파일 메타 ref (pendingSentFilesRef는 useEffect에서 먼저 소비되므로 별도 관리)
+  const pendingFilesForDbRef = React.useRef<Array<{ fileName: string; fileType: string; storagePath: string }> | undefined>(undefined);
+
   // Transport는 한 번만 생성
   const transport = React.useMemo(
     () =>
@@ -149,6 +152,8 @@ export function ChatInterface() {
 
       const fileMeta = pendingFileMetaRef.current;
       pendingFileMetaRef.current = undefined;
+      const filesForDb = pendingFilesForDbRef.current;
+      pendingFilesForDbRef.current = undefined;
 
       const assistantMessage = message.parts
         .filter(isTextUIPart)
@@ -194,7 +199,7 @@ export function ChatInterface() {
             await fetch(`/api/sessions/${currentSessionId}/messages`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ userMessage, assistantMessage, userMessageId }),
+              body: JSON.stringify({ userMessage, assistantMessage, userMessageId, userMessageFiles: filesForDb }),
             });
           } catch { /* 메시지 저장 실패 무시 */ }
         }
@@ -268,11 +273,18 @@ export function ChatInterface() {
 
     // 메시지 파일 미리보기 매핑용 캡처
     if (readyFiles.length > 0) {
-      pendingSentFilesRef.current = readyFiles.map((f) => ({
+      const fileMetas = readyFiles.map((f) => ({
         fileName: f.file.name,
         fileType: f.file.type,
         storagePath: f.storagePath,
         base64: f.base64,
+      }));
+      pendingSentFilesRef.current = fileMetas;
+      // DB 저장용 (base64 제외)
+      pendingFilesForDbRef.current = fileMetas.map(({ fileName, fileType, storagePath }) => ({
+        fileName,
+        fileType,
+        storagePath,
       }));
     }
 

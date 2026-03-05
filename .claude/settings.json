@@ -23,7 +23,10 @@
       "Bash(npx jest --testPathPatterns=\"build-system-prompt|upload-url|file-blocks\" --no-coverage)",
       "Bash(npx jest --testPathPatterns=\"upload-url|file-blocks\" --no-coverage)",
       "Bash(npx tsc --noEmit --project tsconfig.json)",
-      "Bash(npx prisma migrate dev --name add-message-client-id)"
+      "Bash(npx prisma migrate dev --name add-message-client-id)",
+      "Bash(npx prisma db push)",
+      "Bash(npx jest --testPathPattern=\"messages-route|chat-store-files\" --no-coverage)",
+      "Bash(npx jest --testPathPatterns=\"messages-route|chat-store-files\" --no-coverage)"
     ],
     "additionalDirectories": [
       "c:\\project\\BlockMind\\src\\app\\api\\blocks\\[id]"

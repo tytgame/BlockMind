@@ -6,6 +6,7 @@ import { ChatSidebar } from '@/components/chat/chat-sidebar';
 import { BlockList } from '@/components/block/block-list';
 import { useBlocksInit } from '@/hooks/use-blocks-init';
 import { useChatStore } from '@/store/chat-store';
+import type { SentFileInfo } from '@/components/chat/file-preview-modal';
 import { useUIStore } from '@/store/ui-store';
 
 export default function ChatPage() {
@@ -14,14 +15,14 @@ export default function ChatPage() {
 
   // 페이지 리마운트 시 (홈→채팅 복귀 등) 활성 세션 메시지 자동 복원
   React.useEffect(() => {
-    const { sessionId, pendingMessages, setPendingMessages, newMountKey } = useChatStore.getState();
+    const { sessionId, pendingMessages, setPendingMessages, newMountKey, setMessageFiles } = useChatStore.getState();
     if (!sessionId || pendingMessages.length > 0) return;
     void (async () => {
       try {
         const res = await fetch(`/api/sessions/${sessionId}`);
         if (!res.ok) return;
         const data = (await res.json()) as {
-          messages: Array<{ id: string; role: string; content: string; clientId?: string | null }>;
+          messages: Array<{ id: string; role: string; content: string; clientId?: string | null; files?: SentFileInfo[] | null }>;
         };
         const converted = data.messages
           .filter((m) => m.role === 'user' || m.role === 'assistant')
@@ -31,6 +32,15 @@ export default function ChatPage() {
             parts: [{ type: 'text' as const, text: m.content }],
           }));
         if (converted.length === 0) return;
+
+        // 첨부 파일 메타 복원 (messageFilesMap에 주입)
+        for (const m of data.messages) {
+          if (m.role === 'user' && m.files && m.files.length > 0) {
+            const messageId = m.clientId ?? m.id;
+            setMessageFiles(messageId, m.files);
+          }
+        }
+
         setPendingMessages(converted);
         newMountKey();
       } catch { /* 복원 실패 시 빈 채팅 유지 */ }

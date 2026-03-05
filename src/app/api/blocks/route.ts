@@ -74,5 +74,14 @@ export async function POST(req: Request) {
     },
   });
 
+  // image/file 타입 블록은 signedUrl 즉시 생성 (appendBlock 후 썸네일/미리보기 표시용)
+  if (block.fileUrl) {
+    const supabase = createAdminClient();
+    const { data } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .createSignedUrl(block.fileUrl, 3600);
+    return NextResponse.json({ ...block, signedUrl: data?.signedUrl ?? null }, { status: 201 });
+  }
+
   return NextResponse.json(block, { status: 201 });
 }

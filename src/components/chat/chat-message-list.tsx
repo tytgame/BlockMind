@@ -90,10 +90,10 @@ export function ChatMessageList({
                           onClick={() => onFileClick(fileInfo)}
                           className="flex items-center gap-2 rounded-xl bg-[#1a1d21] border border-white/10 px-3 py-2 text-left hover:bg-white/5 transition-colors cursor-pointer"
                         >
-                          {fileInfo.fileType.startsWith('image/') && fileInfo.base64 ? (
+                          {fileInfo.fileType.startsWith('image/') ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
-                              src={fileInfo.base64}
+                              src={fileInfo.base64 ?? `/api/files/download?path=${encodeURIComponent(fileInfo.storagePath)}`}
                               alt={fileInfo.fileName}
                               className="h-12 w-12 rounded-lg object-cover flex-shrink-0"
                             />

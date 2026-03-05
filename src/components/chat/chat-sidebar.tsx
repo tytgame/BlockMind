@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { useChatStore, RestoredMessage } from '@/store/chat-store';
+import type { SentFileInfo } from '@/components/chat/file-preview-modal';
 
 type ChatSessionItem = {
   id: string;
@@ -50,7 +51,7 @@ const iconRailButtonClass =
 
 export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
   const { data: session } = useSession();
-  const { sessionId, setSessionId, setPendingMessages, clearPendingMessages, newMountKey } = useChatStore();
+  const { sessionId, setSessionId, setPendingMessages, clearPendingMessages, newMountKey, setMessageFiles } = useChatStore();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [recentSessions, setRecentSessions] = React.useState<ChatSessionItem[]>([]);
   const t = useTranslations('chatSidebar');
@@ -78,7 +79,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
       const res = await fetch(`/api/sessions/${id}`);
       if (!res.ok) return;
       const data = (await res.json()) as {
-        messages: Array<{ id: string; role: string; content: string; clientId?: string | null }>;
+        messages: Array<{ id: string; role: string; content: string; clientId?: string | null; files?: SentFileInfo[] | null }>;
       };
       const converted: RestoredMessage[] = data.messages
         .filter((m) => m.role === 'user' || m.role === 'assistant')
@@ -88,6 +89,14 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
           role: m.role as 'user' | 'assistant',
           parts: [{ type: 'text' as const, text: m.content }],
         }));
+
+      // 첨부 파일 메타 복원
+      for (const m of data.messages) {
+        if (m.role === 'user' && m.files && m.files.length > 0) {
+          setMessageFiles(m.clientId ?? m.id, m.files);
+        }
+      }
+
       setPendingMessages(converted);
     } catch {
       // fetch 실패 시 빈 상태로 세션 전환
