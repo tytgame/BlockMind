@@ -131,6 +131,36 @@
     "uploading": "上传中...",
     "uploadError": "文件上传失败，请重试。"
   },
+  "login": {
+    "title": "欢迎回来",
+    "subtitle": "登录以继续使用 BlockMind",
+    "continueWithGoogle": "使用 Google 继续",
+    "secureAuth": "安全认证",
+    "terms": "继续即表示您同意我们的",
+    "termsOfService": "服务条款",
+    "and": "和",
+    "privacyPolicy": "隐私政策",
+    "agree": "。",
+    "backToHome": "← 返回首页",
+    "orDivider": "或",
+    "emailPlaceholder": "电子邮件地址",
+    "continueWithEmail": "使用邮箱继续",
+    "invalidEmail": "请输入有效的电子邮件地址。",
+    "sendingCode": "发送中...",
+    "sendError": "发送失败，请重试。"
+  },
+  "verify": {
+    "title": "请查看您的收件箱",
+    "subtitle": "我们已将验证码发送至 {email}。",
+    "codeLabel": "验证码",
+    "submit": "继续",
+    "verifying": "验证中...",
+    "invalidCode": "验证码无效或已过期。",
+    "resend": "重新发送邮件",
+    "resendCooldown": "{seconds}秒后可重发",
+    "resendSuccess": "已发送新验证码。",
+    "backToLogin": "← 使用其他邮箱"
+  },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },
     "en": { "flag": "🇺🇸", "label": "English", "short": "EN" },

@@ -131,6 +131,36 @@
     "uploading": "Uploading...",
     "uploadError": "File upload failed. Please try again."
   },
+  "login": {
+    "title": "Welcome Back",
+    "subtitle": "Sign in to continue with BlockMind",
+    "continueWithGoogle": "Continue with Google",
+    "secureAuth": "Secure authentication",
+    "terms": "By continuing, you agree to our",
+    "termsOfService": "Terms of Service",
+    "and": "and",
+    "privacyPolicy": "Privacy Policy",
+    "agree": ".",
+    "backToHome": "← Back to Home",
+    "orDivider": "or",
+    "emailPlaceholder": "Email address",
+    "continueWithEmail": "Continue with Email",
+    "invalidEmail": "Please enter a valid email address.",
+    "sendingCode": "Sending code...",
+    "sendError": "Failed to send email. Please try again."
+  },
+  "verify": {
+    "title": "Check your inbox",
+    "subtitle": "We sent a verification code to {email}.",
+    "codeLabel": "Code",
+    "submit": "Continue",
+    "verifying": "Verifying...",
+    "invalidCode": "Invalid or expired code.",
+    "resend": "Resend email",
+    "resendCooldown": "Resend in {seconds}s",
+    "resendSuccess": "A new code has been sent.",
+    "backToLogin": "← Use a different email"
+  },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },
     "en": { "flag": "🇺🇸", "label": "English", "short": "EN" },

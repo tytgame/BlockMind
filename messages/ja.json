@@ -131,6 +131,36 @@
     "uploading": "アップロード中...",
     "uploadError": "ファイルのアップロードに失敗しました。もう一度お試しください。"
   },
+  "login": {
+    "title": "おかえりなさい",
+    "subtitle": "BlockMindを続けるにはログインしてください",
+    "continueWithGoogle": "Googleで続ける",
+    "secureAuth": "安全な認証",
+    "terms": "続けることで、当社の",
+    "termsOfService": "利用規約",
+    "and": "および",
+    "privacyPolicy": "プライバシーポリシー",
+    "agree": "に同意したことになります。",
+    "backToHome": "← ホームに戻る",
+    "orDivider": "または",
+    "emailPlaceholder": "メールアドレス",
+    "continueWithEmail": "メールで続ける",
+    "invalidEmail": "有効なメールアドレスを入力してください。",
+    "sendingCode": "コード送信中...",
+    "sendError": "メール送信に失敗しました。もう一度お試しください。"
+  },
+  "verify": {
+    "title": "受信トレイを確認してください",
+    "subtitle": "{email} に認証コードを送信しました。",
+    "codeLabel": "コード",
+    "submit": "続ける",
+    "verifying": "確認中...",
+    "invalidCode": "無効または期限切れのコードです。",
+    "resend": "メールを再送信",
+    "resendCooldown": "{seconds}秒後に再送信可能",
+    "resendSuccess": "新しいコードを送信しました。",
+    "backToLogin": "← 別のメールで登録"
+  },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },
     "en": { "flag": "🇺🇸", "label": "English", "short": "EN" },
