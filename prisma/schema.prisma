@@ -74,12 +74,17 @@ model ChatSession {
   // 첫 메시지로 자동 생성 (최대 40자)
   title     String?
 
+  // 고정 기능
+  isPinned  Boolean   @default(false)
+  pinnedAt  DateTime?
+
   messages  Message[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
   @@index([userId])
+  @@index([userId, isPinned])
 }
 
 // 채팅 메시지. role은 'user' | 'assistant'

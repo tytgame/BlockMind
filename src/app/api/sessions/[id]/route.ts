@@ -30,7 +30,8 @@ export async function GET(
   return NextResponse.json(chatSession);
 }
 
-// PATCH /api/sessions/[id] — 세션 제목 수정
+// PATCH /api/sessions/[id] — 세션 제목 수정 또는 고정 토글
+// body: { title?: string } | { isPinned?: boolean }
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -41,17 +42,21 @@ export async function PATCH(
   }
 
   const { id } = await params;
-  const { title } = (await req.json()) as { title: string };
+  const body = (await req.json()) as { title?: string; isPinned?: boolean };
 
   const existing = await prisma.chatSession.findUnique({ where: { id } });
   if (!existing || existing.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const updated = await prisma.chatSession.update({
-    where: { id },
-    data: { title },
-  });
+  const data: { title?: string; isPinned?: boolean; pinnedAt?: Date | null } = {};
+  if (body.title !== undefined) data.title = body.title;
+  if (body.isPinned !== undefined) {
+    data.isPinned = body.isPinned;
+    data.pinnedAt = body.isPinned ? new Date() : null;
+  }
+
+  const updated = await prisma.chatSession.update({ where: { id }, data });
 
   return NextResponse.json(updated);
 }
