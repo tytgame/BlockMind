@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { SentFileInfo } from '@/components/chat/file-preview-modal';
 
 // useChat의 messages 옵션에 주입할 최소 형태 (UIMessage 호환)
@@ -31,20 +32,29 @@ interface ChatState {
   setMessageFiles: (messageId: string, files: SentFileInfo[]) => void;
 }
 
-export const useChatStore = create<ChatState>((set) => ({
-  input: '',
-  sessionId: null,
-  pendingMessages: [],
-  mountKey: 'initial',
-  messageFilesMap: {},
-  setInput: (input) => set({ input }),
-  resetInput: () => set({ input: '' }),
-  setSessionId: (id) => set({ sessionId: id }),
-  setPendingMessages: (messages) => set({ pendingMessages: messages }),
-  clearPendingMessages: () => set({ pendingMessages: [] }),
-  newMountKey: () => set({ mountKey: `mount-${Date.now()}` }),
-  setMessageFiles: (messageId, files) =>
-    set((state) => ({
-      messageFilesMap: { ...state.messageFilesMap, [messageId]: files },
-    })),
-}));
+export const useChatStore = create<ChatState>()(
+  persist(
+    (set) => ({
+      input: '',
+      sessionId: null,
+      pendingMessages: [],
+      mountKey: 'initial',
+      messageFilesMap: {},
+      setInput: (input) => set({ input }),
+      resetInput: () => set({ input: '' }),
+      setSessionId: (id) => set({ sessionId: id }),
+      setPendingMessages: (messages) => set({ pendingMessages: messages }),
+      clearPendingMessages: () => set({ pendingMessages: [] }),
+      newMountKey: () => set({ mountKey: `mount-${Date.now()}` }),
+      setMessageFiles: (messageId, files) =>
+        set((state) => ({
+          messageFilesMap: { ...state.messageFilesMap, [messageId]: files },
+        })),
+    }),
+    {
+      name: 'blockmind-chat',
+      // sessionId만 persist — 나머지는 새로고침 시 초기화
+      partialize: (state) => ({ sessionId: state.sessionId }),
+    }
+  )
+);

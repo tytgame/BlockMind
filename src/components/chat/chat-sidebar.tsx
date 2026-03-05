@@ -5,14 +5,13 @@ import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Spinner } from '@/components/ui/spinner';
 import {
   Plus,
   Search,
   Settings,
   Pin,
-  Folder,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -28,18 +27,17 @@ type ChatSessionItem = {
   updatedAt: string;
 };
 
+type SessionsResponse = {
+  sessions: ChatSessionItem[];
+  hasMore: boolean;
+};
+
 type PinnedChat = {
   id: string;
   title: string;
 };
 
-type ChatFolder = {
-  id: string;
-  name: string;
-};
-
 const pinnedChats: PinnedChat[] = [];
-const folders: ChatFolder[] = [];
 
 interface ChatSidebarProps {
   collapsed: boolean;
@@ -53,26 +51,103 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
   const { data: session } = useSession();
   const { sessionId, setSessionId, setPendingMessages, clearPendingMessages, newMountKey, setMessageFiles } = useChatStore();
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [recentSessions, setRecentSessions] = React.useState<ChatSessionItem[]>([]);
+  const [sessions, setSessions] = React.useState<ChatSessionItem[]>([]);
+  const [cursor, setCursor] = React.useState<string | null>(null);
+  const [hasMore, setHasMore] = React.useState(false);
+  const [isLoadingMore, setIsLoadingMore] = React.useState(false);
+  const [newSessionId, setNewSessionId] = React.useState<string | null>(null);
   const t = useTranslations('chatSidebar');
 
-  // 세션 목록 로드 (sessionId가 바뀔 때마다 갱신)
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const sentinelRef = React.useRef<HTMLDivElement>(null);
+  const sessionsRef = React.useRef<ChatSessionItem[]>([]);
+  const prevSessionIdRef = React.useRef<string | null | undefined>(undefined);
+
+  // sessionsRef를 항상 최신으로 유지
+  sessionsRef.current = sessions;
+
+  // 첫 페이지 로드 (목록 초기화)
+  const loadInitial = React.useCallback(async () => {
+    try {
+      const res = await fetch('/api/sessions?limit=20');
+      if (!res.ok) return;
+      const data = (await res.json()) as SessionsResponse;
+      setSessions(data.sessions);
+      setCursor(data.sessions.at(-1)?.updatedAt ?? null);
+      setHasMore(data.hasMore);
+    } catch {
+      // silent
+    }
+  }, []);
+
+  // 다음 페이지 로드 (append)
+  const fetchMore = React.useCallback(async (cursorValue: string) => {
+    setIsLoadingMore(true);
+    try {
+      const res = await fetch(`/api/sessions?cursor=${encodeURIComponent(cursorValue)}&limit=20`);
+      if (!res.ok) return;
+      const data = (await res.json()) as SessionsResponse;
+      setSessions((prev) => [...prev, ...data.sessions]);
+      setCursor(data.sessions.at(-1)?.updatedAt ?? null);
+      setHasMore(data.hasMore);
+    } catch {
+      // silent
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, []);
+
+  // 마운트 시 초기 로드
   React.useEffect(() => {
-    async function loadSessions() {
-      try {
-        const res = await fetch('/api/sessions');
-        if (!res.ok) return;
-        const data = (await res.json()) as ChatSessionItem[];
-        setRecentSessions(data);
-      } catch {
-        // 네트워크 오류 시 빈 목록 유지
+    void loadInitial();
+  }, [loadInitial]);
+
+  // sessionId 변경 감지: 새 세션 생성 시 목록 맨 위에 추가
+  React.useEffect(() => {
+    // 첫 렌더 skip
+    if (prevSessionIdRef.current === undefined) {
+      prevSessionIdRef.current = sessionId;
+      return;
+    }
+    const prev = prevSessionIdRef.current;
+    prevSessionIdRef.current = sessionId;
+
+    if (sessionId && sessionId !== prev) {
+      const alreadyInList = sessionsRef.current.some((s) => s.id === sessionId);
+      if (!alreadyInList) {
+        // 새 세션 생성 → 목록 리로드 + 애니메이션 마킹
+        setNewSessionId(sessionId);
+        void loadInitial();
+        // 400ms 후 애니메이션 클래스 제거
+        setTimeout(() => setNewSessionId(null), 400);
       }
     }
-    void loadSessions();
-  }, [sessionId]);
+  }, [sessionId, loadInitial]);
 
-  // 세션 선택: DB에서 메시지 fetch → pendingMessages에 저장 → sessionId 변경
-  // chat/page.tsx의 key={sessionId}가 ChatInterface를 리마운트해 메시지 주입
+  // IntersectionObserver: sentinel이 보이면 다음 페이지 로드
+  // loadMoreRef로 항상 최신 상태 참조
+  const loadMoreRef = React.useRef<() => void>(() => {});
+  loadMoreRef.current = () => {
+    if (!hasMore || isLoadingMore || !cursor) return;
+    void fetchMore(cursor);
+  };
+
+  React.useEffect(() => {
+    const sentinel = sentinelRef.current;
+    const container = scrollContainerRef.current;
+    if (!sentinel || !container) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) loadMoreRef.current();
+      },
+      { root: container, threshold: 0 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []); // 한 번만 설정, ref로 최신 함수 참조
+
+  // 세션 선택
   async function handleSelectSession(id: string) {
     if (id === sessionId) return;
     try {
@@ -84,13 +159,11 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
       const converted: RestoredMessage[] = data.messages
         .filter((m) => m.role === 'user' || m.role === 'assistant')
         .map((m) => ({
-          // clientId: AI SDK가 생성한 원본 UUID → messageFilesMap 키 일치에 사용
           id: m.clientId ?? m.id,
           role: m.role as 'user' | 'assistant',
           parts: [{ type: 'text' as const, text: m.content }],
         }));
 
-      // 첨부 파일 메타 복원
       for (const m of data.messages) {
         if (m.role === 'user' && m.files && m.files.length > 0) {
           setMessageFiles(m.clientId ?? m.id, m.files);
@@ -99,17 +172,16 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
 
       setPendingMessages(converted);
     } catch {
-      // fetch 실패 시 빈 상태로 세션 전환
       clearPendingMessages();
     }
     setSessionId(id);
-    newMountKey(); // 사용자가 명시적으로 세션을 선택 → ChatInterface 리마운트
+    newMountKey();
   }
 
   function handleNewChat() {
     clearPendingMessages();
     setSessionId(null);
-    newMountKey(); // 새 채팅 → ChatInterface 리마운트
+    newMountKey();
   }
 
   if (collapsed) {
@@ -170,15 +242,6 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
             aria-label={t('pinned')}
           >
             <Pin className="h-5 w-5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className={iconRailButtonClass}
-            title={t('folders')}
-            aria-label={t('folders')}
-          >
-            <Folder className="h-5 w-5" />
           </Button>
         </div>
 
@@ -265,38 +328,8 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
         </div>
       </div>
 
-      {/* Chat Lists */}
-      <ScrollArea className="flex-1 px-3">
-        {/* Recents */}
-        <div className="mb-4">
-          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">
-            {t('recents')}
-          </h3>
-          <div className="space-y-1">
-            {recentSessions.length === 0 && (
-              <p className="px-2 py-1 text-xs text-gray-500">{t('noRecentChats')}</p>
-            )}
-            {recentSessions.map((chat) => (
-              <button
-                key={chat.id}
-                onClick={() => void handleSelectSession(chat.id)}
-                className={cn(
-                  'w-full flex items-center gap-3 px-2 py-2 rounded-lg text-left transition-colors',
-                  sessionId === chat.id
-                    ? 'bg-blue-600/20 text-white'
-                    : 'text-gray-300 hover:bg-white/5'
-                )}
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">
-                    {chat.title ?? t('noRecentChats')}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
+      {/* Chat Lists — 네이티브 스크롤 컨테이너 (IntersectionObserver용) */}
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-3">
         {/* Pinned */}
         <div className="mb-4">
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2 flex items-center gap-1">
@@ -327,30 +360,47 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
           </div>
         </div>
 
-        {/* Folders */}
+        {/* Recents */}
         <div className="mb-4">
-          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2 flex items-center gap-1">
-            <Folder className="h-3 w-3" />
-            {t('folders')}
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-2">
+            {t('recents')}
           </h3>
           <div className="space-y-1">
-            {folders.length === 0 && (
-              <p className="px-2 py-1 text-xs text-gray-500">{t('noFolders')}</p>
+            {sessions.length === 0 && (
+              <p className="px-2 py-1 text-xs text-gray-500">{t('noRecentChats')}</p>
             )}
-            {folders.map((folder) => (
+            {sessions.map((chat) => (
               <button
-                key={folder.id}
-                className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-left text-gray-300 hover:bg-white/5 transition-colors"
+                key={chat.id}
+                onClick={() => void handleSelectSession(chat.id)}
+                className={cn(
+                  'w-full flex items-center gap-3 px-2 py-2 rounded-lg text-left transition-colors',
+                  sessionId === chat.id
+                    ? 'bg-blue-600/20 text-white'
+                    : 'text-gray-300 hover:bg-white/5',
+                  // 새 세션 추가 시 슬라이드인 애니메이션
+                  chat.id === newSessionId &&
+                    'animate-in fade-in slide-in-from-top-2 duration-300'
+                )}
               >
-                <Folder className="h-4 w-4 text-gray-400" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{folder.name}</p>
+                  <p className="text-sm font-medium truncate">
+                    {chat.title ?? t('noRecentChats')}
+                  </p>
                 </div>
               </button>
             ))}
           </div>
         </div>
-      </ScrollArea>
+
+        {/* 무한 스크롤 sentinel + 스피너 */}
+        <div ref={sentinelRef} className="h-1" />
+        {isLoadingMore && (
+          <div className="flex justify-center py-3">
+            <Spinner />
+          </div>
+        )}
+      </div>
 
       {/* Bottom Section - Settings & User */}
       <div className="border-t border-white/10 p-3 space-y-2">
