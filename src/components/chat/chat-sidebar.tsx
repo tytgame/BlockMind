@@ -11,14 +11,26 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   Plus,
   Search,
   Settings,
   Pin,
   PinOff,
+  Trash2,
   MoreHorizontal,
   ChevronLeft,
   ChevronRight,
@@ -63,6 +75,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
   const [hasMore, setHasMore] = React.useState(false);
   const [isLoadingMore, setIsLoadingMore] = React.useState(false);
   const [newSessionId, setNewSessionId] = React.useState<string | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = React.useState<string | null>(null);
 
   const t = useTranslations('chatSidebar');
 
@@ -173,6 +186,22 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
     newMountKey();
   }
 
+  // 채팅 삭제 (확인 후 실행)
+  async function handleDeleteSession(id: string) {
+    // optimistic: 목록에서 즉시 제거
+    setPinnedSessions((prev) => prev.filter((s) => s.id !== id));
+    setSessions((prev) => prev.filter((s) => s.id !== id));
+
+    // 현재 활성 세션이면 새 채팅 상태로 전환
+    if (sessionId === id) {
+      clearPendingMessages();
+      setSessionId(null);
+      newMountKey();
+    }
+
+    void fetch(`/api/sessions/${id}`, { method: 'DELETE' });
+  }
+
   // 고정 토글 (optimistic update)
   async function handleTogglePin(e: React.MouseEvent, chat: ChatSessionItem) {
     e.stopPropagation();
@@ -253,9 +282,16 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
                 className="gap-2 text-gray-200 data-[highlighted]:bg-white/10 data-[highlighted]:text-white cursor-pointer"
               >
                 {chat.isPinned
-                  ? <><PinOff className="h-4 w-4" />고정 취소</>
-                  : <><Pin className="h-4 w-4" />고정</>
+                  ? <><PinOff className="h-4 w-4" />{t('unpin')}</>
+                  : <><Pin className="h-4 w-4" />{t('pin')}</>
                 }
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuItem
+                onClick={(e) => { e.stopPropagation(); setDeleteTargetId(chat.id); }}
+                className="gap-2 text-red-400 data-[highlighted]:bg-red-500/10 data-[highlighted]:text-red-400 cursor-pointer"
+              >
+                <Trash2 className="h-4 w-4" />{t('delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -320,6 +356,28 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
   }
 
   return (
+    <>
+    <AlertDialog open={deleteTargetId !== null} onOpenChange={(open) => { if (!open) setDeleteTargetId(null); }}>
+      <AlertDialogContent className="bg-[#2a2f3a] border-white/10 text-white">
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t('deleteConfirmTitle')}</AlertDialogTitle>
+          <AlertDialogDescription className="text-gray-400">
+            {t('deleteConfirmDescription')}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel className="bg-transparent border-white/20 text-gray-300 hover:bg-white/10 hover:text-white">
+            {t('deleteConfirmCancel')}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => { if (deleteTargetId) void handleDeleteSession(deleteTargetId); }}
+            className="bg-red-600 hover:bg-red-700 text-white border-0"
+          >
+            {t('deleteConfirmDelete')}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     <div className="flex flex-col h-full bg-[#1a1d21] text-white">
       {/* Header */}
       <div className="p-4 border-b border-white/10">
@@ -418,5 +476,6 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
         )}
       </div>
     </div>
+    </>
   );
 }

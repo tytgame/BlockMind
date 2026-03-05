@@ -99,7 +99,14 @@
     "recents": "最近",
     "noRecentChats": "最近のチャットはありません",
     "noPinnedChats": "固定されたチャットはありません",
-    "noFolders": "フォルダはありません"
+    "noFolders": "フォルダはありません",
+    "pin": "固定",
+    "unpin": "固定解除",
+    "delete": "削除",
+    "deleteConfirmTitle": "チャットを削除しますか？",
+    "deleteConfirmDescription": "この操作は永久に元に戻せません。チャット履歴、添付ファイル、このチャットから作成されたブロックがすべて削除されます。",
+    "deleteConfirmCancel": "キャンセル",
+    "deleteConfirmDelete": "削除"
   },
   "blockList": {
     "expandSidebar": "ブロックパネルを展開",

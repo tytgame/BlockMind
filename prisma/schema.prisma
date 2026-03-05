@@ -79,6 +79,7 @@ model ChatSession {
   pinnedAt  DateTime?
 
   messages  Message[]
+  blocks    Block[]   // sourceSessionId로 연결된 자동 추출 블록
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -131,9 +132,14 @@ model Block {
   geminiFileUri   String?
   geminiExpiresAt DateTime?
 
+  // 어느 채팅 세션에서 자동 추출되었는지 (null이면 출처 불명)
+  sourceSessionId String?
+  sourceSession   ChatSession? @relation(fields: [sourceSessionId], references: [id], onDelete: SetNull)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([userId, order])
+  @@index([sourceSessionId])
 }

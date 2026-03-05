@@ -99,7 +99,14 @@
     "recents": "Recents",
     "noRecentChats": "No recent chats",
     "noPinnedChats": "No pinned chats",
-    "noFolders": "No folders"
+    "noFolders": "No folders",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete this chat?",
+    "deleteConfirmDescription": "This action is permanent and cannot be undone. The chat history, attachments, and all blocks created from this chat will be permanently deleted.",
+    "deleteConfirmCancel": "Cancel",
+    "deleteConfirmDelete": "Delete"
   },
   "blockList": {
     "expandSidebar": "Expand blocks panel",

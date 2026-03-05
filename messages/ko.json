@@ -99,7 +99,14 @@
     "recents": "최근",
     "noRecentChats": "최근 대화 없음",
     "noPinnedChats": "고정된 대화 없음",
-    "noFolders": "폴더 없음"
+    "noFolders": "폴더 없음",
+    "pin": "고정",
+    "unpin": "고정 취소",
+    "delete": "삭제",
+    "deleteConfirmTitle": "채팅을 삭제하시겠습니까?",
+    "deleteConfirmDescription": "이 작업은 영구적으로 되돌릴 수 없습니다. 채팅 내용, 첨부 파일, 이 채팅에서 생성된 블록이 모두 삭제됩니다.",
+    "deleteConfirmCancel": "취소",
+    "deleteConfirmDelete": "삭제"
   },
   "blockList": {
     "expandSidebar": "블록 패널 펼치기",

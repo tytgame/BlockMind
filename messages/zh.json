@@ -99,7 +99,14 @@
     "recents": "最近",
     "noRecentChats": "暂无最近对话",
     "noPinnedChats": "暂无置顶对话",
-    "noFolders": "暂无文件夹"
+    "noFolders": "暂无文件夹",
+    "pin": "置顶",
+    "unpin": "取消置顶",
+    "delete": "删除",
+    "deleteConfirmTitle": "删除此对话？",
+    "deleteConfirmDescription": "此操作永久不可撤销。聊天记录、附件以及从此对话中创建的所有块将被永久删除。",
+    "deleteConfirmCancel": "取消",
+    "deleteConfirmDelete": "删除"
   },
   "blockList": {
     "expandSidebar": "展开块面板",

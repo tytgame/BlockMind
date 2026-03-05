@@ -28,7 +28,10 @@
       "Bash(npx jest --testPathPattern=\"messages-route|chat-store-files\" --no-coverage)",
       "Bash(npx jest --testPathPatterns=\"messages-route|chat-store-files\" --no-coverage)",
       "Bash(node -e \"const k=require\\(''./messages/ko.json''\\); console.log\\(Object.keys\\(k\\)\\)\")",
-      "Bash(npm install resend)"
+      "Bash(npm install resend)",
+      "Bash(npx shadcn@latest add alert-dialog --yes)",
+      "Bash(npx shadcn@latest add alert-dialog)",
+      "Bash(npx jest src/__tests__/unit/session-delete.test.ts --no-coverage)"
     ],
     "additionalDirectories": [
       "c:\\project\\BlockMind\\src\\app\\api\\blocks\\[id]"

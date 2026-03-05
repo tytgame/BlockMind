@@ -66,7 +66,7 @@ export function ChatInterface() {
   );
 
   // 블록 자동 추출
-  const applyExtractedBlocks = React.useCallback(async (extractedBlocks: ExtractedBlock[]) => {
+  const applyExtractedBlocks = React.useCallback(async (extractedBlocks: ExtractedBlock[], sourceSessionId: string | null) => {
     const { blocks: currentBlocks, appendBlock } = useBlockStore.getState();
 
     const existingKeys = new Set(
@@ -99,6 +99,7 @@ export function ChatInterface() {
         if (extracted.fileSize !== undefined) blockData.fileSize = extracted.fileSize;
         if (extracted.geminiFileUri) blockData.geminiFileUri = extracted.geminiFileUri;
         if (extracted.geminiExpiresAt !== undefined) blockData.geminiExpiresAt = extracted.geminiExpiresAt;
+        if (sourceSessionId) blockData.sourceSessionId = sourceSessionId;
 
         const res = await fetch('/api/blocks', {
           method: 'POST',
@@ -220,7 +221,7 @@ export function ChatInterface() {
           if (!response.ok) return;
           const data = (await response.json()) as ExtractBlocksResponse;
           if (!data.blocks?.length) return;
-          await applyExtractedBlocks(data.blocks.slice(0, MAX_BLOCKS_PER_CYCLE));
+          await applyExtractedBlocks(data.blocks.slice(0, MAX_BLOCKS_PER_CYCLE), currentSessionId ?? null);
         } catch { /* 블록 추출 실패 무시 */ }
       })();
     },
