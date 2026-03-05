@@ -8,19 +8,29 @@ import { useBlocksInit } from '@/hooks/use-blocks-init';
 import { useChatStore } from '@/store/chat-store';
 import type { SentFileInfo } from '@/components/chat/file-preview-modal';
 import { useUIStore } from '@/store/ui-store';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function ChatPage() {
   useBlocksInit();
   const mountKey = useChatStore((state) => state.mountKey);
 
-  // 페이지 리마운트 시 (홈→채팅 복귀 등) 활성 세션 메시지 자동 복원
+  // 'loading'   : useEffect 실행 전 (SSR → hydration 구간) → 스피너
+  // 'restoring' : sessionId 있음, DB fetch 중 → 스피너
+  // 'ready'     : 완료 → ChatInterface 렌더링
+  const [chatState, setChatState] = React.useState<'loading' | 'restoring' | 'ready'>('loading');
+
+  // 페이지 리마운트 시 (새로고침, 홈→채팅 복귀 등) 활성 세션 메시지 자동 복원
   React.useEffect(() => {
     const { sessionId, pendingMessages, setPendingMessages, newMountKey, setMessageFiles } = useChatStore.getState();
-    if (!sessionId || pendingMessages.length > 0) return;
+    if (!sessionId || pendingMessages.length > 0) {
+      setChatState('ready');
+      return;
+    }
+    setChatState('restoring');
     void (async () => {
       try {
         const res = await fetch(`/api/sessions/${sessionId}`);
-        if (!res.ok) return;
+        if (!res.ok) { setChatState('ready'); return; }
         const data = (await res.json()) as {
           messages: Array<{ id: string; role: string; content: string; clientId?: string | null; files?: SentFileInfo[] | null }>;
         };
@@ -31,7 +41,6 @@ export default function ChatPage() {
             role: m.role as 'user' | 'assistant',
             parts: [{ type: 'text' as const, text: m.content }],
           }));
-        if (converted.length === 0) return;
 
         // 첨부 파일 메타 복원 (messageFilesMap에 주입)
         for (const m of data.messages) {
@@ -41,9 +50,12 @@ export default function ChatPage() {
           }
         }
 
-        setPendingMessages(converted);
-        newMountKey();
+        if (converted.length > 0) {
+          setPendingMessages(converted);
+          newMountKey();
+        }
       } catch { /* 복원 실패 시 빈 채팅 유지 */ }
+      finally { setChatState('ready'); }
     })();
   }, []);
   const {
@@ -68,9 +80,15 @@ export default function ChatPage() {
       </div>
 
       {/* Center Panel: Chat Interface */}
-      {/* key가 바뀌면 리마운트 → pendingMessages가 useChat 초기값으로 주입됨 */}
+      {/* loading/restoring 중 스피너 → ChatInterface는 ready 이후에만 렌더링 */}
       <div className="flex-1 min-w-[400px] h-full">
-        <ChatInterface key={mountKey} />
+        {chatState !== 'ready' ? (
+          <div className="flex h-full items-center justify-center">
+            <Spinner size="md" />
+          </div>
+        ) : (
+          <ChatInterface key={mountKey} />
+        )}
       </div>
 
       {/* Right Panel: Block Context Stack */}
