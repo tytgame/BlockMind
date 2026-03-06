@@ -47,7 +47,6 @@ export async function POST(req: Request) {
     type: string;
     label: string;
     content: string;
-    color: string;
     order: number;
     fileUrl?: string;
     fileName?: string;
@@ -65,7 +64,6 @@ export async function POST(req: Request) {
       type: body.type,
       label: body.label,
       content: body.content,
-      color: body.color,
       order: body.order,
       fileUrl: body.fileUrl ?? null,
       fileName: body.fileName ?? null,

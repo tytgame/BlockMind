@@ -1,16 +1,7 @@
 import { create } from 'zustand';
-import { Block, BlockState } from '@/types/block';
+import { BlockState } from '@/types/block';
 import { arrayMove } from '@dnd-kit/sortable';
 import { v4 as uuidv4 } from 'uuid';
-
-const BLOCK_COLORS = [
-  'bg-blue-500',
-  'bg-emerald-500',
-  'bg-violet-500',
-  'bg-amber-500',
-];
-
-export { BLOCK_COLORS };
 
 export const useBlockStore = create<BlockState>((set) => ({
   blocks: [],
@@ -26,7 +17,6 @@ export const useBlockStore = create<BlockState>((set) => ({
           ...blockData,
           id: uuidv4(),
           isVisible: true,
-          color: BLOCK_COLORS[state.blocks.length % BLOCK_COLORS.length],
         },
       ],
     })),

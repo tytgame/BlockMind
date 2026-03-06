@@ -36,7 +36,6 @@ function makeBlock(overrides: Partial<Block> = {}): Block {
     type: 'data',
     label: 'Test Block',
     content: 'Test content',
-    color: 'bg-blue-500',
     isVisible: true,
     ...overrides,
   };

@@ -85,20 +85,17 @@ export function BlockItem({ block }: BlockItemProps) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="mb-2 group max-w-72">
+    <div ref={setNodeRef} style={style} className="mb-2 group max-w-71.5">
       <div
         className={cn(
-          'relative rounded-lg bg-[#252830] overflow-hidden transition-all',
+          'relative rounded-md bg-[#1a1d21] border border-white/10 transition-all',
           'hover:bg-[#2a2f3a]',
           !block.isVisible && 'opacity-50'
         )}
       >
-        {/* Color Bar */}
-        <div className={cn('absolute left-0 top-0 bottom-0 w-1', block.color)} />
-
         {/* Main Content */}
         <div
-          className="pl-4 pr-2 py-3 cursor-pointer"
+          className="p-3 pr-2 py-3 cursor-pointer"
           role="button"
           tabIndex={0}
           onClick={() => setIsDetailOpen(true)}

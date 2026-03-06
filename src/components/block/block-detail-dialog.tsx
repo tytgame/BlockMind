@@ -51,8 +51,7 @@ export function BlockDetailDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl border-white/10 bg-[#1a1d21] p-0 text-white sm:max-w-2xl">
         <div className="border-b border-white/10 bg-[#252830] px-6 py-5">
-          <div className="flex items-center gap-2">
-            <span className={cn('h-2.5 w-2.5 rounded-full', block.color)} />
+          <div className="flex items-center">
             <span className="text-xs uppercase tracking-[0.14em] text-gray-400">
               {block.type === 'image' ? 'image' : block.type === 'file' ? 'file' : 'memory'}
             </span>

@@ -13,7 +13,6 @@ export interface Block {
   type: BlockType;
   label: string;
   content: string;
-  color: string;
   isVisible: boolean;
 
   // 파일 첨부 (image / file 타입에서 사용)
@@ -42,7 +41,7 @@ export type BlockState = {
   pivotIndex: number | null;
   // DB에서 받은 완전한 Block 객체를 그대로 추가 (id는 DB cuid 사용)
   appendBlock: (block: Block) => void;
-  addBlock: (block: Omit<Block, 'id' | 'isVisible' | 'color'>) => void;
+  addBlock: (block: Omit<Block, 'id' | 'isVisible'>) => void;
   updateBlock: (id: string, updates: Partial<Block>) => void;
   removeBlock: (id: string) => void;
   reorderBlocks: (activeId: string, overId: string) => void;

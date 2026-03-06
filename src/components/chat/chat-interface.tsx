@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, isTextUIPart } from 'ai';
 import { useSession } from 'next-auth/react';
-import { useBlockStore, BLOCK_COLORS } from '@/store/block-store';
+import { useBlockStore } from '@/store/block-store';
 import { useChatStore } from '@/store/chat-store';
 import { Block } from '@/types/block';
 import { useTranslations } from 'next-intl';
@@ -86,13 +86,12 @@ export function ChatInterface() {
       if (existingKeys.has(blockKey)) continue;
 
       const { blocks } = useBlockStore.getState();
-      const color = BLOCK_COLORS[blocks.length % BLOCK_COLORS.length];
       const order = blocks.length;
 
       try {
         const blockData: Record<string, unknown> = {
           type: extracted.type ?? 'data',
-          label, content, color, order,
+          label, content, order,
         };
         if (extracted.fileUrl) blockData.fileUrl = extracted.fileUrl;
         if (extracted.fileName) blockData.fileName = extracted.fileName;

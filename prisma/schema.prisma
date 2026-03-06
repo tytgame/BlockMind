@@ -118,7 +118,6 @@ model Block {
   type      String  @default("data")
   label     String
   content   String  @db.Text
-  color     String?
   order     Int     @default(0)
   isVisible Boolean @default(true)
 

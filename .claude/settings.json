@@ -34,7 +34,8 @@
       "Bash(npx jest src/__tests__/unit/session-delete.test.ts --no-coverage)",
       "Bash(npx jest src/__tests__/unit/get-block-icon.test.ts src/__tests__/unit/blocks-extract.test.ts --no-coverage)",
       "Bash(npx jest src/__tests__/unit/chat-store-files.test.ts --no-coverage)",
-      "Bash(npx tsc --noEmit --strict src/__tests__/unit/chat-store-files.test.ts)"
+      "Bash(npx tsc --noEmit --strict src/__tests__/unit/chat-store-files.test.ts)",
+      "Bash(npx prisma db push --accept-data-loss)"
     ],
     "additionalDirectories": [
       "c:\\project\\BlockMind\\src\\app\\api\\blocks\\[id]"

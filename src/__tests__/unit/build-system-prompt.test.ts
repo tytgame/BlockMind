@@ -8,7 +8,6 @@ function makeBlock(override: Partial<Block> = {}): Block {
     type: 'data',
     label: '테스트 블록',
     content: '테스트 내용',
-    color: 'bg-blue-500',
     isVisible: true,
     ...override,
   };

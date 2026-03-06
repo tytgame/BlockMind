@@ -53,7 +53,6 @@ function makeBlockRow(override: object = {}) {
     type: 'data',
     label: '테스트',
     content: '내용',
-    color: 'bg-blue-500',
     order: 0,
     isVisible: true,
     fileUrl: null,
@@ -177,7 +176,7 @@ describe('POST /api/blocks', () => {
 
   it('인증 없으면 401 반환', async () => {
     mockAuth.mockResolvedValueOnce(null);
-    const res = await POST(makeRequest({ type: 'data', label: '테스트', content: '내용', color: 'bg-blue-500', order: 0 }));
+    const res = await POST(makeRequest({ type: 'data', label: '테스트', content: '내용', order: 0 }));
     expect(res.status).toBe(401);
   });
 
@@ -198,7 +197,6 @@ describe('POST /api/blocks', () => {
       type: 'image',
       label: '첨부 사진',
       content: '이미지 설명',
-      color: 'bg-blue-500',
       order: 0,
       fileUrl: `${FAKE_USER_ID}/photo.jpg`,
       fileName: 'photo.jpg',
@@ -225,7 +223,6 @@ describe('POST /api/blocks', () => {
       type: 'file',
       label: '계약서',
       content: '계약 요약',
-      color: 'bg-green-500',
       order: 1,
       fileUrl: `${FAKE_USER_ID}/contract.pdf`,
       fileName: 'contract.pdf',
@@ -248,7 +245,6 @@ describe('POST /api/blocks', () => {
       type: 'file',
       label: '문서',
       content: '내용',
-      color: 'bg-gray-500',
       order: 0,
       fileUrl: `${FAKE_USER_ID}/doc.pdf`,
       fileType: 'application/pdf',
@@ -267,7 +263,6 @@ describe('POST /api/blocks', () => {
       type: 'data',
       label: '이름',
       content: '홍길동',
-      color: 'bg-blue-500',
       order: 0,
     }));
 
