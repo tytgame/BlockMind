@@ -120,9 +120,8 @@ export default function VerifyPage() {
     <div className="min-h-screen bg-[#0f1419] flex flex-col">
       {/* Header */}
       <header className="p-6">
-        <Link href="/" className="flex items-center gap-3 w-fit">
-          <img src="/blockmind_logo_noBackGround.png" alt="BlockMind Logo" className="w-10 h-10" />
-          <span className="text-xl text-white font-sora">
+        <Link href="/" className="flex items-center w-fit">
+          <span className="text-xl text-white font-sora -translate-y-1.5">
             <span className="font-bold">Block</span>
             <span className="font-normal">Mind</span>
           </span>

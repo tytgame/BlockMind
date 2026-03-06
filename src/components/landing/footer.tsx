@@ -43,12 +43,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           {/* Brand Column */}
           <div className="col-span-2">
-            <Link href="/" className="flex items-center gap-3 mb-4">
-              <img
-                src="/blockmind_logo_noBackGround.png"
-                alt="BlockMind Logo"
-                className="w-10 h-10"
-              />
+            <Link href="/" className="flex items-center mb-4">
               <span className="text-xl text-white font-sora">
                 <span className="font-bold">Block</span>
                 <span className="font-normal">Mind</span>

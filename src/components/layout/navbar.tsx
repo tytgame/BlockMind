@@ -69,12 +69,7 @@ export function Navbar() {
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            <img
-              src="/blockmind_logo_noBackGround.png"
-              alt="BlockMind Logo"
-              className="w-10 h-10"
-            />
+          <Link href="/" className="flex items-center">
             <span className="text-xl text-white font-sora">
               <span className="font-bold">Block</span>
               <span className="font-normal">Mind</span>

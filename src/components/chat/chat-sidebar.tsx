@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,6 +33,7 @@ import {
   MoreHorizontal,
   ChevronLeft,
   ChevronRight,
+  Home,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
@@ -318,11 +318,11 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
         <div className="flex flex-1 flex-col items-center gap-2 px-2 py-3">
           <Link
             href="/"
-            className="mb-2 h-10 w-10 rounded-xl border border-white/10 bg-[#252830] flex items-center justify-center hover:bg-[#2a2f3a] transition-colors"
+            className={`mb-2 rounded-lg flex items-center justify-center ${iconRailButtonClass}`}
             aria-label={t('goToHome')}
             title={t('goToHome')}
           >
-            <Image src="/blockmind_logo_noBackGround.png" alt="BlockMind" width={28} height={28} className="h-7 w-7 object-contain" />
+            <Home className="h-5 w-5" />
           </Link>
           <Button variant="ghost" size="icon" className={iconRailButtonClass} title={t('newChat')} aria-label={t('newChat')}>
             <Plus className="h-5 w-5" />
@@ -384,11 +384,14 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
         <div className="flex items-center justify-between">
           <Link
             href="/"
-            className="h-10 w-10 rounded-xl border border-white/10 bg-[#252830] flex items-center justify-center hover:bg-[#2a2f3a] transition-colors"
+            className="flex items-center hover:opacity-80 transition-opacity"
             aria-label={t('goToHome')}
             title={t('goToHome')}
           >
-            <Image src="/blockmind_logo_noBackGround.png" alt="BlockMind" width={30} height={30} className="h-7 w-7 object-contain" />
+            <span className="text-xl text-white font-sora">
+              <span className="font-bold">Block</span>
+              <span className="font-normal">Mind</span>
+            </span>
           </Link>
           <Button
             variant="ghost"
