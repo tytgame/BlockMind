@@ -132,6 +132,11 @@ model Block {
   geminiFileUri   String?
   geminiExpiresAt DateTime?
 
+  // data 타입 블록의 LLM 분류 카테고리 (image/file 타입은 null)
+  // 허용값: animal|fitness|travel|coding|food|music|study|health|
+  //         work|game|finance|shopping|home|sports|entertainment|person
+  category        String?
+
   // 어느 채팅 세션에서 자동 추출되었는지 (null이면 출처 불명)
   sourceSessionId String?
   sourceSession   ChatSession? @relation(fields: [sourceSessionId], references: [id], onDelete: SetNull)

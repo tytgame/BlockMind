@@ -2,6 +2,7 @@ import { google } from '@ai-sdk/google';
 import { generateObject } from 'ai';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { BLOCK_CATEGORIES } from '@/types/block';
 
 const MAX_BLOCKS_PER_CYCLE = 1;
 
@@ -35,6 +36,7 @@ const extractResponseSchema = z.object({
         label: z.string().min(1).max(40),
         content: z.string().min(1).max(500),
         attachFile: z.boolean().optional(), // 파일을 이 블록에 첨부할지 여부
+        category: z.enum(BLOCK_CATEGORIES).optional(), // data 블록 카테고리
       })
     )
     .max(MAX_BLOCKS_PER_CYCLE),
@@ -70,6 +72,9 @@ Rules:
 - Keep content precise and reusable.
 - If a file was attached and it contains important durable information, set attachFile: true.
 - If nothing should be stored, return an empty "blocks" array.
+- For each data block, set "category" to the single best matching value from this list:
+  animal, fitness, travel, coding, food, music, study, health, work, game, finance, shopping, home, sports, entertainment, person
+  Omit "category" only if none of the above fit.
 
 This process is internal. Never produce user-facing text.${fileContext}`,
       prompt: `Existing blocks:
@@ -101,7 +106,11 @@ ${assistantMessage}`,
           ...(fileMetadata.geminiExpiresAt ? { geminiExpiresAt: fileMetadata.geminiExpiresAt } : {}),
         };
       }
-      return { label: block.label, content: block.content };
+      return {
+        label: block.label,
+        content: block.content,
+        ...(block.category ? { category: block.category } : {}),
+      };
     });
 
     return NextResponse.json({ blocks: blocksWithFile });

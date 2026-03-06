@@ -56,6 +56,7 @@ export async function POST(req: Request) {
     geminiFileUri?: string;
     geminiExpiresAt?: string | null;
     sourceSessionId?: string;
+    category?: string;
   };
 
   const block = await prisma.block.create({
@@ -73,6 +74,7 @@ export async function POST(req: Request) {
       geminiFileUri: body.geminiFileUri ?? null,
       geminiExpiresAt: body.geminiExpiresAt ? new Date(body.geminiExpiresAt) : null,
       sourceSessionId: body.sourceSessionId ?? null,
+      category: body.category ?? null,
     },
   });
 

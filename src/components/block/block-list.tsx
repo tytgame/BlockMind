@@ -24,6 +24,7 @@ import { type Block } from '@/types/block';
 import { ChevronLeft, ChevronRight, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
+import { getBlockIcon, getBlockIconColor } from '@/lib/get-block-icon';
 
 interface BlockListProps {
   collapsed: boolean;
@@ -94,20 +95,16 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
                 aria-label={block.label}
                 onClick={() => handleOpenDetail(block)}
                 className={cn(
-                  'relative h-10 w-10 rounded-md border border-white/10 bg-[#252830]',
-                  'transition-colors hover:bg-[#2a2f3a] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60',
-                  !block.isVisible && 'opacity-50'
+                  'h-10 w-10 rounded-md flex items-center justify-center',
+                  'transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60',
+                  !block.isVisible && 'opacity-40'
                 )}
               >
-                <span
-                  className={cn(
-                    'absolute top-0 left-0 right-0 h-1 rounded-t-md',
-                    block.color
-                  )}
-                />
-                <span className="text-[10px] font-semibold uppercase text-gray-200">
-                  {block.type.charAt(0)}
-                </span>
+                {(() => {
+                  const Icon = getBlockIcon(block);
+                  const colorClass = getBlockIconColor(block);
+                  return <Icon className={cn('h-7 w-7', colorClass)} />;
+                })()}
               </button>
             ))}
 

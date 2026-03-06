@@ -1,5 +1,13 @@
 export type BlockType = 'data' | 'image' | 'file';
 
+export const BLOCK_CATEGORIES = [
+  'animal', 'fitness', 'travel', 'coding', 'food', 'music',
+  'study', 'health', 'work', 'game', 'finance', 'shopping',
+  'home', 'sports', 'entertainment', 'person',
+] as const;
+
+export type BlockCategory = typeof BLOCK_CATEGORIES[number];
+
 export interface Block {
   id: string;
   type: BlockType;
@@ -17,6 +25,9 @@ export interface Block {
   // Gemini Files API (PDF 타입만, 48시간 유효)
   geminiFileUri?: string;
   geminiExpiresAt?: string | null; // ISO string
+
+  // data 타입 블록의 LLM 분류 카테고리
+  category?: BlockCategory | null;
 
   // 서버가 GET /api/blocks 응답 시 주입 (DB 저장 안 됨)
   signedUrl?: string;

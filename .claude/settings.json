@@ -31,7 +31,10 @@
       "Bash(npm install resend)",
       "Bash(npx shadcn@latest add alert-dialog --yes)",
       "Bash(npx shadcn@latest add alert-dialog)",
-      "Bash(npx jest src/__tests__/unit/session-delete.test.ts --no-coverage)"
+      "Bash(npx jest src/__tests__/unit/session-delete.test.ts --no-coverage)",
+      "Bash(npx jest src/__tests__/unit/get-block-icon.test.ts src/__tests__/unit/blocks-extract.test.ts --no-coverage)",
+      "Bash(npx jest src/__tests__/unit/chat-store-files.test.ts --no-coverage)",
+      "Bash(npx tsc --noEmit --strict src/__tests__/unit/chat-store-files.test.ts)"
     ],
     "additionalDirectories": [
       "c:\\project\\BlockMind\\src\\app\\api\\blocks\\[id]"

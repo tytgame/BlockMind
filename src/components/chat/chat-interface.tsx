@@ -25,6 +25,7 @@ type ExtractedBlock = {
   fileSize?: number;
   geminiFileUri?: string;
   geminiExpiresAt?: string | null;
+  category?: string;
 };
 
 type ExtractBlocksResponse = {
@@ -100,6 +101,7 @@ export function ChatInterface() {
         if (extracted.geminiFileUri) blockData.geminiFileUri = extracted.geminiFileUri;
         if (extracted.geminiExpiresAt !== undefined) blockData.geminiExpiresAt = extracted.geminiExpiresAt;
         if (sourceSessionId) blockData.sourceSessionId = sourceSessionId;
+        if (extracted.category) blockData.category = extracted.category;
 
         const res = await fetch('/api/blocks', {
           method: 'POST',
