@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import {
   DndContext,
   closestCenter,
@@ -35,6 +36,7 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
   const { blocks, reorderBlocks } = useBlockStore();
   const [selectedBlock, setSelectedBlock] = React.useState<Block | null>(null);
   const [isDetailOpen, setIsDetailOpen] = React.useState(false);
+  const [tooltip, setTooltip] = React.useState<{ label: string; top: number; right: number } | null>(null);
   const t = useTranslations('blockList');
 
   const sensors = useSensors(
@@ -71,6 +73,7 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
 
   if (collapsed) {
     return (
+      <>
       <div className="h-full flex flex-col bg-[#1a1d21] text-white">
         <div className="p-3 border-b border-white/10 flex items-center justify-center">
           <Button
@@ -91,9 +94,17 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
               <button
                 key={block.id}
                 type="button"
-                title={block.label}
                 aria-label={block.label}
                 onClick={() => handleOpenDetail(block)}
+                onMouseEnter={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setTooltip({
+                    label: block.label,
+                    top: rect.top + rect.height / 2,
+                    right: window.innerWidth - rect.left + 10,
+                  });
+                }}
+                onMouseLeave={() => setTooltip(null)}
                 className={cn(
                   'h-10 w-10 rounded-md flex items-center justify-center',
                   'transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60',
@@ -132,6 +143,23 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
           onOpenChange={handleDetailOpenChange}
         />
       </div>
+      {tooltip && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            top: tooltip.top,
+            right: tooltip.right,
+            transform: 'translateY(-50%)',
+            zIndex: 9999,
+            pointerEvents: 'none',
+          }}
+          className="rounded-md bg-[#2a2f3a] border border-white/10 px-2.5 py-1.5 text-xs text-gray-100 whitespace-nowrap shadow-lg"
+        >
+          {tooltip.label}
+        </div>,
+        document.body
+      )}
+    </>
     );
   }
 

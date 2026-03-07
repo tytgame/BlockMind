@@ -6,8 +6,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { FileText, FileType, Download } from 'lucide-react';
+import { FileText, FileType } from 'lucide-react';
 import { Block } from '@/types/block';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
@@ -51,17 +50,10 @@ export function BlockDetailDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl border-white/10 bg-[#1a1d21] p-0 text-white sm:max-w-2xl">
         <div className="border-b border-white/10 bg-[#252830] px-6 py-5">
-          <div className="flex items-center">
-            <span className="text-xs uppercase tracking-[0.14em] text-gray-400">
-              {block.type === 'image' ? 'image' : block.type === 'file' ? 'file' : 'memory'}
-            </span>
-          </div>
-          <DialogTitle className="mt-3 text-xl font-semibold text-white break-words leading-tight">
+          <DialogTitle className="text-xl font-semibold text-white break-words leading-tight">
             {block.label}
           </DialogTitle>
-          <DialogDescription className="mt-1 text-sm text-gray-400">
-            Context block details
-          </DialogDescription>
+          <DialogDescription className="sr-only">Context block details</DialogDescription>
         </div>
 
         <div className="space-y-4 px-6 py-5">
@@ -72,28 +64,22 @@ export function BlockDetailDialog({
               <img
                 src={block.signedUrl}
                 alt={block.label}
-                className="max-h-80 w-full rounded object-contain"
+                className={cn('max-h-80 w-full rounded object-contain', block.fileUrl && 'cursor-pointer hover:opacity-80 transition-opacity')}
+                onClick={block.fileUrl ? handleDownload : undefined}
               />
-              {block.fileUrl && (
-                <div className="mt-3 flex justify-end">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-gray-400 hover:text-white hover:bg-white/10 gap-1.5"
-                    onClick={handleDownload}
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                    {t('download')}
-                  </Button>
-                </div>
-              )}
             </section>
           )}
 
           {/* 파일 타입: 파일 정보 + 상태 */}
           {block.type === 'file' && (
             <section className="rounded-lg border border-white/10 bg-[#252830] p-4">
-              <div className="flex items-center gap-3">
+              <div
+                className={cn(
+                  'inline-flex items-center gap-3 rounded-md transition-colors',
+                  block.fileUrl && 'cursor-pointer hover:bg-white/10 px-2 py-1.5 -mx-2'
+                )}
+                onClick={block.fileUrl ? handleDownload : undefined}
+              >
                 <div className="flex h-10 w-10 items-center justify-center rounded bg-white/5 flex-shrink-0">
                   {isPdf ? (
                     <FileText className="h-5 w-5 text-gray-400" />
@@ -107,17 +93,6 @@ export function BlockDetailDialog({
                     <p className="text-xs text-gray-400">{formatBytes(block.fileSize)}</p>
                   )}
                 </div>
-                {block.fileUrl && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-gray-400 hover:text-white hover:bg-white/10 gap-1.5 flex-shrink-0"
-                    onClick={handleDownload}
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                    {t('download')}
-                  </Button>
-                )}
               </div>
 
               {/* PDF 만료 상태 */}
@@ -132,19 +107,9 @@ export function BlockDetailDialog({
             </section>
           )}
 
-          <section className="rounded-lg border border-white/10 bg-[#252830] p-4">
-            <p className="text-xs uppercase tracking-[0.14em] text-gray-400">주제</p>
-            <p className="mt-2 text-sm font-medium text-gray-100 break-words">
-              {block.label}
-            </p>
-          </section>
-
-          <section className="rounded-lg border border-white/10 bg-[#252830] p-4">
-            <p className="text-xs uppercase tracking-[0.14em] text-gray-400">세부 내용</p>
-            <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-gray-200 max-h-[45vh] overflow-y-auto pr-1">
-              {block.content}
-            </p>
-          </section>
+          <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-gray-200 max-h-[45vh] overflow-y-auto pr-1">
+            {block.content}
+          </p>
         </div>
       </DialogContent>
     </Dialog>

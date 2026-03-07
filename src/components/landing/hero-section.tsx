@@ -2,7 +2,6 @@
 
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Link } from '@/i18n/navigation';
 
 export function HeroSection() {
@@ -16,19 +15,6 @@ export function HeroSection() {
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
 
       <div className="container mx-auto max-w-5xl relative z-10">
-        {/* Badge */}
-        <div className="flex justify-center mb-8">
-          <Badge
-            variant="outline"
-            className="border-blue-500/50 bg-blue-950/30 text-blue-400 px-4 py-1.5"
-          >
-            <span className="inline-flex items-center gap-2">
-              <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-              {t('badge')}
-            </span>
-          </Badge>
-        </div>
-
         {/* Main Heading */}
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-center text-white mb-6 leading-tight">
           {t('headingLine1')}

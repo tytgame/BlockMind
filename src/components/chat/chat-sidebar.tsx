@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -34,6 +34,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Home,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
@@ -78,6 +79,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
   const [deleteTargetId, setDeleteTargetId] = React.useState<string | null>(null);
 
   const t = useTranslations('chatSidebar');
+  const tNav = useTranslations('nav');
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const sentinelRef = React.useRef<HTMLDivElement>(null);
@@ -340,12 +342,27 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
               <Settings className="h-5 w-5" />
             </Button>
             {session?.user ? (
-              <Avatar className="h-10 w-10 border border-white/10">
-                <AvatarImage src={session.user.image || ''} />
-                <AvatarFallback className="bg-gradient-to-br from-orange-400 to-pink-500 text-white text-xs">
-                  {session.user.name?.charAt(0) || 'U'}
-                </AvatarFallback>
-              </Avatar>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60">
+                    <Avatar className="h-10 w-10 border border-white/10 cursor-pointer hover:opacity-80 transition-opacity">
+                      <AvatarImage src={session.user.image || ''} />
+                      <AvatarFallback className="bg-gradient-to-br from-orange-400 to-pink-500 text-white text-xs">
+                        {session.user.name?.charAt(0) || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="right" align="end" className="w-44 bg-[#2a2f3a] border-white/10 text-gray-200">
+                  <DropdownMenuItem
+                    className="cursor-pointer text-red-400 data-[highlighted]:bg-red-500/10 data-[highlighted]:text-red-400"
+                    onClick={() => signOut({ callbackUrl: '/' })}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {tNav('signOut')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <div className="h-10 w-10 rounded-full bg-white/10" />
             )}
@@ -464,18 +481,31 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
           <span className="text-sm">{t('settings')}</span>
         </button>
         {session?.user && (
-          <div className="flex items-center gap-3 px-2 py-2 rounded-lg bg-white/5">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={session.user.image || ''} />
-              <AvatarFallback className="bg-gradient-to-br from-orange-400 to-pink-500 text-white text-xs">
-                {session.user.name?.charAt(0) || 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">{session.user.name || 'User'}</p>
-              <p className="text-xs text-gray-400 truncate">{session.user.email || ''}</p>
-            </div>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center gap-3 px-2 py-2 rounded-lg bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={session.user.image || ''} />
+                  <AvatarFallback className="bg-gradient-to-br from-orange-400 to-pink-500 text-white text-xs">
+                    {session.user.name?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white truncate">{session.user.name || 'User'}</p>
+                  <p className="text-xs text-gray-400 truncate">{session.user.email || ''}</p>
+                </div>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="top" align="start" className="w-44 bg-[#2a2f3a] border-white/10 text-gray-200">
+              <DropdownMenuItem
+                className="cursor-pointer text-red-400 data-[highlighted]:bg-red-500/10 data-[highlighted]:text-red-400"
+                onClick={() => signOut({ callbackUrl: '/' })}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                {tNav('signOut')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
     </div>
