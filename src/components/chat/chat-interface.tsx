@@ -9,6 +9,8 @@ import { useChatStore } from '@/store/chat-store';
 import { Block } from '@/types/block';
 import { useTranslations } from 'next-intl';
 import { buildSystemPrompt } from '@/lib/build-system-prompt';
+import { useDailyLimit } from '@/hooks/use-daily-limit';
+import { LIMITS } from '@/lib/limits';
 import { useFileAttachment, DOCX_MIME, type PendingFileMeta } from '@/hooks/use-file-attachment';
 import { useFilePreview } from '@/hooks/use-file-preview';
 import { FilePreviewModal } from './file-preview-modal';
@@ -38,8 +40,11 @@ export function ChatInterface() {
   const { data: session } = useSession();
   const { input, resetInput, setSessionId, pendingMessages, clearPendingMessages } = useChatStore();
   const [apiError, setApiError] = React.useState<string | null>(null);
+  const [cooldownActive, setCooldownActive] = React.useState(false);
   const t = useTranslations('chatInterface');
   const tFile = useTranslations('fileUpload');
+  const tLimits = useTranslations('limits');
+  const dailyLimit = useDailyLimit();
 
   const {
     attachedFiles,
@@ -152,6 +157,10 @@ export function ChatInterface() {
     onFinish: ({ message, messages: allMessages }) => {
       if (message.role !== 'assistant') return;
 
+      // 쿨다운 시작
+      setCooldownActive(true);
+      setTimeout(() => setCooldownActive(false), LIMITS.MESSAGE_COOLDOWN_MS);
+
       const fileMeta = pendingFileMetaRef.current;
       pendingFileMetaRef.current = undefined;
       const filesForDb = pendingFilesForDbRef.current;
@@ -231,6 +240,25 @@ export function ChatInterface() {
   const isLoading = status === 'streaming' || status === 'submitted';
   const hasMessages = messages.length > 0;
 
+  // ── 제한 계산 ──────────────────────────────────────────────
+  const userMessageCount = messages.filter((m) => m.role === 'user').length;
+  const isSessionMaxReached = userMessageCount >= LIMITS.SESSION_MAX_MESSAGES;
+  const isSessionWarnReached = userMessageCount >= LIMITS.SESSION_WARN_MESSAGES;
+
+  const limitError: string | null = isSessionMaxReached
+    ? tLimits('sessionMax')
+    : dailyLimit.isMaxReached
+      ? tLimits('dailyMax')
+      : null;
+
+  const limitBanner: string | null = !limitError && isSessionWarnReached
+    ? tLimits('sessionWarn')
+    : !limitError && dailyLimit.isWarnReached
+      ? tLimits('dailyWarn', { remaining: dailyLimit.remaining })
+      : null;
+
+  const isInputDisabled = cooldownActive || isSessionMaxReached || dailyLimit.isMaxReached;
+
   // lastResetAt 변경 시 pivotIndex 갱신
   const lastResetAt = useBlockStore((state) => state.lastResetAt);
   React.useEffect(() => {
@@ -251,9 +279,11 @@ export function ChatInterface() {
     const readyFiles = attachedFiles.filter((f) => f.status === 'ready');
     const hasUploadingFiles = attachedFiles.some((f) => f.status === 'uploading');
 
-    if ((!trimmedInput && readyFiles.length === 0) || isLoading) return;
+    if ((!trimmedInput && readyFiles.length === 0) || isLoading || isInputDisabled) return;
     if (hasUploadingFiles) { setApiError(tFile('uploading')); return; }
+    if (input.length > LIMITS.MESSAGE_MAX_CHARS) return;
 
+    dailyLimit.increment();
     setApiError(null);
     resetInput();
 
@@ -328,6 +358,10 @@ export function ChatInterface() {
       isLoading={isLoading}
       apiError={apiError}
       onErrorClose={() => setApiError(null)}
+      charLimit={LIMITS.MESSAGE_MAX_CHARS}
+      limitBanner={limitBanner}
+      limitError={limitError}
+      isDisabled={isInputDisabled}
     />
   );
 

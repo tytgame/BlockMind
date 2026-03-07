@@ -111,7 +111,7 @@
   "blockList": {
     "expandSidebar": "ブロックパネルを展開",
     "collapseSidebar": "ブロックパネルを折りたたむ",
-    "currentBlocks": "現在のブロック",
+    "currentBlocks": "マイブロック",
     "activeMemory": "アクティブメモリ",
     "settings": "設定",
     "noBlocks": "ブロックがありません。",
@@ -167,6 +167,14 @@
     "resendCooldown": "{seconds}秒後に再送信可能",
     "resendSuccess": "新しいコードを送信しました。",
     "backToLogin": "← 別のメールで登録"
+  },
+  "limits": {
+    "charCount": "{count} / {max}",
+    "sessionWarn": "この会話はまもなく上限に達します。新しいチャットを始めてください。",
+    "sessionMax": "最大メッセージ数に達しました。新しいチャットを始めてください。",
+    "dailyWarn": "今日はあと{remaining}回使えます。",
+    "dailyMax": "本日の使用上限に達しました。明日またご利用ください。",
+    "maxActiveBlocks": "同時に有効化できるブロックは最大{max}個です。"
   },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },

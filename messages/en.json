@@ -111,7 +111,7 @@
   "blockList": {
     "expandSidebar": "Expand blocks panel",
     "collapseSidebar": "Collapse blocks panel",
-    "currentBlocks": "Current Blocks",
+    "currentBlocks": "My Blocks",
     "activeMemory": "Active Memory",
     "settings": "Settings",
     "noBlocks": "No blocks yet.",
@@ -167,6 +167,14 @@
     "resendCooldown": "Resend in {seconds}s",
     "resendSuccess": "A new code has been sent.",
     "backToLogin": "← Use a different email"
+  },
+  "limits": {
+    "charCount": "{count} / {max}",
+    "sessionWarn": "This conversation is almost at its limit. Start a new chat.",
+    "sessionMax": "Maximum messages reached. Please start a new chat.",
+    "dailyWarn": "{remaining} messages left today.",
+    "dailyMax": "You've reached today's usage limit. Come back tomorrow.",
+    "maxActiveBlocks": "You can activate up to {max} blocks at a time."
   },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },

@@ -111,7 +111,7 @@
   "blockList": {
     "expandSidebar": "展开块面板",
     "collapseSidebar": "收起块面板",
-    "currentBlocks": "当前块",
+    "currentBlocks": "我的块",
     "activeMemory": "活跃记忆",
     "settings": "设置",
     "noBlocks": "暂无块。",
@@ -167,6 +167,14 @@
     "resendCooldown": "{seconds}秒后可重发",
     "resendSuccess": "已发送新验证码。",
     "backToLogin": "← 使用其他邮箱"
+  },
+  "limits": {
+    "charCount": "{count} / {max}",
+    "sessionWarn": "此对话即将达到上限，请开始新对话。",
+    "sessionMax": "已达到最大消息数，请开始新对话。",
+    "dailyWarn": "今天还剩 {remaining} 次。",
+    "dailyMax": "您已达到今日使用上限，明天再来吧。",
+    "maxActiveBlocks": "最多可同时激活 {max} 个块。"
   },
   "localeConfig": {
     "ko": { "flag": "🇰🇷", "label": "한국어", "short": "KO" },

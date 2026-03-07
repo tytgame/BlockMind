@@ -37,7 +37,8 @@
       "Bash(npx tsc --noEmit --strict src/__tests__/unit/chat-store-files.test.ts)",
       "Bash(npx prisma db push --accept-data-loss)",
       "Bash(ls /c/project/BlockMind/*.md)",
-      "Bash(ls /c/project/BlockMind/docs/*.md)"
+      "Bash(ls /c/project/BlockMind/docs/*.md)",
+      "Bash(npx jest src/__tests__/unit/limits.test.ts src/__tests__/unit/use-daily-limit.test.ts --no-coverage)"
     ],
     "additionalDirectories": [
       "c:\\project\\BlockMind\\src\\app\\api\\blocks\\[id]"

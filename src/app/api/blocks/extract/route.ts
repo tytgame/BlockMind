@@ -2,6 +2,7 @@ import { google } from '@ai-sdk/google';
 import { generateObject } from 'ai';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { auth } from '@/auth';
 import { BLOCK_CATEGORIES } from '@/types/block';
 
 const MAX_BLOCKS_PER_CYCLE = 1;
@@ -43,6 +44,11 @@ const extractResponseSchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ blocks: [] }, { status: 401 });
+  }
+
   try {
     const rawBody = await req.json();
     const parsed = extractRequestSchema.safeParse(rawBody);

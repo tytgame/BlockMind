@@ -17,6 +17,10 @@ interface ChatInputComposerProps {
   isLoading: boolean;
   apiError: string | null;
   onErrorClose: () => void;
+  charLimit?: number;
+  limitBanner?: string | null;
+  limitError?: string | null;
+  isDisabled?: boolean;
   className?: string;
 }
 
@@ -29,10 +33,17 @@ export function ChatInputComposer({
   isLoading,
   apiError,
   onErrorClose,
+  charLimit,
+  limitBanner,
+  limitError,
+  isDisabled,
   className,
 }: ChatInputComposerProps) {
   const t = useTranslations('chatInterface');
   const { input, setInput } = useChatStore();
+  const charCount = input.length;
+  const isCharWarn = charLimit !== undefined && charCount >= Math.floor(charLimit * 0.9);
+  const isCharOver = charLimit !== undefined && charCount > charLimit;
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
@@ -55,9 +66,27 @@ export function ChatInputComposer({
     }
   };
 
+  const isFullyDisabled = isLoading || isDisabled;
+
   return (
     <div className={className}>
-      {/* 에러 배너 */}
+      {/* 제한 경고 배너 (노란색, 비해제) */}
+      {limitBanner && !limitError && (
+        <div className="flex items-center gap-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl px-4 py-2.5 mb-3">
+          <AlertTriangle className="h-4 w-4 text-yellow-400 flex-shrink-0" />
+          <p className="text-sm text-yellow-300">{limitBanner}</p>
+        </div>
+      )}
+
+      {/* 제한 초과 배너 (빨간색, 비해제) */}
+      {limitError && (
+        <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5 mb-3">
+          <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0" />
+          <p className="text-sm text-red-300">{limitError}</p>
+        </div>
+      )}
+
+      {/* API 에러 배너 (해제 가능) */}
       {apiError && (
         <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-3">
           <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
@@ -97,7 +126,7 @@ export function ChatInputComposer({
             onPaste={onPaste}
             placeholder={t('placeholder')}
             rows={1}
-            disabled={isLoading}
+            disabled={isFullyDisabled}
             className="w-full bg-transparent text-white placeholder:text-gray-500 resize-none outline-none text-sm leading-relaxed mb-3 max-h-48 overflow-y-auto disabled:opacity-60"
           />
 
@@ -109,18 +138,29 @@ export function ChatInputComposer({
               size="icon"
               className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
               onClick={() => fileInputRef.current?.click()}
-              disabled={isLoading}
+              disabled={isFullyDisabled}
             >
               <Plus className="h-5 w-5" />
             </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-3">
+              {/* 글자 수 카운터 */}
+              {charLimit !== undefined && (isCharWarn || isCharOver) && (
+                <span className={cn(
+                  'text-xs tabular-nums',
+                  isCharOver ? 'text-red-400' : isCharWarn ? 'text-yellow-400' : 'text-gray-500'
+                )}>
+                  {charCount} / {charLimit}
+                </span>
+              )}
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </form>

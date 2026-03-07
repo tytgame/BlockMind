@@ -14,6 +14,7 @@ import { GripVertical, X, Eye, EyeOff, FileText, FileType, Download, RefreshCw, 
 import { Block } from '@/types/block';
 import { useBlockStore } from '@/store/block-store';
 import { cn } from '@/lib/utils';
+import { LIMITS } from '@/lib/limits';
 import { BlockDetailDialog } from './block-detail-dialog';
 import { useTranslations } from 'next-intl';
 
@@ -37,7 +38,9 @@ export function BlockItem({ block }: BlockItemProps) {
   const [isDetailOpen, setIsDetailOpen] = React.useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
+  const [showLimitMsg, setShowLimitMsg] = React.useState(false);
   const t = useTranslations('blockItem');
+  const tLimits = useTranslations('limits');
 
   const {
     attributes,
@@ -200,6 +203,15 @@ export function BlockItem({ block }: BlockItemProps) {
                 onClick={(e) => {
                   e.stopPropagation();
                   const newVisibility = !block.isVisible;
+                  if (newVisibility) {
+                    const { blocks } = useBlockStore.getState();
+                    const activeCount = blocks.filter((b) => b.isVisible).length;
+                    if (activeCount >= LIMITS.MAX_ACTIVE_BLOCKS) {
+                      setShowLimitMsg(true);
+                      setTimeout(() => setShowLimitMsg(false), 2500);
+                      return;
+                    }
+                  }
                   updateBlock(block.id, { isVisible: newVisibility });
                   void fetch(`/api/blocks/${block.id}`, {
                     method: 'PATCH',
@@ -229,6 +241,12 @@ export function BlockItem({ block }: BlockItemProps) {
           </div>
         </div>
       </div>
+
+      {showLimitMsg && (
+        <p className="text-xs text-red-400 mt-1 px-1">
+          {tLimits('maxActiveBlocks', { max: LIMITS.MAX_ACTIVE_BLOCKS })}
+        </p>
+      )}
 
       <BlockDetailDialog
         block={block}

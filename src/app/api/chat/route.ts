@@ -1,6 +1,7 @@
 import { google } from '@ai-sdk/google';
 import { convertToModelMessages, streamText, type UIMessage } from 'ai';
 import { NextResponse } from 'next/server';
+import { auth } from '@/auth';
 import { sliceMessagesByReset } from '@/lib/slice-messages-by-reset';
 
 
@@ -50,6 +51,11 @@ function isQuotaError(error: unknown): boolean {
 }
 
 export async function POST(req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const { messages, systemPrompt, pivotIndex } = await req.json() as {
       messages: UIMessage[];
@@ -69,6 +75,7 @@ export async function POST(req: Request) {
       model: google('gemini-2.5-flash'),
       system: buildSystemPrompt(systemPrompt),
       messages: modelMessages,
+      maxOutputTokens: 2048,
     });
 
     return result.toUIMessageStreamResponse();
