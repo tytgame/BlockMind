@@ -39,8 +39,9 @@ import {
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { useChatStore, RestoredMessage } from '@/store/chat-store';
-import type { SentFileInfo } from '@/components/chat/file-preview-modal';
+import { useChatStore } from '@/store/chat-store';
+import { useBlockStore } from '@/store/block-store';
+import { useSessionNavigation } from '@/hooks/use-session-navigation';
 
 type ChatSessionItem = {
   id: string;
@@ -66,7 +67,8 @@ const iconRailButtonClass =
 
 export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
   const { data: session } = useSession();
-  const { sessionId, setSessionId, setPendingMessages, clearPendingMessages, newMountKey, setMessageFiles } = useChatStore();
+  const { sessionId, setSessionId, clearPendingMessages, newMountKey } = useChatStore();
+  const { navigateToSession } = useSessionNavigation();
   const [searchQuery, setSearchQuery] = React.useState('');
 
   // 고정 세션 (전체), 미고정 세션 (pagination)
@@ -156,30 +158,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
   // 세션 선택
   async function handleSelectSession(id: string) {
     if (id === sessionId) return;
-    try {
-      const res = await fetch(`/api/sessions/${id}`);
-      if (!res.ok) return;
-      const data = (await res.json()) as {
-        messages: Array<{ id: string; role: string; content: string; clientId?: string | null; files?: SentFileInfo[] | null }>;
-      };
-      const converted: RestoredMessage[] = data.messages
-        .filter((m) => m.role === 'user' || m.role === 'assistant')
-        .map((m) => ({
-          id: m.clientId ?? m.id,
-          role: m.role as 'user' | 'assistant',
-          parts: [{ type: 'text' as const, text: m.content }],
-        }));
-      for (const m of data.messages) {
-        if (m.role === 'user' && m.files && m.files.length > 0) {
-          setMessageFiles(m.clientId ?? m.id, m.files);
-        }
-      }
-      setPendingMessages(converted);
-    } catch {
-      clearPendingMessages();
-    }
-    setSessionId(id);
-    newMountKey();
+    await navigateToSession(id);
   }
 
   function handleNewChat() {
@@ -200,6 +179,9 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
       setSessionId(null);
       newMountKey();
     }
+
+    // 해당 세션에서 추출된 블록을 store에서 즉시 제거
+    useBlockStore.getState().removeBlocksBySession(id);
 
     void fetch(`/api/sessions/${id}`, { method: 'DELETE' });
   }

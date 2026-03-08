@@ -6,10 +6,12 @@ import {
   DialogDescription,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { FileText, FileType } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { FileText, FileType, ExternalLink } from 'lucide-react';
 import { Block } from '@/types/block';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
+import { useSessionNavigation } from '@/hooks/use-session-navigation';
 
 interface BlockDetailDialogProps {
   block: Block | null;
@@ -35,8 +37,11 @@ export function BlockDetailDialog({
   onOpenChange,
 }: BlockDetailDialogProps) {
   const t = useTranslations('blockItem');
+  const { navigateToSession } = useSessionNavigation();
 
   if (!block) return null;
+
+  const hasSource = !!block.sourceSessionId;
 
   const isPdf = block.type === 'file' && block.fileType === 'application/pdf';
   const expired = isPdf && isPdfExpired(block);
@@ -110,6 +115,30 @@ export function BlockDetailDialog({
           <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-gray-200 max-h-[45vh] overflow-y-auto pr-1">
             {block.content}
           </p>
+
+          {/* 출처 */}
+          <div className="flex items-center justify-between pt-2 border-t border-white/10">
+            <span className="text-xs text-gray-500">{t('source')}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={!hasSource}
+              className="h-7 gap-1.5 text-xs text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-40"
+              onClick={() => {
+                // 클로저로 값 캡처 후 모달 닫기
+                const targetSessionId = block.sourceSessionId!;
+                const targetMessageId = block.sourceMessageId;
+                onOpenChange(false);
+                // 모달 close 애니메이션(~150ms) 완료 후 이동
+                setTimeout(() => {
+                  void navigateToSession(targetSessionId, targetMessageId);
+                }, 150);
+              }}
+            >
+              <ExternalLink className="h-3 w-3" />
+              {hasSource ? (block.sourceSessionTitle ?? t('goToSource')) : t('noSource')}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

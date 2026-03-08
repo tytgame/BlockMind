@@ -127,7 +127,10 @@
     "hoursLeft": "{hours}시간 남음",
     "refreshMemory": "다시 기억",
     "refreshing": "업로드 중...",
-    "download": "다운로드"
+    "download": "다운로드",
+    "source": "블록 출처",
+    "goToSource": "출처 대화 보기",
+    "noSource": "출처 없음"
   },
   "fileUpload": {
     "errorSizeImage": "이미지는 10MB 이하만 첨부 가능합니다.",

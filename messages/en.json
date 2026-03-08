@@ -127,7 +127,10 @@
     "hoursLeft": "{hours}h left",
     "refreshMemory": "Refresh memory",
     "refreshing": "Uploading...",
-    "download": "Download"
+    "download": "Download",
+    "source": "Block Source",
+    "goToSource": "View source chat",
+    "noSource": "No source"
   },
   "fileUpload": {
     "errorSizeImage": "Images must be 10MB or less.",

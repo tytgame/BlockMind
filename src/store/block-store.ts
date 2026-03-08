@@ -40,6 +40,17 @@ export const useBlockStore = create<BlockState>((set) => ({
       // 블록 삭제 시 항상 리셋 (삭제된 블록 관련 대화도 AI가 더 이상 보면 안 됨)
       lastResetAt: Date.now(),
     })),
+  removeBlocksBySession: (sessionId) =>
+    set((state) => {
+      const remaining = state.blocks.filter((b) => b.sourceSessionId !== sessionId);
+      const hadVisibleRemoved = state.blocks.some(
+        (b) => b.sourceSessionId === sessionId && b.isVisible
+      );
+      return {
+        blocks: remaining,
+        ...(hadVisibleRemoved ? { lastResetAt: Date.now() } : {}),
+      };
+    }),
   reorderBlocks: (activeId, overId) =>
     set((state) => {
       const oldIndex = state.blocks.findIndex((b) => b.id === activeId);

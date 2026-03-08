@@ -127,7 +127,10 @@
     "hoursLeft": "{hours}時間残り",
     "refreshMemory": "再記憶",
     "refreshing": "アップロード中...",
-    "download": "ダウンロード"
+    "download": "ダウンロード",
+    "source": "ブロック出典",
+    "goToSource": "出典の会話を見る",
+    "noSource": "出典なし"
   },
   "fileUpload": {
     "errorSizeImage": "画像は10MB以下にしてください。",

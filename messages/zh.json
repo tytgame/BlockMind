@@ -127,7 +127,10 @@
     "hoursLeft": "剩余{hours}小时",
     "refreshMemory": "重新记忆",
     "refreshing": "上传中...",
-    "download": "下载"
+    "download": "下载",
+    "source": "块来源",
+    "goToSource": "查看来源对话",
+    "noSource": "无来源"
   },
   "fileUpload": {
     "errorSizeImage": "图片大小不能超过 10MB。",

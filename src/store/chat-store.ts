@@ -30,6 +30,9 @@ interface ChatState {
   // 사용자 명시적 액션 시 호출 → ChatInterface 리마운트 유발
   newMountKey: () => void;
   setMessageFiles: (messageId: string, files: SentFileInfo[]) => void;
+  // 세션 이동 후 특정 메시지로 스크롤할 때 사용
+  scrollToMessageId: string | null;
+  setScrollToMessageId: (id: string | null) => void;
 }
 
 export const useChatStore = create<ChatState>()(
@@ -50,6 +53,8 @@ export const useChatStore = create<ChatState>()(
         set((state) => ({
           messageFilesMap: { ...state.messageFilesMap, [messageId]: files },
         })),
+      scrollToMessageId: null,
+      setScrollToMessageId: (id) => set({ scrollToMessageId: id }),
     }),
     {
       name: 'blockmind-chat',

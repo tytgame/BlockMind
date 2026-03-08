@@ -14,17 +14,24 @@ export async function GET() {
   const blocks = await prisma.block.findMany({
     where: { userId: session.user.id },
     orderBy: { order: 'asc' },
+    include: { sourceSession: { select: { title: true } } },
   });
 
+  // sourceSessionTitle을 flat하게 주입, sourceSession 관계 제거
+  const flatBlocks = blocks.map(({ sourceSession, ...b }) => ({
+    ...b,
+    sourceSessionTitle: sourceSession?.title ?? null,
+  }));
+
   // 파일이 있는 블록에 signedUrl 주입
-  const fileBlocks = blocks.filter((b) => b.fileUrl);
+  const fileBlocks = flatBlocks.filter((b) => b.fileUrl);
   if (fileBlocks.length === 0) {
-    return NextResponse.json(blocks);
+    return NextResponse.json(flatBlocks);
   }
 
   const supabase = createAdminClient();
   const withSignedUrls = await Promise.all(
-    blocks.map(async (block) => {
+    flatBlocks.map(async (block) => {
       if (!block.fileUrl) return block;
       const { data } = await supabase.storage
         .from(STORAGE_BUCKET)
@@ -55,6 +62,7 @@ export async function POST(req: Request) {
     geminiFileUri?: string;
     geminiExpiresAt?: string | null;
     sourceSessionId?: string;
+    sourceMessageId?: string;
     category?: string;
   };
 
@@ -72,6 +80,7 @@ export async function POST(req: Request) {
       geminiFileUri: body.geminiFileUri ?? null,
       geminiExpiresAt: body.geminiExpiresAt ? new Date(body.geminiExpiresAt) : null,
       sourceSessionId: body.sourceSessionId ?? null,
+      sourceMessageId: body.sourceMessageId ?? null,
       category: body.category ?? null,
     },
   });

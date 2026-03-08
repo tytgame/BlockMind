@@ -38,7 +38,7 @@ const MAX_BLOCKS_PER_CYCLE = 1;
 
 export function ChatInterface() {
   const { data: session } = useSession();
-  const { input, resetInput, setSessionId, pendingMessages, clearPendingMessages } = useChatStore();
+  const { input, resetInput, setSessionId, pendingMessages, clearPendingMessages, scrollToMessageId } = useChatStore();
   const [apiError, setApiError] = React.useState<string | null>(null);
   const [cooldownActive, setCooldownActive] = React.useState(false);
   const t = useTranslations('chatInterface');
@@ -72,7 +72,7 @@ export function ChatInterface() {
   );
 
   // 블록 자동 추출
-  const applyExtractedBlocks = React.useCallback(async (extractedBlocks: ExtractedBlock[], sourceSessionId: string | null) => {
+  const applyExtractedBlocks = React.useCallback(async (extractedBlocks: ExtractedBlock[], sourceSessionId: string | null, sourceMessageId: string | null) => {
     const { blocks: currentBlocks, appendBlock } = useBlockStore.getState();
 
     const existingKeys = new Set(
@@ -105,6 +105,7 @@ export function ChatInterface() {
         if (extracted.geminiFileUri) blockData.geminiFileUri = extracted.geminiFileUri;
         if (extracted.geminiExpiresAt !== undefined) blockData.geminiExpiresAt = extracted.geminiExpiresAt;
         if (sourceSessionId) blockData.sourceSessionId = sourceSessionId;
+        if (sourceMessageId) blockData.sourceMessageId = sourceMessageId;
         if (extracted.category) blockData.category = extracted.category;
 
         const res = await fetch('/api/blocks', {
@@ -231,7 +232,7 @@ export function ChatInterface() {
           if (!response.ok) return;
           const data = (await response.json()) as ExtractBlocksResponse;
           if (!data.blocks?.length) return;
-          await applyExtractedBlocks(data.blocks.slice(0, MAX_BLOCKS_PER_CYCLE), currentSessionId ?? null);
+          await applyExtractedBlocks(data.blocks.slice(0, MAX_BLOCKS_PER_CYCLE), currentSessionId ?? null, userMessageId ?? null);
         } catch { /* 블록 추출 실패 무시 */ }
       })();
     },
@@ -266,6 +267,16 @@ export function ChatInterface() {
     useBlockStore.getState().setPivotIndex(messages.length);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastResetAt]);
+
+  // 출처 이동 후 특정 메시지로 스크롤
+  React.useEffect(() => {
+    if (!scrollToMessageId) return;
+    const el = document.querySelector(`[data-message-id="${scrollToMessageId}"]`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      useChatStore.getState().setScrollToMessageId(null);
+    }
+  }, [scrollToMessageId, messages]);
 
   const { previewFile, previewOpen, messageFilesMap, openPreview, closePreview, pendingSentFilesRef } =
     useFilePreview(messages);

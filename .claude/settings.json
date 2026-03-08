@@ -38,7 +38,8 @@
       "Bash(npx prisma db push --accept-data-loss)",
       "Bash(ls /c/project/BlockMind/*.md)",
       "Bash(ls /c/project/BlockMind/docs/*.md)",
-      "Bash(npx jest src/__tests__/unit/limits.test.ts src/__tests__/unit/use-daily-limit.test.ts --no-coverage)"
+      "Bash(npx jest src/__tests__/unit/limits.test.ts src/__tests__/unit/use-daily-limit.test.ts --no-coverage)",
+      "Bash(npx prisma migrate dev --name add_block_source_message)"
     ],
     "additionalDirectories": [
       "c:\\project\\BlockMind\\src\\app\\api\\blocks\\[id]"

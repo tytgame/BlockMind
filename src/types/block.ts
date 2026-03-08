@@ -28,6 +28,11 @@ export interface Block {
   // data 타입 블록의 LLM 분류 카테고리
   category?: BlockCategory | null;
 
+  // 블록 출처 (자동 추출 시 기록)
+  sourceSessionId?: string | null;
+  sourceSessionTitle?: string | null;  // API에서 JOIN해서 반환 (DB 저장 안 됨)
+  sourceMessageId?: string | null;     // user 메시지 clientId
+
   // 서버가 GET /api/blocks 응답 시 주입 (DB 저장 안 됨)
   signedUrl?: string;
 }
@@ -44,6 +49,7 @@ export type BlockState = {
   addBlock: (block: Omit<Block, 'id' | 'isVisible'>) => void;
   updateBlock: (id: string, updates: Partial<Block>) => void;
   removeBlock: (id: string) => void;
+  removeBlocksBySession: (sessionId: string) => void;
   reorderBlocks: (activeId: string, overId: string) => void;
   setBlocks: (blocks: Block[]) => void;
   setPivotIndex: (index: number | null) => void;

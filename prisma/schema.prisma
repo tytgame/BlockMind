@@ -140,6 +140,9 @@ model Block {
   sourceSessionId String?
   sourceSession   ChatSession? @relation(fields: [sourceSessionId], references: [id], onDelete: SetNull)
 
+  // 어느 user 메시지(clientId)에서 추출되었는지
+  sourceMessageId String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
