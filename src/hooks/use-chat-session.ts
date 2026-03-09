@@ -4,6 +4,7 @@ import * as React from 'react';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import { useBlockStore } from '@/store/block-store';
+import { useChatStore } from '@/store/chat-store';
 import type { Block } from '@/types/block';
 import type { PendingFileMeta } from '@/hooks/use-file-attachment';
 
@@ -117,7 +118,7 @@ export function useChatSession({
         }
       }
     },
-    []
+    [t]
   );
 
   // AI 응답 완료 후 세션 저장 · 메시지 저장 · 블록 추출 처리
@@ -143,6 +144,8 @@ export function useChatSession({
           // 리마운트 없이 URL만 업데이트 — 새로고침 시 /chat/[id]로 복원 가능
           const pathPrefix = locale === 'ko' ? '' : `/${locale}`;
           window.history.replaceState(null, '', `${pathPrefix}/chat/${currentSessionId}`);
+          // replaceState는 useParams를 트리거하지 않으므로 store로 사이드바에 알림
+          useChatStore.getState().setLastCreatedSessionId(currentSessionId);
         } catch (err) {
           console.error('[useChatSession] 세션 생성 네트워크 오류:', err);
           onError(errorSaveFailed);

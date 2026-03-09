@@ -73,7 +73,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
   // URL에서 현재 활성 세션 ID 읽기 (localStorage 의존 없음)
   const activeSessionId = params.sessionId ?? null;
 
-  const { clearPendingMessages } = useChatStore();
+  const { clearPendingMessages, lastCreatedSessionId, setLastCreatedSessionId } = useChatStore();
   const { navigateToSession } = useSessionNavigation();
   const [searchQuery, setSearchQuery] = React.useState('');
 
@@ -121,18 +121,14 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
 
   React.useEffect(() => { void loadInitial(); }, [loadInitial]);
 
-  // 새 세션 생성 감지 (URL의 activeSessionId 변경으로 판단)
+  // 새 세션 생성 감지 — replaceState는 useParams를 트리거하지 않으므로 store로 전달받음
   React.useEffect(() => {
-    if (!activeSessionId) return;
-    const alreadyInList =
-      sessionsRef.current.some((s) => s.id === activeSessionId) ||
-      pinnedSessions.some((s) => s.id === activeSessionId);
-    if (!alreadyInList) {
-      setNewSessionId(activeSessionId);
-      void loadInitial();
-      setTimeout(() => setNewSessionId(null), 400);
-    }
-  }, [activeSessionId, pinnedSessions, loadInitial]);
+    if (!lastCreatedSessionId) return;
+    setLastCreatedSessionId(null);
+    setNewSessionId(lastCreatedSessionId);
+    void loadInitial();
+    setTimeout(() => setNewSessionId(null), 400);
+  }, [lastCreatedSessionId, setLastCreatedSessionId, loadInitial]);
 
   // IntersectionObserver
   const loadMoreRef = React.useRef<() => void>(() => {});

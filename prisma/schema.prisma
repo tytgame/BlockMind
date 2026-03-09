@@ -20,6 +20,7 @@ model User {
   // BlockMind
   chatSessions  ChatSession[]
   blocks        Block[]
+  dailyUsages   DailyUsage[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -149,4 +150,16 @@ model Block {
   @@index([userId])
   @@index([userId, order])
   @@index([sourceSessionId])
+}
+
+// 유저별 일일 메시지 사용량. 서버 게이트키퍼 역할 (클라이언트 localStorage 우회 방지)
+model DailyUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @db.Date
+  count     Int      @default(0)
+
+  @@unique([userId, date])
+  @@index([userId])
 }

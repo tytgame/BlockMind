@@ -40,22 +40,31 @@ export async function GET() {
     sourceSessionTitle: sourceSession?.title ?? null,
   }));
 
-  // 파일이 있는 블록에 signedUrl 주입
-  const fileBlocks = flatBlocks.filter((b) => b.fileUrl);
-  if (fileBlocks.length === 0) {
+  // 파일이 있는 블록에 signedUrl 주입 — 5개씩 청크로 처리 (동시 호출 제한 + 단일 실패 격리)
+  const CONCURRENCY = 5;
+  const fileIndices = flatBlocks.reduce<number[]>((acc, b, i) => {
+    if (b.fileUrl) acc.push(i);
+    return acc;
+  }, []);
+
+  if (fileIndices.length === 0) {
     return NextResponse.json(flatBlocks);
   }
 
   const supabase = createAdminClient();
-  const withSignedUrls = await Promise.all(
-    flatBlocks.map(async (block) => {
-      if (!block.fileUrl) return block;
-      const { data } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .createSignedUrl(block.fileUrl, 3600);
-      return { ...block, signedUrl: data?.signedUrl ?? null };
-    })
-  );
+  const withSignedUrls = flatBlocks.map((b) => ({ ...b, signedUrl: null as string | null }));
+
+  for (let i = 0; i < fileIndices.length; i += CONCURRENCY) {
+    const chunk = fileIndices.slice(i, i + CONCURRENCY);
+    await Promise.allSettled(
+      chunk.map(async (idx) => {
+        const { data } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .createSignedUrl(flatBlocks[idx].fileUrl!, 3600);
+        withSignedUrls[idx].signedUrl = data?.signedUrl ?? null;
+      })
+    );
+  }
 
   return NextResponse.json(withSignedUrls);
 }

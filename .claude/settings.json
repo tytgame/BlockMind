@@ -45,7 +45,9 @@
       "Bash(grep -A 10 '\"\"chatInterface\"\"' c:/project/BlockMind/messages/en.json)",
       "Bash(grep -A 10 '\"\"chatInterface\"\"' c:/project/BlockMind/messages/zh.json)",
       "Bash(grep -A 10 '\"\"chatInterface\"\"' c:/project/BlockMind/messages/ja.json)",
-      "Bash(npm install sonner)"
+      "Bash(npm install sonner)",
+      "Bash(npx prisma migrate dev --name add-daily-usage)",
+      "Bash(ls node_modules/.prisma/client/*.d.ts)"
     ],
     "additionalDirectories": [
       "c:\\project\\BlockMind\\src\\app\\api\\blocks\\[id]",

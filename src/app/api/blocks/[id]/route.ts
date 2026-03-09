@@ -1,6 +1,20 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+
+const patchBlockSchema = z.object({
+  label: z.string().min(1).max(200).optional(),
+  content: z.string().min(1).max(10_000).optional(),
+  isVisible: z.boolean().optional(),
+  order: z.number().int().min(0).optional(),
+  fileUrl: z.string().max(500).optional(),
+  fileName: z.string().max(255).optional(),
+  fileType: z.string().max(100).optional(),
+  fileSize: z.number().int().min(0).optional(),
+  geminiFileUri: z.string().max(500).optional(),
+  geminiExpiresAt: z.string().nullable().optional(),
+});
 
 // PATCH /api/blocks/[id] — 블록 수정 (label, content, isVisible, order)
 export async function PATCH(
@@ -13,18 +27,12 @@ export async function PATCH(
   }
 
   const { id } = await params;
-  const body = (await req.json()) as Partial<{
-    label: string;
-    content: string;
-    isVisible: boolean;
-    order: number;
-    fileUrl: string;
-    fileName: string;
-    fileType: string;
-    fileSize: number;
-    geminiFileUri: string;
-    geminiExpiresAt: string | null;
-  }>;
+
+  const parsed = patchBlockSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+  }
+  const body = parsed.data;
 
   // 본인 블록인지 확인
   const existing = await prisma.block.findUnique({ where: { id } });
@@ -35,10 +43,18 @@ export async function PATCH(
   const updated = await prisma.block.update({
     where: { id },
     data: {
-      ...body,
-      geminiExpiresAt: body.geminiExpiresAt !== undefined
-        ? (body.geminiExpiresAt ? new Date(body.geminiExpiresAt) : null)
-        : undefined,
+      ...(body.label !== undefined && { label: body.label }),
+      ...(body.content !== undefined && { content: body.content }),
+      ...(body.isVisible !== undefined && { isVisible: body.isVisible }),
+      ...(body.order !== undefined && { order: body.order }),
+      ...(body.fileUrl !== undefined && { fileUrl: body.fileUrl }),
+      ...(body.fileName !== undefined && { fileName: body.fileName }),
+      ...(body.fileType !== undefined && { fileType: body.fileType }),
+      ...(body.fileSize !== undefined && { fileSize: body.fileSize }),
+      ...(body.geminiFileUri !== undefined && { geminiFileUri: body.geminiFileUri }),
+      ...(body.geminiExpiresAt !== undefined && {
+        geminiExpiresAt: body.geminiExpiresAt ? new Date(body.geminiExpiresAt) : null,
+      }),
     },
   });
 

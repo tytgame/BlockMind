@@ -82,7 +82,6 @@ export async function POST(req: Request) {
         html: otpEmailHtml(otp),
       });
       if (error) {
-        console.error('[send-otp] Resend error:', error);
         return NextResponse.json({ error: 'send_failed' }, { status: 500 });
       }
     } else {

@@ -16,12 +16,15 @@ interface ChatState {
   messageFilesMap: Record<string, SentFileInfo[]>;
   // 세션 이동 후 특정 메시지로 스크롤할 때 사용
   scrollToMessageId: string | null;
+  // 새 세션 생성 직후 사이드바 갱신 트리거 (replaceState는 useParams를 트리거하지 않으므로 store로 전달)
+  lastCreatedSessionId: string | null;
   setInput: (input: string) => void;
   resetInput: () => void;
   setPendingMessages: (messages: RestoredMessage[]) => void;
   clearPendingMessages: () => void;
   setMessageFiles: (messageId: string, files: SentFileInfo[]) => void;
   setScrollToMessageId: (id: string | null) => void;
+  setLastCreatedSessionId: (id: string | null) => void;
 }
 
 export const useChatStore = create<ChatState>()((set) => ({
@@ -29,6 +32,7 @@ export const useChatStore = create<ChatState>()((set) => ({
   pendingMessages: [],
   messageFilesMap: {},
   scrollToMessageId: null,
+  lastCreatedSessionId: null,
   setInput: (input) => set({ input }),
   resetInput: () => set({ input: '' }),
   setPendingMessages: (messages) => set({ pendingMessages: messages }),
@@ -38,5 +42,6 @@ export const useChatStore = create<ChatState>()((set) => ({
       messageFilesMap: { ...state.messageFilesMap, [messageId]: files },
     })),
   setScrollToMessageId: (id) => set({ scrollToMessageId: id }),
+  setLastCreatedSessionId: (id) => set({ lastCreatedSessionId: id }),
 }));
 // persist 제거 — URL(/chat/[sessionId])이 sessionId의 단일 소스(source of truth)

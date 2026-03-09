@@ -2,11 +2,13 @@ import { google } from '@ai-sdk/google';
 import { convertToModelMessages, streamText, type UIMessage } from 'ai';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
+import { prisma } from '@/lib/prisma';
 import { sliceMessagesByReset } from '@/lib/slice-messages-by-reset';
+import { LIMITS } from '@/lib/limits';
 
 
 // Allow streaming responses up to 30 seconds
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 function buildSystemPrompt(memoryBlocks?: string) {
   const memoryContext =
@@ -56,6 +58,28 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // 일일 사용량 서버 검증 — 클라이언트 localStorage 우회 방지
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  const userId = session.user.id;
+
+  const usage = await prisma.$transaction(async (tx) => {
+    const existing = await tx.dailyUsage.findUnique({
+      where: { userId_date: { userId, date: today } },
+      select: { count: true },
+    });
+    if ((existing?.count ?? 0) >= LIMITS.DAILY_MAX_MESSAGES) return null;
+    return tx.dailyUsage.upsert({
+      where: { userId_date: { userId, date: today } },
+      create: { userId, date: today, count: 1 },
+      update: { count: { increment: 1 } },
+    });
+  });
+
+  if (!usage) {
+    return NextResponse.json({ error: 'QUOTA_EXCEEDED' }, { status: 429 });
+  }
+
   try {
     const { messages, systemPrompt, pivotIndex } = await req.json() as {
       messages: UIMessage[];
@@ -75,8 +99,8 @@ export async function POST(req: Request) {
       model: google('gemini-2.5-flash'),
       system: buildSystemPrompt(systemPrompt),
       messages: modelMessages,
-      // 왜 2048일까?
-      maxOutputTokens: 2048,
+      // 8192: Gemini 기본값 근처
+      maxOutputTokens: 8192,
     });
 
     return result.toUIMessageStreamResponse();
