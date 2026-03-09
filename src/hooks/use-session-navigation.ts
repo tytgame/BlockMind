@@ -6,7 +6,7 @@ import type { SentFileInfo } from '@/components/chat/file-preview-modal';
 
 export function useSessionNavigation() {
   const router = useRouter();
-  const { setSessionId, setPendingMessages, clearPendingMessages, newMountKey, setMessageFiles, setScrollToMessageId } =
+  const { setPendingMessages, clearPendingMessages, setMessageFiles, setScrollToMessageId } =
     useChatStore();
 
   const navigateToSession = async (sessionId: string, scrollToMessageId?: string | null) => {
@@ -37,9 +37,8 @@ export function useSessionNavigation() {
       setScrollToMessageId(scrollToMessageId);
     }
 
-    setSessionId(sessionId);
-    newMountKey();
-    router.push('/chat');
+    // URL 기반 라우팅 — sessionId가 URL의 단일 소스
+    router.push(`/chat/${sessionId}`);
   };
 
   return { navigateToSession };

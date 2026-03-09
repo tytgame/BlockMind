@@ -1,6 +1,18 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+
+const saveMessagesSchema = z.object({
+  userMessage: z.string().min(1).max(1_000),
+  assistantMessage: z.string().min(1).max(50_000),
+  userMessageId: z.string().max(100).optional(),
+  userMessageFiles: z.array(z.object({
+    fileName: z.string().max(255),
+    fileType: z.string().max(100),
+    storagePath: z.string().max(500),
+  })).max(10).optional(),
+});
 
 // POST /api/sessions/[id]/messages — user/assistant 메시지 쌍 저장
 // body: { userMessage: string; assistantMessage: string }
@@ -23,12 +35,11 @@ export async function POST(
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const { userMessage, assistantMessage, userMessageId, userMessageFiles } = (await req.json()) as {
-    userMessage: string;
-    assistantMessage: string;
-    userMessageId?: string;
-    userMessageFiles?: Array<{ fileName: string; fileType: string; storagePath: string }>;
-  };
+  const parsed = saveMessagesSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+  }
+  const { userMessage, assistantMessage, userMessageId, userMessageFiles } = parsed.data;
 
   // user → assistant 순서로 저장
   // clientId: AI SDK 클라이언트 UUID — 세션 복원 시 messageFilesMap 키 일치에 사용

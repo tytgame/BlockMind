@@ -6,39 +6,30 @@ import { DefaultChatTransport, isTextUIPart } from 'ai';
 import { useSession } from 'next-auth/react';
 import { useBlockStore } from '@/store/block-store';
 import { useChatStore } from '@/store/chat-store';
-import { Block } from '@/types/block';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { useRouter } from '@/i18n/navigation';
 import { buildSystemPrompt } from '@/lib/build-system-prompt';
 import { useDailyLimit } from '@/hooks/use-daily-limit';
 import { LIMITS } from '@/lib/limits';
 import { useFileAttachment, DOCX_MIME, type PendingFileMeta } from '@/hooks/use-file-attachment';
 import { useFilePreview } from '@/hooks/use-file-preview';
+import { useChatSession } from '@/hooks/use-chat-session';
 import { FilePreviewModal } from './file-preview-modal';
 import { ChatMessageList } from './chat-message-list';
 import { ChatInputComposer } from './chat-input-composer';
 
-type ExtractedBlock = {
-  label: string;
-  content: string;
-  type?: string;
-  fileUrl?: string;
-  fileName?: string;
-  fileType?: string;
-  fileSize?: number;
-  geminiFileUri?: string;
-  geminiExpiresAt?: string | null;
-  category?: string;
-};
+interface ChatInterfaceProps {
+  sessionId: string | null;
+}
 
-type ExtractBlocksResponse = {
-  blocks?: ExtractedBlock[];
-};
+export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProps) {
+  const locale = useLocale();
+  const router = useRouter();
+  // 세션 ID는 ref로 관리 — 렌더링 없이 onFinish 클로저에서 읽기/쓰기
+  const sessionIdRef = React.useRef<string | null>(initialSessionId);
 
-const MAX_BLOCKS_PER_CYCLE = 1;
-
-export function ChatInterface() {
   const { data: session } = useSession();
-  const { input, resetInput, setSessionId, pendingMessages, clearPendingMessages, scrollToMessageId } = useChatStore();
+  const { input, resetInput, pendingMessages, clearPendingMessages, scrollToMessageId } = useChatStore();
   const [apiError, setApiError] = React.useState<string | null>(null);
   const [cooldownActive, setCooldownActive] = React.useState(false);
   const t = useTranslations('chatInterface');
@@ -71,58 +62,14 @@ export function ChatInterface() {
     []
   );
 
-  // 블록 자동 추출
-  const applyExtractedBlocks = React.useCallback(async (extractedBlocks: ExtractedBlock[], sourceSessionId: string | null, sourceMessageId: string | null) => {
-    const { blocks: currentBlocks, appendBlock } = useBlockStore.getState();
-
-    const existingKeys = new Set(
-      currentBlocks.map((b) => `${b.label.trim().toLowerCase()}::${b.content.trim().toLowerCase()}`)
-    );
-
-    let addedCount = 0;
-    for (const extracted of extractedBlocks) {
-      if (addedCount >= MAX_BLOCKS_PER_CYCLE) break;
-
-      const label = extracted.label.trim();
-      const content = extracted.content.trim();
-      if (!label || !content) continue;
-
-      const blockKey = `${label.toLowerCase()}::${content.toLowerCase()}`;
-      if (existingKeys.has(blockKey)) continue;
-
-      const { blocks } = useBlockStore.getState();
-      const order = blocks.length;
-
-      try {
-        const blockData: Record<string, unknown> = {
-          type: extracted.type ?? 'data',
-          label, content, order,
-        };
-        if (extracted.fileUrl) blockData.fileUrl = extracted.fileUrl;
-        if (extracted.fileName) blockData.fileName = extracted.fileName;
-        if (extracted.fileType) blockData.fileType = extracted.fileType;
-        if (extracted.fileSize !== undefined) blockData.fileSize = extracted.fileSize;
-        if (extracted.geminiFileUri) blockData.geminiFileUri = extracted.geminiFileUri;
-        if (extracted.geminiExpiresAt !== undefined) blockData.geminiExpiresAt = extracted.geminiExpiresAt;
-        if (sourceSessionId) blockData.sourceSessionId = sourceSessionId;
-        if (sourceMessageId) blockData.sourceMessageId = sourceMessageId;
-        if (extracted.category) blockData.category = extracted.category;
-
-        const res = await fetch('/api/blocks', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(blockData),
-        });
-        if (!res.ok) continue;
-        const dbBlock = (await res.json()) as Block;
-        appendBlock(dbBlock);
-        existingKeys.add(blockKey);
-        addedCount += 1;
-      } catch {
-        // 블록 생성 실패는 채팅 UX에 영향 주지 않음
-      }
-    }
-  }, []);
+  const errorSaveFailed = t('errorSaveFailed');
+  const { handleFinish } = useChatSession({
+    sessionIdRef,
+    locale,
+    router,
+    onError: setApiError,
+    errorSaveFailed,
+  });
 
   // 세션 복원
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -158,7 +105,6 @@ export function ChatInterface() {
     onFinish: ({ message, messages: allMessages }) => {
       if (message.role !== 'assistant') return;
 
-      // 쿨다운 시작
       setCooldownActive(true);
       setTimeout(() => setCooldownActive(false), LIMITS.MESSAGE_COOLDOWN_MS);
 
@@ -187,54 +133,7 @@ export function ChatInterface() {
 
       if (!userMessage) return;
 
-      void (async () => {
-        // 1. 세션 생성 또는 기존 세션 id 사용
-        let currentSessionId = useChatStore.getState().sessionId;
-        if (!currentSessionId) {
-          try {
-            const res = await fetch('/api/sessions', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ title: userMessage.slice(0, 40) }),
-            });
-            if (res.ok) {
-              const created = (await res.json()) as { id: string };
-              currentSessionId = created.id;
-              setSessionId(currentSessionId);
-            }
-          } catch { /* 세션 생성 실패 무시 */ }
-        }
-
-        // 2. 메시지 저장
-        if (currentSessionId) {
-          try {
-            await fetch(`/api/sessions/${currentSessionId}/messages`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ userMessage, assistantMessage, userMessageId, userMessageFiles: filesForDb }),
-            });
-          } catch { /* 메시지 저장 실패 무시 */ }
-        }
-
-        // 3. 블록 자동 추출
-        const { blocks: currentBlocks } = useBlockStore.getState();
-        try {
-          const response = await fetch('/api/blocks/extract', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userMessage,
-              assistantMessage,
-              existingBlocks: currentBlocks.map((b) => ({ label: b.label, content: b.content })),
-              ...(fileMeta ? { fileMetadata: fileMeta } : {}),
-            }),
-          });
-          if (!response.ok) return;
-          const data = (await response.json()) as ExtractBlocksResponse;
-          if (!data.blocks?.length) return;
-          await applyExtractedBlocks(data.blocks.slice(0, MAX_BLOCKS_PER_CYCLE), currentSessionId ?? null, userMessageId ?? null);
-        } catch { /* 블록 추출 실패 무시 */ }
-      })();
+      void handleFinish({ userMessage, assistantMessage, userMessageId, fileMeta, filesForDb });
     },
   });
 

@@ -75,6 +75,7 @@ export async function POST(req: Request) {
       model: google('gemini-2.5-flash'),
       system: buildSystemPrompt(systemPrompt),
       messages: modelMessages,
+      // 왜 2048일까?
       maxOutputTokens: 2048,
     });
 

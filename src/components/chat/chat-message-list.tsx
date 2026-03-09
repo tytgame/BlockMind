@@ -30,9 +30,27 @@ export function ChatMessageList({
   const locale = useLocale();
 
   const scrollRef = React.useRef<HTMLDivElement>(null);
+  // 사용자가 스크롤을 바닥 근처(80px 이내)에 두고 있는지 추적
+  const isAtBottomRef = React.useRef(true);
+  // 직전 messages 길이 — 새 메시지가 추가됐는지 감지
+  const prevLengthRef = React.useRef(0);
+
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const distFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    isAtBottomRef.current = distFromBottom < 80;
+  };
+
   React.useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+    const el = scrollRef.current;
+    if (!el) return;
+    const newMessageAdded = messages.length > prevLengthRef.current;
+    prevLengthRef.current = messages.length;
+    // 새 메시지 추가(유저 전송 or AI 응답 시작)시에만 강제 스크롤
+    // 스트리밍 중 업데이트는 사용자가 바닥에 있을 때만 따라감
+    if (newMessageAdded || isAtBottomRef.current) {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
     }
   }, [messages]);
 
@@ -44,7 +62,7 @@ export function ChatMessageList({
     });
 
   return (
-    <div ref={scrollRef} className="flex-1 px-6 overflow-y-auto">
+    <div ref={scrollRef} onScroll={handleScroll} className="flex-1 px-6 overflow-y-auto">
       <div className="py-6 space-y-6 max-w-3xl mx-auto">
         {messages.map((m, index) => {
           const textContent = m.parts

@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import type { SentFileInfo } from '@/components/chat/file-preview-modal';
 
 // useChat의 messages 옵션에 주입할 최소 형태 (UIMessage 호환)
@@ -11,55 +10,33 @@ export type RestoredMessage = {
 
 interface ChatState {
   input: string;
-  // 현재 활성 채팅 세션 id (DB에 저장된 ChatSession.id)
-  // null이면 아직 세션이 생성되지 않은 상태 (첫 메시지 전)
-  sessionId: string | null;
   // 세션 복원 시 useChat에 주입할 메시지 목록 (리마운트 후 소비되고 초기화됨)
   pendingMessages: RestoredMessage[];
-  // ChatInterface의 key prop으로 사용. 사용자가 명시적으로 세션을 변경할 때만 갱신.
-  // onFinish에서 sessionId가 바뀌어도 mountKey는 변경되지 않으므로 리마운트 없음.
-  mountKey: string;
   // 메시지 ID → 첨부 파일 목록 매핑 (세션 전환 시 리마운트 후에도 카드 유지)
-  // Record를 사용해 직렬화 가능하게 유지 (messageId: UUID → 충돌 없음)
   messageFilesMap: Record<string, SentFileInfo[]>;
-  setInput: (input: string) => void;
-  resetInput: () => void;
-  setSessionId: (id: string | null) => void;
-  setPendingMessages: (messages: RestoredMessage[]) => void;
-  clearPendingMessages: () => void;
-  // 사용자 명시적 액션 시 호출 → ChatInterface 리마운트 유발
-  newMountKey: () => void;
-  setMessageFiles: (messageId: string, files: SentFileInfo[]) => void;
   // 세션 이동 후 특정 메시지로 스크롤할 때 사용
   scrollToMessageId: string | null;
+  setInput: (input: string) => void;
+  resetInput: () => void;
+  setPendingMessages: (messages: RestoredMessage[]) => void;
+  clearPendingMessages: () => void;
+  setMessageFiles: (messageId: string, files: SentFileInfo[]) => void;
   setScrollToMessageId: (id: string | null) => void;
 }
 
-export const useChatStore = create<ChatState>()(
-  persist(
-    (set) => ({
-      input: '',
-      sessionId: null,
-      pendingMessages: [],
-      mountKey: 'initial',
-      messageFilesMap: {},
-      setInput: (input) => set({ input }),
-      resetInput: () => set({ input: '' }),
-      setSessionId: (id) => set({ sessionId: id }),
-      setPendingMessages: (messages) => set({ pendingMessages: messages }),
-      clearPendingMessages: () => set({ pendingMessages: [] }),
-      newMountKey: () => set({ mountKey: `mount-${Date.now()}` }),
-      setMessageFiles: (messageId, files) =>
-        set((state) => ({
-          messageFilesMap: { ...state.messageFilesMap, [messageId]: files },
-        })),
-      scrollToMessageId: null,
-      setScrollToMessageId: (id) => set({ scrollToMessageId: id }),
-    }),
-    {
-      name: 'blockmind-chat',
-      // sessionId만 persist — 나머지는 새로고침 시 초기화
-      partialize: (state) => ({ sessionId: state.sessionId }),
-    }
-  )
-);
+export const useChatStore = create<ChatState>()((set) => ({
+  input: '',
+  pendingMessages: [],
+  messageFilesMap: {},
+  scrollToMessageId: null,
+  setInput: (input) => set({ input }),
+  resetInput: () => set({ input: '' }),
+  setPendingMessages: (messages) => set({ pendingMessages: messages }),
+  clearPendingMessages: () => set({ pendingMessages: [] }),
+  setMessageFiles: (messageId, files) =>
+    set((state) => ({
+      messageFilesMap: { ...state.messageFilesMap, [messageId]: files },
+    })),
+  setScrollToMessageId: (id) => set({ scrollToMessageId: id }),
+}));
+// persist 제거 — URL(/chat/[sessionId])이 sessionId의 단일 소스(source of truth)

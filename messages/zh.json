@@ -79,6 +79,8 @@
     "placeholder": "向 BlockMind 发送消息...",
     "errorQuota": "API 配额已超出，请稍后再试。",
     "errorGeneral": "发生错误，请稍后再试。",
+    "errorSaveFailed": "消息保存失败。刷新后对话可能会丢失。",
+    "blockCreated": "已创建一个块。",
     "today": "今天",
     "you": "你",
     "thinking": "思考中...",

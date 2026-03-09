@@ -38,7 +38,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
+import { useParams } from 'next/navigation';
 import { useChatStore } from '@/store/chat-store';
 import { useBlockStore } from '@/store/block-store';
 import { useSessionNavigation } from '@/hooks/use-session-navigation';
@@ -67,7 +68,12 @@ const iconRailButtonClass =
 
 export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
   const { data: session } = useSession();
-  const { sessionId, setSessionId, clearPendingMessages, newMountKey } = useChatStore();
+  const router = useRouter();
+  const params = useParams<{ sessionId?: string }>();
+  // URL에서 현재 활성 세션 ID 읽기 (localStorage 의존 없음)
+  const activeSessionId = params.sessionId ?? null;
+
+  const { clearPendingMessages } = useChatStore();
   const { navigateToSession } = useSessionNavigation();
   const [searchQuery, setSearchQuery] = React.useState('');
 
@@ -86,7 +92,6 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const sentinelRef = React.useRef<HTMLDivElement>(null);
   const sessionsRef = React.useRef<ChatSessionItem[]>([]);
-  const prevSessionIdRef = React.useRef<string | null | undefined>(undefined);
   sessionsRef.current = sessions;
 
   const loadInitial = React.useCallback(async () => {
@@ -116,25 +121,18 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
 
   React.useEffect(() => { void loadInitial(); }, [loadInitial]);
 
-  // 새 세션 생성 감지
+  // 새 세션 생성 감지 (URL의 activeSessionId 변경으로 판단)
   React.useEffect(() => {
-    if (prevSessionIdRef.current === undefined) {
-      prevSessionIdRef.current = sessionId;
-      return;
+    if (!activeSessionId) return;
+    const alreadyInList =
+      sessionsRef.current.some((s) => s.id === activeSessionId) ||
+      pinnedSessions.some((s) => s.id === activeSessionId);
+    if (!alreadyInList) {
+      setNewSessionId(activeSessionId);
+      void loadInitial();
+      setTimeout(() => setNewSessionId(null), 400);
     }
-    const prev = prevSessionIdRef.current;
-    prevSessionIdRef.current = sessionId;
-    if (sessionId && sessionId !== prev) {
-      const alreadyInList =
-        sessionsRef.current.some((s) => s.id === sessionId) ||
-        pinnedSessions.some((s) => s.id === sessionId);
-      if (!alreadyInList) {
-        setNewSessionId(sessionId);
-        void loadInitial();
-        setTimeout(() => setNewSessionId(null), 400);
-      }
-    }
-  }, [sessionId, pinnedSessions, loadInitial]);
+  }, [activeSessionId, pinnedSessions, loadInitial]);
 
   // IntersectionObserver
   const loadMoreRef = React.useRef<() => void>(() => {});
@@ -157,14 +155,13 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
 
   // 세션 선택
   async function handleSelectSession(id: string) {
-    if (id === sessionId) return;
+    if (id === activeSessionId) return;
     await navigateToSession(id);
   }
 
   function handleNewChat() {
     clearPendingMessages();
-    setSessionId(null);
-    newMountKey();
+    router.push('/chat');
   }
 
   // 채팅 삭제 (확인 후 실행)
@@ -173,11 +170,9 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
     setPinnedSessions((prev) => prev.filter((s) => s.id !== id));
     setSessions((prev) => prev.filter((s) => s.id !== id));
 
-    // 현재 활성 세션이면 새 채팅 상태로 전환
-    if (sessionId === id) {
-      clearPendingMessages();
-      setSessionId(null);
-      newMountKey();
+    // 현재 활성 세션이면 새 채팅으로 이동
+    if (activeSessionId === id) {
+      router.push('/chat');
     }
 
     // 해당 세션에서 추출된 블록을 store에서 즉시 제거
@@ -223,7 +218,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
         key={chat.id}
         className={cn(
           'group relative flex items-center rounded-lg transition-colors',
-          sessionId === chat.id ? 'bg-blue-600/20' : 'hover:bg-white/10',
+          activeSessionId === chat.id ? 'bg-blue-600/20' : 'hover:bg-white/10',
           chat.id === newSessionId && 'animate-in fade-in slide-in-from-top-2 duration-300'
         )}
       >
@@ -234,7 +229,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
         >
           <p className={cn(
             'text-sm font-medium truncate pr-6',
-            sessionId === chat.id ? 'text-white' : 'text-gray-300'
+            activeSessionId === chat.id ? 'text-white' : 'text-gray-300'
           )}>
             {chat.title ?? t('noRecentChats')}
           </p>
@@ -308,7 +303,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
           >
             <Home className="h-5 w-5" />
           </Link>
-          <Button variant="ghost" size="icon" className={iconRailButtonClass} title={t('newChat')} aria-label={t('newChat')}>
+          <Button variant="ghost" size="icon" className={iconRailButtonClass} title={t('newChat')} aria-label={t('newChat')} onClick={handleNewChat}>
             <Plus className="h-5 w-5" />
           </Button>
           <Button variant="ghost" size="icon" className={iconRailButtonClass} title={t('search')} aria-label={t('search')}>

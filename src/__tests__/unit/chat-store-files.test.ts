@@ -11,10 +11,9 @@ import type { SentFileInfo } from '@/components/chat/file-preview-modal';
 beforeEach(() => {
   useChatStore.setState({
     input: '',
-    sessionId: null,
     pendingMessages: [],
-    mountKey: 'initial',
     messageFilesMap: {},
+    scrollToMessageId: null,
   });
 });
 
@@ -100,14 +99,14 @@ describe('chat-store — messageFilesMap', () => {
   describe('세션 복원 시뮬레이션', () => {
     it('DB 메시지에서 파일 메타를 복원하면 messageFilesMap에 반영된다', () => {
       // DB에서 로드된 메시지 (page.tsx useEffect 로직을 단순화해 시뮬레이션)
-      const dbMessages = [
+      const dbMessages: Array<{ id: string; role: string; clientId: string | null; files: SentFileInfo[] | null }> = [
         {
           id: 'db-msg-1',
           role: 'user',
           clientId: 'client-uuid-1',
           files: [
             { fileName: 'cat.jpg', fileType: 'image/jpeg', storagePath: 'user/ts-cat.jpg' },
-          ] as SentFileInfo[],
+          ],
         },
         { id: 'db-msg-2', role: 'assistant', clientId: null, files: null },
         {
@@ -116,7 +115,7 @@ describe('chat-store — messageFilesMap', () => {
           clientId: 'client-uuid-2',
           files: [
             { fileName: 'report.pdf', fileType: 'application/pdf', storagePath: 'user/ts-report.pdf' },
-          ] as SentFileInfo[],
+          ],
         },
       ];
 
@@ -190,16 +189,16 @@ describe('chat-store — messageFilesMap', () => {
   // ── 기타 store 동작 ────────────────────────────────────────────────────
 
   describe('기타 store 액션과의 독립성', () => {
-    it('newMountKey 호출해도 messageFilesMap은 유지된다', () => {
+    it('setPendingMessages 호출해도 messageFilesMap은 유지된다', () => {
       useChatStore.getState().setMessageFiles('msg-1', [makeFileInfo()]);
-      useChatStore.getState().newMountKey();
+      useChatStore.getState().setPendingMessages([{ id: 'x', role: 'user', parts: [{ type: 'text', text: 'hi' }] }]);
 
       expect(useChatStore.getState().messageFilesMap['msg-1']).toBeDefined();
     });
 
-    it('setSessionId 호출해도 messageFilesMap은 유지된다', () => {
+    it('clearPendingMessages 호출해도 messageFilesMap은 유지된다', () => {
       useChatStore.getState().setMessageFiles('msg-1', [makeFileInfo()]);
-      useChatStore.getState().setSessionId('new-session-id');
+      useChatStore.getState().clearPendingMessages();
 
       expect(useChatStore.getState().messageFilesMap['msg-1']).toBeDefined();
     });

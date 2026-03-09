@@ -39,10 +39,17 @@
       "Bash(ls /c/project/BlockMind/*.md)",
       "Bash(ls /c/project/BlockMind/docs/*.md)",
       "Bash(npx jest src/__tests__/unit/limits.test.ts src/__tests__/unit/use-daily-limit.test.ts --no-coverage)",
-      "Bash(npx prisma migrate dev --name add_block_source_message)"
+      "Bash(npx prisma migrate dev --name add_block_source_message)",
+      "Bash(find /c/project/BlockMind/src/app/[locale] -type f -name \"*.tsx\" -o -name \"*.ts\")",
+      "Bash(find /c/project/BlockMind/src/app/[locale] -type f \\\\\\( -name \"page.tsx\" -o -name \"layout.tsx\" \\\\\\))",
+      "Bash(grep -A 10 '\"\"chatInterface\"\"' c:/project/BlockMind/messages/en.json)",
+      "Bash(grep -A 10 '\"\"chatInterface\"\"' c:/project/BlockMind/messages/zh.json)",
+      "Bash(grep -A 10 '\"\"chatInterface\"\"' c:/project/BlockMind/messages/ja.json)",
+      "Bash(npm install sonner)"
     ],
     "additionalDirectories": [
-      "c:\\project\\BlockMind\\src\\app\\api\\blocks\\[id]"
+      "c:\\project\\BlockMind\\src\\app\\api\\blocks\\[id]",
+      "c:\\project\\BlockMind\\src\\app\\[locale]\\chat"
     ]
   }
 }

@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+
+const createSessionSchema = z.object({
+  title: z.string().max(100).optional(),
+});
 
 const SESSION_PAGE_SIZE = 20;
 
@@ -62,12 +67,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body = (await req.json()) as { title?: string };
+  const parsed = createSessionSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+  }
 
   const chatSession = await prisma.chatSession.create({
     data: {
       userId: session.user.id,
-      title: body.title ?? null,
+      title: parsed.data.title ?? null,
     },
   });
 

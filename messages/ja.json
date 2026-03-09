@@ -79,6 +79,8 @@
     "placeholder": "BlockMindにメッセージを送る...",
     "errorQuota": "API使用量の上限を超えました。しばらくしてからもう一度お試しください。",
     "errorGeneral": "エラーが発生しました。しばらくしてからもう一度お試しください。",
+    "errorSaveFailed": "メッセージの保存に失敗しました。更新すると会話が失われる可能性があります。",
+    "blockCreated": "ブロックが作成されました。",
     "today": "今日",
     "you": "あなた",
     "thinking": "考え中...",

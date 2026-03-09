@@ -1,0 +1,211 @@
+'use client';
+
+import * as React from 'react';
+import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
+import { useBlockStore } from '@/store/block-store';
+import type { Block } from '@/types/block';
+import type { PendingFileMeta } from '@/hooks/use-file-attachment';
+
+// ── 타입 ──────────────────────────────────────────────────────────────────
+
+type ExtractedBlock = {
+  label: string;
+  content: string;
+  type?: string;
+  fileUrl?: string;
+  fileName?: string;
+  fileType?: string;
+  fileSize?: number;
+  geminiFileUri?: string;
+  geminiExpiresAt?: string | null;
+  category?: string;
+};
+
+type ExtractBlocksResponse = {
+  blocks?: ExtractedBlock[];
+};
+
+export type HandleFinishParams = {
+  userMessage: string;
+  assistantMessage: string;
+  userMessageId: string | undefined;
+  fileMeta: PendingFileMeta | undefined;
+  filesForDb: Array<{ fileName: string; fileType: string; storagePath: string }> | undefined;
+};
+
+interface UseChatSessionOptions {
+  sessionIdRef: { current: string | null };
+  locale: string;
+  router: { push: (href: string) => void };
+  onError: (msg: string) => void;
+  errorSaveFailed: string;
+}
+
+const MAX_BLOCKS_PER_CYCLE = 1;
+
+// ── 훅 ────────────────────────────────────────────────────────────────────
+
+export function useChatSession({
+  sessionIdRef,
+  locale,
+  router,
+  onError,
+  errorSaveFailed,
+}: UseChatSessionOptions) {
+  const t = useTranslations('chatInterface');
+
+  // 블록 자동 추출 결과 적용
+  const applyExtractedBlocks = React.useCallback(
+    async (
+      extractedBlocks: ExtractedBlock[],
+      sourceSessionId: string | null,
+      sourceMessageId: string | null
+    ) => {
+      const { blocks: currentBlocks, appendBlock } = useBlockStore.getState();
+      const existingKeys = new Set(
+        currentBlocks.map((b) => `${b.label.trim().toLowerCase()}::${b.content.trim().toLowerCase()}`)
+      );
+
+      let addedCount = 0;
+      for (const extracted of extractedBlocks) {
+        if (addedCount >= MAX_BLOCKS_PER_CYCLE) break;
+
+        const label = extracted.label.trim();
+        const content = extracted.content.trim();
+        if (!label || !content) continue;
+
+        const blockKey = `${label.toLowerCase()}::${content.toLowerCase()}`;
+        if (existingKeys.has(blockKey)) continue;
+
+        const { blocks } = useBlockStore.getState();
+        const order = blocks.length;
+
+        try {
+          const blockData: Record<string, unknown> = {
+            type: extracted.type ?? 'data',
+            label,
+            content,
+            order,
+          };
+          if (extracted.fileUrl) blockData.fileUrl = extracted.fileUrl;
+          if (extracted.fileName) blockData.fileName = extracted.fileName;
+          if (extracted.fileType) blockData.fileType = extracted.fileType;
+          if (extracted.fileSize !== undefined) blockData.fileSize = extracted.fileSize;
+          if (extracted.geminiFileUri) blockData.geminiFileUri = extracted.geminiFileUri;
+          if (extracted.geminiExpiresAt !== undefined) blockData.geminiExpiresAt = extracted.geminiExpiresAt;
+          if (sourceSessionId) blockData.sourceSessionId = sourceSessionId;
+          if (sourceMessageId) blockData.sourceMessageId = sourceMessageId;
+          if (extracted.category) blockData.category = extracted.category;
+
+          const res = await fetch('/api/blocks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(blockData),
+          });
+          if (!res.ok) {
+            console.error('[useChatSession] 블록 생성 실패:', res.status);
+            continue;
+          }
+          const dbBlock = (await res.json()) as Block;
+          appendBlock(dbBlock);
+          toast.success(t('blockCreated'));
+          existingKeys.add(blockKey);
+          addedCount += 1;
+        } catch (err) {
+          console.error('[useChatSession] 블록 생성 네트워크 오류:', err);
+        }
+      }
+    },
+    []
+  );
+
+  // AI 응답 완료 후 세션 저장 · 메시지 저장 · 블록 추출 처리
+  const handleFinish = React.useCallback(
+    async ({ userMessage, assistantMessage, userMessageId, fileMeta, filesForDb }: HandleFinishParams) => {
+      // 1. 세션 생성 (신규 채팅인 경우에만)
+      let currentSessionId = sessionIdRef.current;
+      if (!currentSessionId) {
+        try {
+          const res = await fetch('/api/sessions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: userMessage.slice(0, 40) }),
+          });
+          if (!res.ok) {
+            console.error('[useChatSession] 세션 생성 실패:', res.status);
+            onError(errorSaveFailed);
+            return;
+          }
+          const created = (await res.json()) as { id: string };
+          currentSessionId = created.id;
+          sessionIdRef.current = currentSessionId;
+          // 리마운트 없이 URL만 업데이트 — 새로고침 시 /chat/[id]로 복원 가능
+          const pathPrefix = locale === 'ko' ? '' : `/${locale}`;
+          window.history.replaceState(null, '', `${pathPrefix}/chat/${currentSessionId}`);
+        } catch (err) {
+          console.error('[useChatSession] 세션 생성 네트워크 오류:', err);
+          onError(errorSaveFailed);
+          return;
+        }
+      }
+
+      // 2. 메시지 저장
+      try {
+        const msgRes = await fetch(`/api/sessions/${currentSessionId}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userMessage, assistantMessage, userMessageId, userMessageFiles: filesForDb }),
+        });
+        if (msgRes.status === 404) {
+          // 세션 없음 (계정 전환 등) → 새 채팅으로 리다이렉트
+          sessionIdRef.current = null;
+          router.push('/chat');
+          return;
+        }
+        if (!msgRes.ok) {
+          console.error('[useChatSession] 메시지 저장 실패:', msgRes.status);
+          onError(errorSaveFailed);
+          return;
+        }
+      } catch (err) {
+        console.error('[useChatSession] 메시지 저장 네트워크 오류:', err);
+        onError(errorSaveFailed);
+        return;
+      }
+
+      // 3. 블록 자동 추출 — 실패해도 사용자에게 알리지 않음
+      //    !response.ok → 서버/네트워크 오류 (console.error로 기록)
+      //    data.blocks가 없거나 비어있음 → LLM이 추출할 내용 없다고 판단한 것 (정상)
+      const { blocks: currentBlocks } = useBlockStore.getState();
+      try {
+        const response = await fetch('/api/blocks/extract', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userMessage,
+            assistantMessage,
+            existingBlocks: currentBlocks.map((b) => ({ label: b.label, content: b.content })),
+            ...(fileMeta ? { fileMetadata: fileMeta } : {}),
+          }),
+        });
+        if (!response.ok) {
+          console.error('[useChatSession] 블록 추출 API 실패:', response.status);
+          return;
+        }
+        const data = (await response.json()) as ExtractBlocksResponse;
+        if (!data.blocks?.length) return;
+        await applyExtractedBlocks(
+          data.blocks.slice(0, MAX_BLOCKS_PER_CYCLE),
+          currentSessionId,
+          userMessageId ?? null
+        );
+      } catch (err) {
+        console.error('[useChatSession] 블록 추출 네트워크 오류:', err);
+      }
+    },
+    [sessionIdRef, locale, router, onError, errorSaveFailed, applyExtractedBlocks]
+  );
+
+  return { handleFinish };
+}

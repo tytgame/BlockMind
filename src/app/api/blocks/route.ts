@@ -1,7 +1,24 @@
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { createAdminClient, STORAGE_BUCKET } from '@/lib/supabase/admin';
+
+const createBlockSchema = z.object({
+  type: z.enum(['data', 'image', 'file']),
+  label: z.string().min(1).max(200),
+  content: z.string().min(1).max(10_000),
+  order: z.number().int().min(0),
+  fileUrl: z.string().max(500).optional(),
+  fileName: z.string().max(255).optional(),
+  fileType: z.string().max(100).optional(),
+  fileSize: z.number().int().min(0).optional(),
+  geminiFileUri: z.string().max(500).optional(),
+  geminiExpiresAt: z.string().nullable().optional(),
+  sourceSessionId: z.string().max(100).optional(),
+  sourceMessageId: z.string().max(100).optional(),
+  category: z.string().max(50).optional(),
+});
 
 // GET /api/blocks — 내 블록 목록 (order 오름차순)
 // image/file 타입 블록은 signedUrl(1h) 포함
@@ -50,21 +67,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const body = (await req.json()) as {
-    type: string;
-    label: string;
-    content: string;
-    order: number;
-    fileUrl?: string;
-    fileName?: string;
-    fileType?: string;
-    fileSize?: number;
-    geminiFileUri?: string;
-    geminiExpiresAt?: string | null;
-    sourceSessionId?: string;
-    sourceMessageId?: string;
-    category?: string;
-  };
+  const parsed = createBlockSchema.safeParse(await req.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+  }
+  const body = parsed.data;
+
+  // sourceSessionId가 있으면 해당 세션의 소유자 확인
+  if (body.sourceSessionId) {
+    const ownerCheck = await prisma.chatSession.findUnique({
+      where: { id: body.sourceSessionId },
+      select: { userId: true },
+    });
+    if (ownerCheck?.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+  }
 
   const block = await prisma.block.create({
     data: {
