@@ -43,6 +43,10 @@ export default function LoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: trimmed }),
       });
+      if (res.status === 429) {
+        setSendError(t('tooManyRequests'));
+        return;
+      }
       if (!res.ok) {
         setSendError(t('sendError'));
         return;

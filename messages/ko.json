@@ -159,7 +159,8 @@
     "continueWithEmail": "이메일로 계속하기",
     "invalidEmail": "올바른 이메일 주소를 입력해 주세요.",
     "sendingCode": "코드 전송 중...",
-    "sendError": "이메일 발송에 실패했습니다. 다시 시도해 주세요."
+    "sendError": "이메일 발송에 실패했습니다. 다시 시도해 주세요.",
+    "tooManyRequests": "잠시 후 다시 시도해 주세요. (1분 후 재요청 가능)"
   },
   "verify": {
     "title": "받은 편지함을 확인하세요",

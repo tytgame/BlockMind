@@ -5,6 +5,7 @@ import { resend, EMAIL_FROM } from '@/lib/resend';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const OTP_EXPIRY_MS = 10 * 60 * 1000; // 10분
+const OTP_COOLDOWN_MS = 60 * 1000;    // 재요청 쿨다운 1분
 
 function otpEmailHtml(otp: string): string {
   return `<!DOCTYPE html>
@@ -61,6 +62,18 @@ export async function POST(req: Request) {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
+
+    // 쿨다운 체크 — 1분 이내 재요청 차단
+    // expires = 생성시각 + 10분이므로, expires > now + 9분이면 1분 이내 발급된 것
+    const recentToken = await prisma.verificationToken.findFirst({
+      where: {
+        identifier: normalizedEmail,
+        expires: { gt: new Date(Date.now() + OTP_EXPIRY_MS - OTP_COOLDOWN_MS) },
+      },
+    });
+    if (recentToken) {
+      return NextResponse.json({ error: 'too_many_requests' }, { status: 429 });
+    }
 
     // 6자리 OTP 생성 + SHA-256 해시
     const otp = Math.floor(100000 + Math.random() * 900000).toString();

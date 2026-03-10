@@ -65,6 +65,7 @@ export async function POST(req: Request) {
 
     const result = await generateObject({
       model: google('gemini-2.5-flash'),
+      output: 'object',
       schema: extractResponseSchema,
       temperature: 0.2,
       system: `You extract durable memory blocks from conversations for a hidden context system.
@@ -78,6 +79,7 @@ Rules:
 - Keep content precise and reusable.
 - If a file was attached and it contains important durable information, set attachFile: true.
 - If nothing should be stored, return an empty "blocks" array.
+- Write the block label and content in the same language as the user's message.
 - For each data block, set "category" to the single best matching value from this list:
   animal, fitness, travel, coding, food, music, study, health, work, game, finance, shopping, home, sports, entertainment, person
   Omit "category" only if none of the above fit.
