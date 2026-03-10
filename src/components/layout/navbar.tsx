@@ -90,12 +90,6 @@ export function Navbar() {
             >
               {t('features')}
             </Link>
-            <Link
-              href="/#"
-              className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
-            >
-              {t('pricing')}
-            </Link>
           </div>
 
           {/* Action Buttons */}

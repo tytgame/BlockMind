@@ -1,6 +1,6 @@
 'use client';
 
-import { Github, Twitter, Linkedin } from 'lucide-react';
+import { Github } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 
@@ -55,24 +55,14 @@ export function Footer() {
 
             {/* Social Links */}
             <div className="flex gap-3">
-              <Link
-                href="/#"
+              <a
+                href="https://github.com/tytgame/BlockMind"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
               >
                 <Github className="w-5 h-5" />
-              </Link>
-              <Link
-                href="/#"
-                className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
-              >
-                <Twitter className="w-5 h-5" />
-              </Link>
-              <Link
-                href="/#"
-                className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
-              >
-                <Linkedin className="w-5 h-5" />
-              </Link>
+              </a>
             </div>
           </div>
 

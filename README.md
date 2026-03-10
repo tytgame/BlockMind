@@ -1,5 +1,9 @@
 # BlockMind
 
+<p align="center">
+  <img src="public/blockmindLogo.png" alt="BlockMind Logo" width="200" />
+</p>
+
 > AI가 지금 무엇을 기준으로 답하고 있는지 직접 확인하고 제어하는 컨텍스트 중심 AI 채팅 서비스
 
 ![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=nextdotjs&logoColor=white)
