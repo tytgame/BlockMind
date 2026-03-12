@@ -6,4 +6,4 @@ export const resend = process.env.RESEND_API_KEY
   : null;
 
 // 발신자 주소: 도메인 인증 전엔 onboarding@resend.dev 사용 가능
-export const EMAIL_FROM = process.env.EMAIL_FROM;
+export const EMAIL_FROM = process.env.EMAIL_FROM ?? 'BlockMind <onboarding@resend.dev>';
