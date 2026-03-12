@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { createAdminClient, STORAGE_BUCKET } from '@/lib/supabase/admin';
 
 const patchBlockSchema = z.object({
   label: z.string().min(1).max(200).optional(),
@@ -16,7 +17,7 @@ const patchBlockSchema = z.object({
   geminiExpiresAt: z.string().nullable().optional(),
 });
 
-// PATCH /api/blocks/[id] — 블록 수정 (label, content, isVisible, order)
+// PATCH /api/blocks/[id] — 블록 수정 (isVisible, order)
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -77,6 +78,14 @@ export async function DELETE(
   const existing = await prisma.block.findUnique({ where: { id } });
   if (!existing || existing.userId !== session.user.id) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+
+  // Storage 파일 삭제 (file/image 블록인 경우)
+  if (existing.fileUrl) {
+    try {
+      const supabase = createAdminClient();
+      await supabase.storage.from(STORAGE_BUCKET).remove([existing.fileUrl]);
+    } catch { /* Storage 삭제 실패 무시 — DB 삭제는 계속 진행 */ }
   }
 
   await prisma.block.delete({ where: { id } });

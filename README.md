@@ -1,7 +1,7 @@
 # BlockMind
 
 <p align="center">
-  <img src="public/newTextLogo.png" alt="BlockMind Logo" width="1200" />
+  <img src="public/newTextLogo.png" alt="BlockMind Logo" width="800" />
 </p>
 
 > AI가 지금 무엇을 기준으로 답하고 있는지 직접 확인하고 제어하는 컨텍스트 중심 AI 채팅 서비스
@@ -31,14 +31,13 @@ BlockMind는 이 문제를 UI 레벨에서 다룹니다.
 
 | 기능 | 설명 |
 |------|------|
-| **3-column 레이아웃** | 좌측 세션 목록 · 중앙 채팅 · 우측 블록 패널을 동시에 표시 |
 | **자동 블록 추출** | AI 응답 완료 후 durable context를 자동으로 추출해 블록으로 저장 |
-| **활성 문맥 제어** | 블록 visibility toggle, drag-and-drop reorder로 AI 참고 기준 실시간 조정 |
-| **스트리밍 채팅** | Gemini 2.5 Flash 기반 스트리밍 응답, Markdown/GFM 렌더링 |
-| **파일 첨부** | 이미지, PDF, DOCX 업로드 지원. 파일이 메시지 및 블록 흐름에 연결됨 |
-| **세션 관리** | 세션 생성/전환/고정/삭제, 새로고침 후 현재 세션 자동 복원 |
-| **컨텍스트 리셋** | 블록 visibility 변경 시 해당 시점 이전 대화는 AI 컨텍스트에서 제외 |
-| **다국어 지원** | 한국어, 영어, 중국어, 일본어 (next-intl v4) |
+| **블록 활성** | 블록 적용 토글, dnd로 블록 순서 조정 |
+| **스트리밍 채팅** | Google LLM 기반 응답, Markdown/GFM 형식으로 출력 |
+| **파일 첨부** | 이미지, PDF, DOCX 업로드 지원. 파일이 메시지와 블록에 연결됨 |
+| **채팅 관리** | 채팅 CRUD, 현재 세션 자동 복원 |
+| **컨텍스트 리셋** | 블록 활성화 변경 시 해당 시점 이전 대화는 AI 컨텍스트에서 제외 |
+| **다국어 지원** | 한국어, 영어, 중국어, 일본어 |
 | **인증** | Google OAuth + 이메일 OTP 로그인 |
 
 ---

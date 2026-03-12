@@ -24,7 +24,7 @@ export async function PATCH(
   }
 
   // Gemini Files API 재업로드
-  const baseUrl = process.env.NEXTAUTH_URL ?? 'http://localhost:3000';
+  const baseUrl = process.env.NEXTAUTH_URL;
   const uploadRes = await fetch(`${baseUrl}/api/upload/gemini`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Cookie: _req.headers.get('Cookie') ?? '' },
