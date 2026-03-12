@@ -16,6 +16,7 @@ import { useFilePreview } from '@/hooks/use-file-preview';
 import { useChatSession } from '@/hooks/use-chat-session';
 import { FilePreviewModal } from './file-preview-modal';
 import { ChatMessageList } from './chat-message-list';
+import { AlertTriangle } from 'lucide-react';
 import { ChatInputComposer } from './chat-input-composer';
 
 interface ChatInterfaceProps {
@@ -27,6 +28,8 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
   const router = useRouter();
   // 세션 ID는 ref로 관리 — 렌더링 없이 onFinish 클로저에서 읽기/쓰기
   const sessionIdRef = React.useRef<string | null>(initialSessionId);
+  // stop() 호출 시 onFinish에서 DB 저장/블록 추출을 스킵하기 위한 플래그
+  const isStoppedRef = React.useRef(false);
 
   const { data: session } = useSession();
   const { input, resetInput, pendingMessages, clearPendingMessages, scrollToMessageId } = useChatStore();
@@ -81,7 +84,7 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
 
   // ── useChat ──────────────────────────────────────────────
 
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status, stop } = useChat({
     transport,
     messages: initialMessages,
     onError: (error) => {
@@ -104,6 +107,12 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
     },
     onFinish: ({ message, messages: allMessages }) => {
       if (message.role !== 'assistant') return;
+
+      // 사용자가 중단한 경우 DB 저장/블록 추출 스킵
+      if (isStoppedRef.current) {
+        isStoppedRef.current = false;
+        return;
+      }
 
       setCooldownActive(true);
       setTimeout(() => setCooldownActive(false), LIMITS.MESSAGE_COOLDOWN_MS);
@@ -136,6 +145,11 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
       void handleFinish({ userMessage, assistantMessage, userMessageId, fileMeta, filesForDb });
     },
   });
+
+  const handleStop = () => {
+    isStoppedRef.current = true;
+    stop();
+  };
 
   const isLoading = status === 'streaming' || status === 'submitted';
   const hasMessages = messages.length > 0;
@@ -184,6 +198,7 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    isStoppedRef.current = false;
 
     const trimmedInput = input.trim();
     const readyFiles = attachedFiles.filter((f) => f.status === 'ready');
@@ -258,13 +273,31 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
 
   // ── JSX ──────────────────────────────────────────────────
 
-  const inputComposer = (
+  const baseInputComposer = (
     <ChatInputComposer
       attachedFiles={attachedFiles}
       onRemoveFile={removeFile}
       onFileInputChange={handleFileInputChange}
       onPaste={handlePaste}
       onSubmit={handleSubmit}
+      onStop={handleStop}
+      isLoading={isLoading}
+      apiError={apiError}
+      onErrorClose={() => setApiError(null)}
+      charLimit={LIMITS.MESSAGE_MAX_CHARS}
+      isDisabled={isInputDisabled}
+    />
+  );
+
+  // 인사말 화면용 — 제한 배너 포함
+  const inputComposerWithBanners = (
+    <ChatInputComposer
+      attachedFiles={attachedFiles}
+      onRemoveFile={removeFile}
+      onFileInputChange={handleFileInputChange}
+      onPaste={handlePaste}
+      onSubmit={handleSubmit}
+      onStop={handleStop}
       isLoading={isLoading}
       apiError={apiError}
       onErrorClose={() => setApiError(null)}
@@ -292,9 +325,27 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
             onFileClick={openPreview}
             session={session}
           />
+          {/* 제한 배너 — border-t 위에 독립적으로 표시 */}
+          {(limitError ?? limitBanner) && (
+            <div className="px-6 pt-4 pb-6">
+              <div className="max-w-3xl mx-auto">
+                {limitError ? (
+                  <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5">
+                    <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0" />
+                    <p className="text-sm text-red-300">{limitError}</p>
+                  </div>
+                ) : limitBanner ? (
+                  <div className="flex items-center gap-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl px-4 py-2.5">
+                    <AlertTriangle className="h-4 w-4 text-yellow-400 flex-shrink-0" />
+                    <p className="text-sm text-yellow-300">{limitBanner}</p>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          )}
           <div className="px-6 py-4 border-t border-white/10">
             <div className="max-w-3xl mx-auto">
-              {inputComposer}
+              {baseInputComposer}
               <p className="text-xs text-gray-500 text-center mt-3">{t('disclaimer')}</p>
             </div>
           </div>
@@ -307,7 +358,7 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
               <p className="text-base">{t('greetingSubtitle')}</p>
             </div>
             <div className="w-full">
-              {inputComposer}
+              {inputComposerWithBanners}
               <p className="text-xs text-gray-500 text-center mt-3">{t('disclaimer')}</p>
             </div>
           </div>

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Plus, Settings, X } from 'lucide-react';
+import { AlertTriangle, ArrowUp, Plus, Settings, Square, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useChatStore } from '@/store/chat-store';
 import { FileAttachmentPreview, type AttachedFile } from './file-attachment-preview';
@@ -14,6 +14,7 @@ interface ChatInputComposerProps {
   onFileInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPaste: (e: React.ClipboardEvent<HTMLTextAreaElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
+  onStop: () => void;
   isLoading: boolean;
   apiError: string | null;
   onErrorClose: () => void;
@@ -30,6 +31,7 @@ export function ChatInputComposer({
   onFileInputChange,
   onPaste,
   onSubmit,
+  onStop,
   isLoading,
   apiError,
   onErrorClose,
@@ -160,6 +162,25 @@ export function ChatInputComposer({
               >
                 <Settings className="h-4 w-4" />
               </Button>
+              {isLoading ? (
+                <Button
+                  type="button"
+                  size="icon"
+                  onClick={onStop}
+                  className="h-8 w-8 bg-white/10 hover:bg-white/20 text-white rounded-full"
+                >
+                  <Square className="h-3.5 w-3.5 fill-current" />
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  size="icon"
+                  disabled={!input.trim() || isDisabled || isCharOver}
+                  className="h-8 w-8 bg-white/10 hover:bg-white/20 text-white rounded-full disabled:opacity-30"
+                >
+                  <ArrowUp className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           </div>
         </div>
