@@ -144,7 +144,7 @@ export function ChatMessageList({
                   {/* 메시지 버블 */}
                   {isUser ? (
                     textContent.trim() ? (
-                      <div className="rounded-2xl rounded-tr-md bg-blue-600 px-4 py-3 text-white">
+                      <div className="rounded-2xl rounded-tr-md bg-[#2d2f33] px-4 py-3 text-white">
                         <MessageContent content={textContent} isUser={true} />
                       </div>
                     ) : null

@@ -73,11 +73,39 @@
     "termsOfService": "利用規約"
   },
   "demo": {
-    "placeholder": "BlockMindにメッセージを送る..."
+    "placeholder": "BlockMindにメッセージを送る...",
+    "sectionTitle": "実際にどう動くか見てみましょう",
+    "sectionSubtitle": "会話後、AIが自動でコンテキストをブロックとして保存します",
+    "newChat": "+ 新しいチャット",
+    "recent": "最近",
+    "blockCreatedPrefix": "ブロックが作成されました —",
+    "scenarios": [
+      {
+        "sessionTitle": "近くのレストランを探す",
+        "otherSessions": ["明日の天気は？", "週末の予定を立てて"],
+        "userMessage": "近くのおすすめレストランを3件教えて",
+        "aiResponse": "人気のレストランをご紹介します！平壌冷麺専門店は あっさりしたスープが絶品です。お寿司店はコスパ抜群のおまかせが人気。パスタレストランはデートにぴったりの雰囲気です。",
+        "blockLabel": "近くのレストラン"
+      },
+      {
+        "sessionTitle": "ヨーロッパ旅行の予算",
+        "otherSessions": ["パリの観光スポット", "イタリアのビザ情報"],
+        "userMessage": "ヨーロッパ2週間の旅行予算はどのくらい？",
+        "aiResponse": "ヨーロッパ2週間の旅行は 航空券約15万円 宿泊費約8万円 食費・交通費約6万円が目安です。合計30万円前後で余裕を持って旅行できます！",
+        "blockLabel": "ヨーロッパ旅行予算"
+      },
+      {
+        "sessionTitle": "投資の始め方",
+        "otherSessions": ["積立 vs ETF比較", "給料管理の方法"],
+        "userMessage": "投資を始めたいけど何から始めればいい？",
+        "aiResponse": "まず3ヶ月分の生活費を高利回り口座に緊急資金として確保しましょう。次に証券口座を開設して S&P500インデックスETFへの少額投資から始めるのがおすすめです。習慣を早く作ることが一番大切です！",
+        "blockLabel": "投資入門ガイド"
+      }
+    ]
   },
   "chatInterface": {
     "placeholder": "BlockMindにメッセージを送る...",
-    "errorQuota": "API使用量の上限を超えました。しばらくしてからもう一度お試しください。",
+    "errorQuota": "使用量の上限を超えました。しばらくしてからもう一度お試しください。",
     "errorGeneral": "エラーが発生しました。しばらくしてからもう一度お試しください。",
     "errorSaveFailed": "メッセージの保存に失敗しました。更新すると会話が失われる可能性があります。",
     "blockCreated": "ブロックが作成されました。",

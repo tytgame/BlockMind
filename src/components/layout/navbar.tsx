@@ -102,7 +102,7 @@ export function Navbar() {
               <>
                 <Button
                   size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-medium"
                   asChild
                 >
                   <Link href="/chat">
@@ -169,7 +169,7 @@ export function Navbar() {
                 </Button>
                 <Button
                   size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-medium"
                   asChild
                 >
                   <Link href="/chat">{t('getStarted')}</Link>

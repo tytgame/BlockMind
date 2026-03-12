@@ -73,11 +73,39 @@
     "termsOfService": "Terms of Service"
   },
   "demo": {
-    "placeholder": "Message BlockMind..."
+    "placeholder": "Message BlockMind...",
+    "sectionTitle": "See it in action",
+    "sectionSubtitle": "After each chat, AI automatically saves context as blocks",
+    "newChat": "+ New Chat",
+    "recent": "Recent",
+    "blockCreatedPrefix": "Block created —",
+    "scenarios": [
+      {
+        "sessionTitle": "Restaurant recs near Gangnam",
+        "otherSessions": ["Tomorrow's weather", "Plan my weekend"],
+        "userMessage": "Recommend 3 restaurants near Gangnam station",
+        "aiResponse": "Here are some popular spots near Gangnam! Bongpiyang is famous for its light Pyongyang cold noodles. Sushi Hyo is a great value omakase. The Place is a cozy pasta restaurant perfect for a date night.",
+        "blockLabel": "Gangnam Restaurants"
+      },
+      {
+        "sessionTitle": "Europe trip budget plan",
+        "otherSessions": ["Paris attractions", "Italy visa info"],
+        "userMessage": "How much budget do I need for 2 weeks in Europe?",
+        "aiResponse": "For 2 weeks in Europe expect around $900 for flights $450 for accommodation and $375 for food and transport. A total budget of $1,700 to $2,100 should give you a comfortable trip!",
+        "blockLabel": "Europe Trip Budget"
+      },
+      {
+        "sessionTitle": "Getting started with investing",
+        "otherSessions": ["Savings vs ETF", "Managing monthly salary"],
+        "userMessage": "I'm new to investing, where do I start?",
+        "aiResponse": "Start by building an emergency fund of 3 months expenses in a high-yield savings account. Then open an index fund account and begin investing small amounts in an S&P500 ETF. Building the habit early is the most important thing!",
+        "blockLabel": "Investing Starter Guide"
+      }
+    ]
   },
   "chatInterface": {
     "placeholder": "Message BlockMind...",
-    "errorQuota": "API quota exceeded. Please try again later.",
+    "errorQuota": "quota exceeded. Please try again later.",
     "errorGeneral": "An error occurred. Please try again later.",
     "errorSaveFailed": "Failed to save the message. The conversation may be lost if you refresh.",
     "blockCreated": "A block has been created.",

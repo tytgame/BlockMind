@@ -35,18 +35,10 @@ export function HeroSection() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button
             size="lg"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg font-semibold shadow-lg shadow-blue-600/30"
+            className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-6 text-lg font-semibold backdrop-blur-sm"
             asChild
           >
             <Link href="/chat">{t('startChatting')}</Link>
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-gray-700 bg-gray-800/50 hover:bg-gray-800 text-white px-8 py-6 text-lg"
-            asChild
-          >
-            <Link href="/#">{t('viewDocs')}</Link>
           </Button>
         </div>
       </div>

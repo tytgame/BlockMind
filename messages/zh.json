@@ -73,11 +73,39 @@
     "termsOfService": "服务条款"
   },
   "demo": {
-    "placeholder": "向 BlockMind 发送消息..."
+    "placeholder": "向 BlockMind 发送消息...",
+    "sectionTitle": "看看它如何工作",
+    "sectionSubtitle": "每次对话后，AI 会自动将上下文保存为块",
+    "newChat": "+ 新对话",
+    "recent": "最近",
+    "blockCreatedPrefix": "已创建块 —",
+    "scenarios": [
+      {
+        "sessionTitle": "推荐附近餐厅",
+        "otherSessions": ["明天天气怎样", "帮我规划周末"],
+        "userMessage": "推荐3家附近好吃的餐厅",
+        "aiResponse": "为您推荐几家人气餐厅！平壤冷面馆以清淡的汤底著称。寿司匠是性价比极高的怀石料理。意式餐厅氛围绝佳 非常适合约会。",
+        "blockLabel": "附近餐厅推荐"
+      },
+      {
+        "sessionTitle": "欧洲旅行预算计划",
+        "otherSessions": ["巴黎景点推荐", "意大利签证信息"],
+        "userMessage": "去欧洲旅行两周需要多少预算？",
+        "aiResponse": "欧洲两周旅行机票约6000元 住宿约3000元 餐饮交通约2500元。总预算11000到14000元左右就能舒适出行！",
+        "blockLabel": "欧洲旅行预算"
+      },
+      {
+        "sessionTitle": "理财入门指南",
+        "otherSessions": ["定期存款 vs ETF", "月薪管理方法"],
+        "userMessage": "我刚开始理财，从哪里入手？",
+        "aiResponse": "首先准备3个月生活费的应急资金存入高收益账户。然后开通指数基金账户 从小额投入标普500 ETF开始。养成投资习惯是最重要的一步！",
+        "blockLabel": "理财入门指南"
+      }
+    ]
   },
   "chatInterface": {
     "placeholder": "向 BlockMind 发送消息...",
-    "errorQuota": "API 配额已超出，请稍后再试。",
+    "errorQuota": "配额已超出，请稍后再试。",
     "errorGeneral": "发生错误，请稍后再试。",
     "errorSaveFailed": "消息保存失败。刷新后对话可能会丢失。",
     "blockCreated": "已创建一个块。",
