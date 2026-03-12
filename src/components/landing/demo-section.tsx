@@ -216,8 +216,8 @@ export function DemoSection() {
 
               {/* Toast notification */}
               <div
-                className={`absolute bottom-16 left-1/2 -translate-x-1/2 transition-all duration-500 z-10 ${
-                  showToast ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
+                className={`absolute top-4 left-1/2 -translate-x-1/2 transition-all duration-500 z-10 ${
+                  showToast ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3 pointer-events-none'
                 }`}
               >
                 <div className="flex items-center gap-2 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 shadow-xl whitespace-nowrap">

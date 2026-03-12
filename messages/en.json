@@ -108,7 +108,7 @@
     "errorQuota": "quota exceeded. Please try again later.",
     "errorGeneral": "An error occurred. Please try again later.",
     "errorSaveFailed": "Failed to save the message. The conversation may be lost if you refresh.",
-    "blockCreated": "A block has been created.",
+    "blockCreated": "Block created",
     "today": "Today",
     "you": "You",
     "thinking": "Thinking...",

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { toast } from 'sonner';
+import { CheckCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useBlockStore } from '@/store/block-store';
 import { useChatStore } from '@/store/chat-store';
@@ -44,6 +45,21 @@ interface UseChatSessionOptions {
 }
 
 const MAX_BLOCKS_PER_CYCLE = 1;
+
+// 블록 생성 토스트 콘텐츠 — 애니메이션은 globals.css에서 처리
+function BlockToast({ label, text }: { label: string; text: string }) {
+  return React.createElement(
+    'div',
+    { className: 'flex items-center gap-2 bg-[#2f3235] border border-white/10 rounded-lg px-3 py-2 shadow-xl whitespace-nowrap' },
+    React.createElement(CheckCircle, { className: 'w-3.5 h-3.5 text-green-500 flex-shrink-0' }),
+    React.createElement(
+      'span',
+      { className: 'text-xs text-gray-300' },
+      `${text} \u2014 `,
+      React.createElement('span', { className: 'text-white font-medium' }, label)
+    )
+  );
+}
 
 // ── 훅 ────────────────────────────────────────────────────────────────────
 
@@ -110,7 +126,10 @@ export function useChatSession({
           }
           const dbBlock = (await res.json()) as Block;
           appendBlock(dbBlock);
-          toast.success(t('blockCreated'));
+          toast.custom(
+            () => React.createElement(BlockToast, { label, text: t('blockCreated') }),
+            { duration: 3000, style: { background: 'transparent', border: 'none', padding: 0, boxShadow: 'none' } }
+          );
           existingKeys.add(blockKey);
           addedCount += 1;
         } catch (err) {

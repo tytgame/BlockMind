@@ -146,3 +146,21 @@
 *::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.32);
 }
+
+/* ── Sonner 토스트 슬라이드 애니메이션 ──────────────────────────────────────
+   Sonner는 CSS를 JS로 동적 주입하므로 globals.css보다 나중에 삽입됨.
+   같은 specificity에선 나중에 온 Sonner가 이기므로 !important 필수.
+   Enter : opacity-0 / translateY(-12px) → opacity-1 / translateY(0)
+   Exit  : opacity-1 / translateY(0)     → opacity-0 / translateY(-12px)
+──────────────────────────────────────────────────────────────────────────── */
+[data-sonner-toast][data-y-position='top'] {
+  transition: transform 500ms ease, opacity 500ms ease, height 400ms, box-shadow 200ms !important;
+}
+[data-sonner-toast][data-y-position='top']:not([data-mounted='true']) {
+  --y: translateY(-12px) !important;
+  opacity: 0 !important;
+}
+[data-sonner-toast][data-y-position='top'][data-removed='true'] {
+  --y: translateY(-12px) !important;
+  opacity: 0 !important;
+}
