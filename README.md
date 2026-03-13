@@ -6,10 +6,9 @@
 
 > AI가 지금 무엇을 기준으로 답하고 있는지 직접 확인하고 제어하는 컨텍스트 중심 AI 채팅 서비스
 
-![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js_16.1-000000?style=flat-square&logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
-![Gemini](https://img.shields.io/badge/Gemini_2.5_Flash-4285F4?style=flat-square&logo=google&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma_7-2D3748?style=flat-square&logo=prisma&logoColor=white)
 
@@ -51,16 +50,16 @@ BlockMind는 이 문제를 UI 레벨에서 다룹니다.
 - **DnD**: @dnd-kit/core, @dnd-kit/sortable
 
 ### Backend & AI
-- **AI**: Vercel AI SDK + Google Gemini 2.5 Flash
+- **AI**: Vercel AI SDK + LLM API
 - **Auth**: NextAuth.js v5, Google OAuth, Credentials (Email OTP)
 - **Database**: Prisma 7 + PostgreSQL (Supabase)
 - **Storage**: Supabase Storage (signed URL 방식)
-- **File Processing**: Mammoth (DOCX 텍스트 추출), Gemini Files API (PDF)
+- **File Processing**: Mammoth (DOCX 텍스트 추출), Files API (PDF)
 
 ### Infra & 기타
 - **i18n**: next-intl v4 (URL 기반 라우팅, `localePrefix: as-needed`)
 - **Email**: Resend
-- **Testing**: Jest + ts-jest (단위 테스트 176개)
+- **Testing**: Jest + ts-jest (단위 테스트 176개), Playwright (E2E)
 
 ---
 
@@ -155,9 +154,10 @@ npm run dev
 ### 기타 명령어
 
 ```bash
-npm test          # 단위 테스트 실행
-npm run build     # 프로덕션 빌드
-npm start         # 프로덕션 서버 실행
+npm test              # 단위 테스트 실행
+npm run test:e2e      # E2E 테스트 실행 (Playwright)
+npm run build         # 프로덕션 빌드
+npm start             # 프로덕션 서버 실행
 ```
 
 ---
@@ -166,4 +166,4 @@ npm start         # 프로덕션 서버 실행
 
 ## 라이선스
 
-이 프로젝트는 현재 라이선스가 지정되어 있지 않습니다.
+MIT License — 자세한 내용은 [LICENSE](LICENSE) 파일을 참고하세요.
