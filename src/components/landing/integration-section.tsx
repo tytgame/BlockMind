@@ -22,7 +22,7 @@ export function IntegrationSection() {
   }));
 
   return (
-    <section className="py-24 px-6 relative">
+    <section className="py-24 px-6 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-full blur-3xl" />

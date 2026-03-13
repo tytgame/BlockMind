@@ -150,7 +150,7 @@ export function DemoSection() {
           {/* 3-column layout */}
           <div className="flex h-[440px]">
             {/* Left: Chat sidebar */}
-            <div className="w-44 border-r border-gray-800 bg-[#141618] flex flex-col p-3 gap-1.5 flex-shrink-0">
+            <div className="hidden sm:flex w-44 border-r border-gray-800 bg-[#141618] flex-col p-3 gap-1.5 flex-shrink-0">
               <button className="w-full text-xs bg-blue-600 text-white rounded-md py-1.5 px-2 text-left mb-1">
                 {t('newChat')}
               </button>

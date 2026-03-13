@@ -25,6 +25,12 @@ export const metadata: Metadata = {
   description: "AI의 맥락을 블록으로 조립하여 완벽한 대화를 설계하세요",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

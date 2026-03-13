@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 import { LIMITS } from '@/lib/limits';
 import { BlockDetailDialog } from './block-detail-dialog';
 import { useTranslations } from 'next-intl';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 interface BlockItemProps {
   block: Block;
@@ -42,6 +43,8 @@ export function BlockItem({ block }: BlockItemProps) {
   const t = useTranslations('blockItem');
   const tLimits = useTranslations('limits');
 
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+
   const {
     attributes,
     listeners,
@@ -49,7 +52,7 @@ export function BlockItem({ block }: BlockItemProps) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: block.id });
+  } = useSortable({ id: block.id, disabled: !isDesktop });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -115,7 +118,7 @@ export function BlockItem({ block }: BlockItemProps) {
               {...attributes}
               {...listeners}
               onClick={(e) => e.stopPropagation()}
-              className="cursor-grab active:cursor-grabbing p-1 -ml-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/5 rounded"
+              className="cursor-grab active:cursor-grabbing p-1 -ml-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity hover:bg-white/5 rounded"
             >
               <GripVertical className="h-4 w-4 text-gray-500" />
             </div>
@@ -164,7 +167,7 @@ export function BlockItem({ block }: BlockItemProps) {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
               {/* PDF 만료 시 새로고침 버튼 */}
               {isPdf && expired && (
                 <Button

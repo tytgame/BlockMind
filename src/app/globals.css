@@ -164,3 +164,10 @@
   --y: translateY(-12px) !important;
   opacity: 0 !important;
 }
+
+/* ── 모바일 safe-area ─────────────────────────────────────────────────────── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  html {
+    --safe-bottom: env(safe-area-inset-bottom);
+  }
+}

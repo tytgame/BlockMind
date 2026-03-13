@@ -343,7 +343,7 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
               </div>
             </div>
           )}
-          <div className="px-6 py-4 border-t border-white/10">
+          <div className="px-3 py-4 sm:px-6 border-t border-white/10 pb-[calc(1rem+env(safe-area-inset-bottom))]">
             <div className="max-w-3xl mx-auto">
               {baseInputComposer}
               <p className="text-xs text-gray-500 text-center mt-3">{t('disclaimer')}</p>
@@ -351,7 +351,7 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
           </div>
         </>
       ) : (
-        <div className="flex-1 px-6">
+        <div className="flex-1 px-3 sm:px-6">
           <div className="h-full max-w-3xl mx-auto flex flex-col items-center justify-center pb-16">
             <div className="text-center text-gray-400 mb-8">
               <p className="text-4xl font-medium text-white mb-3">{t('greeting')}</p>

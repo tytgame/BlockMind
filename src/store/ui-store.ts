@@ -4,8 +4,12 @@ import { persist } from 'zustand/middleware';
 interface UIState {
   isChatSidebarCollapsed: boolean;
   isBlockSidebarCollapsed: boolean;
+  isMobileSidebarOpen: boolean;
+  isMobileBlockPanelOpen: boolean;
   setChatSidebarCollapsed: (collapsed: boolean) => void;
   setBlockSidebarCollapsed: (collapsed: boolean) => void;
+  setMobileSidebarOpen: (open: boolean) => void;
+  setMobileBlockPanelOpen: (open: boolean) => void;
 }
 
 export const useUIStore = create<UIState>()(
@@ -13,11 +17,19 @@ export const useUIStore = create<UIState>()(
     (set) => ({
       isChatSidebarCollapsed: true,
       isBlockSidebarCollapsed: true,
+      isMobileSidebarOpen: false,
+      isMobileBlockPanelOpen: false,
       setChatSidebarCollapsed: (collapsed) => set({ isChatSidebarCollapsed: collapsed }),
       setBlockSidebarCollapsed: (collapsed) => set({ isBlockSidebarCollapsed: collapsed }),
+      setMobileSidebarOpen: (open) => set({ isMobileSidebarOpen: open }),
+      setMobileBlockPanelOpen: (open) => set({ isMobileBlockPanelOpen: open }),
     }),
     {
-      name: 'blockmind-ui', // localStorage key
+      name: 'blockmind-ui',
+      partialize: (state) => ({
+        isChatSidebarCollapsed: state.isChatSidebarCollapsed,
+        isBlockSidebarCollapsed: state.isBlockSidebarCollapsed,
+      }),
     }
   )
 );

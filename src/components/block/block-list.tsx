@@ -30,9 +30,11 @@ import { getBlockIcon, getBlockIconColor } from '@/lib/get-block-icon';
 interface BlockListProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
+  forceCollapsed?: boolean;
 }
 
-export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
+export function BlockList({ collapsed, onToggleCollapse, forceCollapsed }: BlockListProps) {
+  const effectiveCollapsed = forceCollapsed ?? collapsed;
   const { blocks, reorderBlocks } = useBlockStore();
   const [selectedBlock, setSelectedBlock] = React.useState<Block | null>(null);
   const [isDetailOpen, setIsDetailOpen] = React.useState(false);
@@ -71,10 +73,10 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
     if (!open) setSelectedBlock(null);
   };
 
-  if (collapsed) {
+  if (effectiveCollapsed) {
     return (
       <>
-      <div className="h-full flex flex-col bg-[#1a1d21] text-white">
+      <div className="h-full w-full flex flex-col bg-[#1a1d21] text-white">
         <div className="p-3 border-b border-white/10 flex items-center justify-center">
           <Button
             variant="ghost"
@@ -164,7 +166,7 @@ export function BlockList({ collapsed, onToggleCollapse }: BlockListProps) {
   }
 
   return (
-    <div className="h-full flex flex-col bg-[#1a1d21]">
+    <div className="h-full w-full flex flex-col bg-[#1a1d21]">
       {/* Header */}
       <div className="px-4 py-4 border-b border-white/10 flex justify-between items-center">
         <h2 className="font-semibold text-white">{t('currentBlocks')}</h2>

@@ -3,7 +3,10 @@
 import * as React from 'react';
 import { ChatSidebar } from '@/components/chat/chat-sidebar';
 import { BlockList } from '@/components/block/block-list';
+import { MobileHeader } from '@/components/chat/mobile-header';
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import { useBlocksInit } from '@/hooks/use-blocks-init';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { useUIStore } from '@/store/ui-store';
 
 export default function ChatLayout({ children }: { children: React.ReactNode }) {
@@ -12,17 +15,28 @@ export default function ChatLayout({ children }: { children: React.ReactNode }) 
   const {
     isChatSidebarCollapsed,
     isBlockSidebarCollapsed,
+    isMobileSidebarOpen,
+    isMobileBlockPanelOpen,
     setChatSidebarCollapsed,
     setBlockSidebarCollapsed,
+    setMobileSidebarOpen,
+    setMobileBlockPanelOpen,
   } = useUIStore();
 
+  // 태블릿(md~lg): 사이드바 항상 접힘
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+
   return (
-    <div className="h-screen w-screen overflow-hidden bg-[#1a1d21] dark">
-      <div className="flex h-screen w-full overflow-hidden">
-        {/* Left Panel: Chat Sidebar */}
+    <div className="h-dvh w-screen overflow-hidden bg-[#1a1d21] dark">
+      <div className="flex h-full w-full flex-col overflow-hidden md:flex-row">
+
+        {/* Mobile Header (< md) */}
+        <MobileHeader />
+
+        {/* Left Panel: Chat Sidebar — md+: collapse 상태에 따라 72px or 256px */}
         <div
-          className={`h-full flex-shrink-0 border-r border-white/10 transition-[width,min-width] duration-300 ease-out ${
-            isChatSidebarCollapsed ? 'w-[72px] min-w-[72px]' : 'w-64 min-w-[256px]'
+          className={`hidden h-full flex-shrink-0 overflow-hidden border-r border-white/10 transition-[width,min-width] duration-300 ease-out md:flex ${
+            isChatSidebarCollapsed ? 'w-[72px] min-w-[72px]' : 'w-[256px] min-w-[256px]'
           }`}
         >
           <ChatSidebar
@@ -31,23 +45,55 @@ export default function ChatLayout({ children }: { children: React.ReactNode }) 
           />
         </div>
 
-        {/* Center Panel: Chat Interface (children) */}
-        <div className="flex-1 min-w-[400px] h-full">
+        {/* Center Panel: Chat Interface */}
+        <div className="min-w-0 flex-1 overflow-hidden">
           {children}
         </div>
 
-        {/* Right Panel: Block Context Stack */}
+        {/* Right Panel: Block Context Stack — md+: 태블릿은 72px 고정, 데스크톱은 collapse 상태 */}
         <div
-          className={`h-full flex-shrink-0 border-l border-white/10 transition-[width,min-width] duration-300 ease-out ${
-            isBlockSidebarCollapsed ? 'w-[72px] min-w-[72px]' : 'w-80 min-w-[320px]'
+          className={`hidden h-full flex-shrink-0 overflow-hidden border-l border-white/10 transition-[width,min-width] duration-300 ease-out md:flex ${
+            !isDesktop || isBlockSidebarCollapsed
+              ? 'w-[72px] min-w-[72px]'
+              : 'w-[320px] min-w-[320px]'
           }`}
         >
           <BlockList
             collapsed={isBlockSidebarCollapsed}
-            onToggleCollapse={() => setBlockSidebarCollapsed(!isBlockSidebarCollapsed)}
+            onToggleCollapse={
+              !isDesktop
+                ? () => setMobileBlockPanelOpen(true)
+                : () => setBlockSidebarCollapsed(!isBlockSidebarCollapsed)
+            }
+            forceCollapsed={isDesktop ? undefined : true}
           />
         </div>
       </div>
+
+      {/* Mobile: 세션 목록 Left Drawer */}
+      <Sheet open={isMobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
+        <SheetContent side="left" className="w-72 border-white/10 bg-[#1a1d21] p-0 text-white" hideCloseButton>
+          <SheetTitle className="sr-only">세션 목록</SheetTitle>
+          <SheetDescription className="sr-only">채팅 세션 목록</SheetDescription>
+          <ChatSidebar
+            collapsed={false}
+            onToggleCollapse={() => setMobileSidebarOpen(false)}
+            forceCollapsed={false}
+          />
+        </SheetContent>
+      </Sheet>
+
+      {/* Mobile: 블록 패널 Right Drawer */}
+      <Sheet open={isMobileBlockPanelOpen} onOpenChange={setMobileBlockPanelOpen}>
+        <SheetContent side="right" className="w-80 border-white/10 bg-[#1a1d21] p-0 text-white" hideCloseButton>
+          <SheetTitle className="sr-only">블록 패널</SheetTitle>
+          <SheetDescription className="sr-only">컨텍스트 블록 패널</SheetDescription>
+          <BlockList
+            collapsed={false}
+            onToggleCollapse={() => setMobileBlockPanelOpen(false)}
+          />
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

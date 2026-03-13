@@ -61,12 +61,14 @@ type SessionsResponse = {
 interface ChatSidebarProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
+  forceCollapsed?: boolean;
 }
 
 const iconRailButtonClass =
   'h-10 w-10 text-gray-300 hover:text-white hover:bg-white/10';
 
-export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
+export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: ChatSidebarProps) {
+  const effectiveCollapsed = forceCollapsed ?? collapsed;
   const { data: session } = useSession();
   const router = useRouter();
   const params = useParams<{ sessionId?: string }>();
@@ -275,9 +277,9 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
     );
   }
 
-  if (collapsed) {
+  if (effectiveCollapsed) {
     return (
-      <div className="flex h-full flex-col bg-[#1a1d21] text-white">
+      <div className="flex h-full w-full flex-col bg-[#1a1d21] text-white">
         <div className="flex items-center justify-center border-b border-white/10 p-3">
           <Button
             variant="ghost"
@@ -368,7 +370,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse }: ChatSidebarProps) {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-    <div className="flex flex-col h-full bg-[#1a1d21] text-white">
+    <div className="flex flex-col h-full w-full bg-[#1a1d21] text-white">
       {/* Header */}
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between">

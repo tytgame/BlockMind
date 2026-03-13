@@ -62,7 +62,7 @@ export function ChatMessageList({
     });
 
   return (
-    <div ref={scrollRef} onScroll={handleScroll} className="flex-1 px-6 overflow-y-auto">
+    <div ref={scrollRef} onScroll={handleScroll} className="flex-1 px-3 sm:px-6 overflow-y-auto">
       <div className="py-6 space-y-6 max-w-3xl mx-auto">
         {messages.map((m, index) => {
           const textContent = m.parts
