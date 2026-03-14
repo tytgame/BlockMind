@@ -1,7 +1,7 @@
 import { Navbar } from '@/components/layout/navbar';
 import { HeroSection } from '@/components/landing/hero-section';
+import { BeforeAfterSection } from '@/components/landing/before-after-section';
 import { DemoSection } from '@/components/landing/demo-section';
-import { FeaturesSection } from '@/components/landing/features-section';
 import { IntegrationSection } from '@/components/landing/integration-section';
 import { Footer } from '@/components/landing/footer';
 
@@ -11,8 +11,8 @@ export default function LandingPage() {
       <Navbar />
       <main>
         <HeroSection />
+        <BeforeAfterSection />
         <DemoSection />
-        <FeaturesSection />
         <IntegrationSection />
       </main>
       <Footer />

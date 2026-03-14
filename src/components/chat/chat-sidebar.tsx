@@ -427,7 +427,6 @@ export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: Cha
       {/* New Chat Button */}
       <div className="p-3">
         <Button onClick={handleNewChat} className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm gap-2">
-          <Plus className="h-4 w-4" />
           {t('newChat')}
         </Button>
       </div>

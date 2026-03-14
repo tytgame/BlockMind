@@ -22,7 +22,7 @@ import { BlockDetailDialog } from './block-detail-dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { type Block } from '@/types/block';
-import { ChevronLeft, ChevronRight, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import { getBlockIcon, getBlockIconColor } from '@/lib/get-block-icon';
@@ -126,18 +126,6 @@ export function BlockList({ collapsed, onToggleCollapse, forceCollapsed }: Block
             )}
           </div>
         </ScrollArea>
-
-        <div className="p-2 border-t border-white/10 flex items-center justify-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10 text-gray-300 hover:text-white hover:bg-white/10"
-            title={t('settings')}
-            aria-label={t('settings')}
-          >
-            <Settings className="h-5 w-5" />
-          </Button>
-        </div>
 
         <BlockDetailDialog
           block={selectedBlock}

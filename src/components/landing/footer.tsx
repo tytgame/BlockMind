@@ -7,42 +7,13 @@ import { Link } from '@/i18n/navigation';
 export function Footer() {
   const t = useTranslations('footer');
 
-  const footerColumns = [
-    {
-      title: t('product.title'),
-      links: [
-        { label: t('product.features'), href: '/#features' },
-        { label: t('product.pricing'), href: '/#' },
-        { label: t('product.docs'), href: '/#' },
-        { label: t('product.api'), href: '/#' },
-      ],
-    },
-    {
-      title: t('company.title'),
-      links: [
-        { label: t('company.about'), href: '/#' },
-        { label: t('company.contact'), href: '/#' },
-        { label: t('company.blog'), href: '/#' },
-        { label: t('company.careers'), href: '/#' },
-      ],
-    },
-    {
-      title: t('legal.title'),
-      links: [
-        { label: t('legal.privacy'), href: '/#' },
-        { label: t('legal.terms'), href: '/#' },
-        { label: t('legal.cookies'), href: '/#' },
-      ],
-    },
-  ];
-
   return (
     <footer className="relative border-t border-gray-800 bg-gray-950">
       <div className="container mx-auto px-6 py-12">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12">
           {/* Brand Column */}
-          <div className="col-span-2">
+          <div>
             <Link href="/" className="flex items-center mb-4">
               <span className="text-xl text-white font-sora">
                 <span className="font-bold">Block</span>
@@ -65,35 +36,16 @@ export function Footer() {
               </a>
             </div>
           </div>
-
-          {/* Link Columns */}
-          {footerColumns.map((column, index) => (
-            <div key={index}>
-              <h3 className="text-white font-semibold mb-4">{column.title}</h3>
-              <ul className="space-y-2">
-                {column.links.map((link, linkIndex) => (
-                  <li key={linkIndex}>
-                    <Link
-                      href={link.href}
-                      className="text-gray-400 hover:text-white text-sm transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
         </div>
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-500 text-sm">{t('copyright')}</p>
           <div className="flex gap-6">
-            <Link href="/#" className="text-gray-500 hover:text-gray-400 text-sm transition-colors">
+            <Link href="/privacy" className="text-gray-500 hover:text-gray-400 text-sm transition-colors">
               {t('privacyPolicy')}
             </Link>
-            <Link href="/#" className="text-gray-500 hover:text-gray-400 text-sm transition-colors">
+            <Link href="/terms" className="text-gray-500 hover:text-gray-400 text-sm transition-colors">
               {t('termsOfService')}
             </Link>
           </div>

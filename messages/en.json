@@ -10,7 +10,7 @@
   },
   "hero": {
     "badge": "BlockMind 1.0 is now available",
-    "headingLine1": "Experience the Power",
+    "headingLine1": "Explained it to AI from scratch again?",
     "headingLine2prefix": "of ",
     "headingLine2suffix": "",
     "subtitle": "Design perfect conversations by assembling AI context with blocks. A new way to communicate with AI through visual control of personas, rules, and data.",
@@ -39,10 +39,9 @@
     "sectionTitle": "Build with Blocks",
     "sectionSubtitle": "Build perfect AI context with four block types. Each block works independently and combines seamlessly.",
     "blocks": [
-      { "name": "Persona", "description": "Define AI role and personality" },
-      { "name": "Rule", "description": "Conversation rules and guidelines" },
-      { "name": "Data", "description": "Reference data and context" },
-      { "name": "Output", "description": "Output format and style" }
+      { "name": "Data", "description": "Your info, rules, and background written in text" },
+      { "name": "Image", "description": "Image files to show the AI" },
+      { "name": "File", "description": "PDFs and documents for the AI to reference" }
     ],
     "tip": "Drag blocks to reorder them, and click to activate or deactivate."
   },
@@ -72,34 +71,54 @@
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service"
   },
+  "beforeAfter": {
+    "eyebrow": "Sound familiar?",
+    "headingLine1": "Are you repeating yourself",
+    "headingLine2": "every time you talk to AI?",
+    "beforeLabel": "Without BlockMind",
+    "afterLabel": "With BlockMind",
+    "row1Before": "You explain the same background every single conversation",
+    "row1After": "Set a block once — AI always remembers who you are",
+    "row2Before": "Context vanishes when the chat ends, starting from scratch",
+    "row2After": "Key info is auto-saved as blocks and carries over",
+    "row3Before": "AI treats you like a stranger every time",
+    "row3After": "Jump straight to what matters — AI already knows your context"
+  },
   "demo": {
     "placeholder": "Message BlockMind...",
     "sectionTitle": "See it in action",
     "sectionSubtitle": "After each chat, AI automatically saves context as blocks",
-    "newChat": "+ New Chat",
+    "newChat": "New Chat",
     "recent": "Recent",
     "blockCreatedPrefix": "Block created —",
     "scenarios": [
       {
-        "sessionTitle": "Restaurant recs near Gangnam",
-        "otherSessions": ["Tomorrow's weather", "Plan my weekend"],
-        "userMessage": "Recommend 3 restaurants near Gangnam station",
-        "aiResponse": "Here are some popular spots near Gangnam! Bongpiyang is famous for its light Pyongyang cold noodles. Sushi Hyo is a great value omakase. The Place is a cozy pasta restaurant perfect for a date night.",
-        "blockLabel": "Gangnam Restaurants"
+        "sessionTitle": "Review Q2 Marketing Plan",
+        "otherSessions": ["Weekly team meeting notes", "Client proposal feedback"],
+        "userMessage": "Pull the key numbers from the Q2 plan I uploaded",
+        "aiResponse": "Here are the key figures from the Q2 plan. Target MAU 150K, ad budget $24K, projected conversion rate 4.2%. The core goal is 23% MAU growth from last quarter.",
+        "blockLabel": "Q2 Marketing Plan"
       },
       {
-        "sessionTitle": "Europe trip budget plan",
-        "otherSessions": ["Paris attractions", "Italy visa info"],
-        "userMessage": "How much budget do I need for 2 weeks in Europe?",
-        "aiResponse": "For 2 weeks in Europe expect around $900 for flights $450 for accommodation and $375 for food and transport. A total budget of $1,700 to $2,100 should give you a comfortable trip!",
-        "blockLabel": "Europe Trip Budget"
+        "sessionTitle": "Kakao PM Interview Prep",
+        "otherSessions": ["Resume final review", "Key competency keywords"],
+        "userMessage": "I have a Kakao PM interview tomorrow — give me likely questions",
+        "aiResponse": "Three must-prep PM questions: 'How do you prioritize features?', 'Tell me about a data-driven decision you made', and 'Share an example where you identified and fixed user pain.' Focus on these three.",
+        "blockLabel": "Kakao PM Interview"
       },
       {
-        "sessionTitle": "Getting started with investing",
-        "otherSessions": ["Savings vs ETF", "Managing monthly salary"],
-        "userMessage": "I'm new to investing, where do I start?",
-        "aiResponse": "Start by building an emergency fund of 3 months expenses in a high-yield savings account. Then open an index fund account and begin investing small amounts in an S&P500 ETF. Building the habit early is the most important thing!",
-        "blockLabel": "Investing Starter Guide"
+        "sessionTitle": "Thesis Chapter 2 Feedback",
+        "otherSessions": ["APA reference list", "Advisor revision notes"],
+        "userMessage": "The logic flow in Chapter 2 feels off — can you check it?",
+        "aiResponse": "The issue is jumping straight from concept definitions to empirical studies without a transition. Add a 'Limitations of Prior Research' section in between — it'll naturally lead into why your study is needed.",
+        "blockLabel": "Thesis Structure"
+      },
+      {
+        "sessionTitle": "Conflict with my manager",
+        "otherSessions": ["Dealing with burnout", "When to start job hunting"],
+        "userMessage": "My manager always dismisses my ideas — how do I handle this?",
+        "aiResponse": "When managers dismiss ideas quickly it's often a trust issue. Next time, show a small win first and back your proposal with data. That alone can dramatically increase how often your ideas land.",
+        "blockLabel": "Workplace Relationships"
       }
     ]
   },

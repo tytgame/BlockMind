@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { CheckCircle, UtensilsCrossed, Plane, DollarSign, type LucideIcon } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { CheckCircle, Briefcase, GraduationCap, BookOpen, Heart, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 interface BlockIcon {
@@ -10,16 +10,18 @@ interface BlockIcon {
 }
 
 const BLOCK_ICONS: BlockIcon[] = [
-  { Icon: UtensilsCrossed, color: 'text-yellow-400' },
-  { Icon: Plane,           color: 'text-sky-400'    },
-  { Icon: DollarSign,      color: 'text-green-400'  },
+  { Icon: Briefcase,     color: 'text-blue-400'   },
+  { Icon: GraduationCap, color: 'text-purple-400' },
+  { Icon: BookOpen,      color: 'text-yellow-400' },
+  { Icon: Heart,         color: 'text-pink-400'   },
 ];
 
 // 시나리오별 newBlock / existingBlocks 아이콘 (순서 고정)
 const SCENARIO_ICONS = [
   { newBlock: BLOCK_ICONS[0], existingBlocks: [BLOCK_ICONS[1], BLOCK_ICONS[2]] },
-  { newBlock: BLOCK_ICONS[1], existingBlocks: [BLOCK_ICONS[0], BLOCK_ICONS[2]] },
-  { newBlock: BLOCK_ICONS[2], existingBlocks: [BLOCK_ICONS[0], BLOCK_ICONS[1]] },
+  { newBlock: BLOCK_ICONS[1], existingBlocks: [BLOCK_ICONS[0], BLOCK_ICONS[3]] },
+  { newBlock: BLOCK_ICONS[2], existingBlocks: [BLOCK_ICONS[1], BLOCK_ICONS[3]] },
+  { newBlock: BLOCK_ICONS[3], existingBlocks: [BLOCK_ICONS[0], BLOCK_ICONS[2]] },
 ];
 
 const WORD_MS = 90;
@@ -151,7 +153,7 @@ export function DemoSection() {
           <div className="flex h-[440px]">
             {/* Left: Chat sidebar */}
             <div className="hidden sm:flex w-44 border-r border-gray-800 bg-[#141618] flex-col p-3 gap-1.5 flex-shrink-0">
-              <button className="w-full text-xs bg-blue-600 text-white rounded-md py-1.5 px-2 text-left mb-1">
+              <button className="w-full text-xs bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-md py-1.5 px-2 text-center mb-1">
                 {t('newChat')}
               </button>
               <div className="text-[10px] text-gray-600 px-1 mb-0.5">{t('recent')}</div>

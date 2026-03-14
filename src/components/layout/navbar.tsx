@@ -78,18 +78,18 @@ export function Navbar() {
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center gap-8">
-            <Link
+            {/* <Link
               href="/"
               className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
             >
               {t('home')}
-            </Link>
-            <Link
+            </Link> */}
+            {/* <Link
               href="/#features"
               className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
             >
               {t('features')}
-            </Link>
+            </Link> */}
           </div>
 
           {/* Action Buttons */}

@@ -1,22 +1,62 @@
 'use client';
 
-import { User, FileText, Database, FileOutput } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Image, FileText, PawPrint, Dumbbell, Plane, Code2, UtensilsCrossed, Music, BookOpen, Heart, Briefcase, Gamepad2, DollarSign, ShoppingBag, Home, Trophy, Film, User, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-const BLOCK_ICONS = [User, FileText, Database, FileOutput];
-const BLOCK_COLORS = [
-  'from-purple-600 to-purple-700',
-  'from-blue-600 to-blue-700',
-  'from-green-600 to-green-700',
-  'from-orange-600 to-orange-700',
+const CATEGORY_ICONS: { Icon: LucideIcon; color: string }[] = [
+  { Icon: Briefcase,     color: 'text-slate-300'   },
+  { Icon: Code2,         color: 'text-emerald-400' },
+  { Icon: BookOpen,      color: 'text-blue-400'    },
+  { Icon: UtensilsCrossed, color: 'text-yellow-400' },
+  { Icon: Heart,         color: 'text-rose-400'    },
+  { Icon: Plane,         color: 'text-sky-400'     },
+  { Icon: Music,         color: 'text-purple-400'  },
+  { Icon: DollarSign,    color: 'text-green-400'   },
+  { Icon: Gamepad2,      color: 'text-violet-400'  },
+  { Icon: PawPrint,      color: 'text-amber-400'   },
+  { Icon: Dumbbell,      color: 'text-orange-400'  },
+  { Icon: ShoppingBag,   color: 'text-pink-400'    },
+  { Icon: Home,          color: 'text-amber-300'   },
+  { Icon: Trophy,        color: 'text-lime-400'    },
+  { Icon: Film,          color: 'text-red-400'     },
+  { Icon: User,          color: 'text-cyan-400'    },
+];
+
+function CyclingIcon() {
+  const [idx, setIdx] = useState(0);
+  const [fade, setFade] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setIdx(prev => (prev + 1) % CATEGORY_ICONS.length);
+        setFade(true);
+      }, 200);
+    }, 1200);
+    return () => clearInterval(interval);
+  }, []);
+
+  const { Icon, color } = CATEGORY_ICONS[idx];
+  return (
+    <div className={`transition-opacity duration-200 ${fade ? 'opacity-100' : 'opacity-0'}`}>
+      <Icon className={`w-6 h-6 ${color}`} />
+    </div>
+  );
+}
+
+const BLOCK_CONFIG = [
+  { gradientFrom: 'from-blue-600', gradientTo: 'to-blue-700', cycling: true },
+  { gradientFrom: 'from-teal-600', gradientTo: 'to-teal-700', cycling: false, Icon: Image, color: 'text-teal-400' },
+  { gradientFrom: 'from-green-600', gradientTo: 'to-green-700', cycling: false, Icon: FileText, color: 'text-green-400' },
 ];
 
 export function IntegrationSection() {
   const t = useTranslations('integration');
   const blocks = t.raw('blocks') as Array<{ name: string; description: string }>;
   const blockTypes = blocks.map((block, i) => ({
-    icon: BLOCK_ICONS[i],
-    color: BLOCK_COLORS[i],
+    ...BLOCK_CONFIG[i],
     name: block.name,
     description: block.description,
   }));
@@ -40,34 +80,31 @@ export function IntegrationSection() {
         </div>
 
         {/* Block Type Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {blockTypes.map((block, index) => {
-            const Icon = block.icon;
-            return (
-              <div
-                key={index}
-                className="group relative p-6 rounded-xl border border-gray-800 bg-gray-900/50 hover:border-gray-700 transition-all duration-300 text-center"
-              >
-                {/* Icon */}
-                <div className={`mb-4 mx-auto inline-flex p-4 rounded-xl bg-gradient-to-br ${block.color} group-hover:scale-110 transition-transform duration-300`}>
-                  <Icon className="w-6 h-6 text-white" />
-                </div>
-
-                {/* Name */}
-                <h3 className="text-lg font-bold text-white mb-2">
-                  {block.name}
-                </h3>
-
-                {/* Description */}
-                <p className="text-xs text-gray-400">
-                  {block.description}
-                </p>
-
-                {/* Hover effect */}
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/0 to-white/0 group-hover:from-white/5 group-hover:to-white/5 transition-all duration-300" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {blockTypes.map((block, index) => (
+            <div
+              key={index}
+              className="group relative p-6 rounded-xl border border-gray-800 bg-gray-900/50 hover:border-gray-700 transition-all duration-300 text-center"
+            >
+              {/* Icon */}
+              <div className="mb-4 mx-auto inline-flex p-4 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                {block.cycling ? (
+                  <CyclingIcon />
+                ) : (
+                  block.Icon && <block.Icon className={`w-6 h-6 ${block.color}`} />
+                )}
               </div>
-            );
-          })}
+
+              {/* Name */}
+              <h3 className="text-lg font-bold text-white mb-2">{block.name}</h3>
+
+              {/* Description */}
+              <p className="text-xs text-gray-400">{block.description}</p>
+
+              {/* Hover effect */}
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/0 to-white/0 group-hover:from-white/5 group-hover:to-white/5 transition-all duration-300" />
+            </div>
+          ))}
         </div>
 
         {/* Additional Info */}

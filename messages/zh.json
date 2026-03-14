@@ -10,7 +10,7 @@
   },
   "hero": {
     "badge": "BlockMind 1.0 正式发布",
-    "headingLine1": "体验",
+    "headingLine1": "又从头给 AI 解释了一遍？",
     "headingLine2prefix": "",
     "headingLine2suffix": "的强大能力",
     "subtitle": "通过将 AI 上下文组装成块来设计完美的对话。通过对角色、规则和数据的可视化控制，以全新方式与 AI 沟通。",
@@ -39,10 +39,9 @@
     "sectionTitle": "用块构建",
     "sectionSubtitle": "使用四种块类型构建完美的 AI 上下文。每个块独立运作，无缝组合。",
     "blocks": [
-      { "name": "Persona", "description": "定义 AI 角色和个性" },
-      { "name": "Rule", "description": "对话规则和指南" },
-      { "name": "Data", "description": "参考数据和上下文" },
-      { "name": "Output", "description": "输出格式和风格" }
+      { "name": "数据", "description": "以文字写下的个人信息、规则和背景知识" },
+      { "name": "图片", "description": "要展示给 AI 的图片文件" },
+      { "name": "文件", "description": "PDF 及供 AI 参考的文档" }
     ],
     "tip": "拖动块可重新排序，点击可激活或停用。"
   },
@@ -72,34 +71,54 @@
     "privacyPolicy": "隐私政策",
     "termsOfService": "服务条款"
   },
+  "beforeAfter": {
+    "eyebrow": "是否有过这样的体验？",
+    "headingLine1": "每次和 AI 对话",
+    "headingLine2": "都要重复同样的话吗？",
+    "beforeLabel": "以前",
+    "afterLabel": "使用 BlockMind",
+    "row1Before": "每次对话开始时都要重新介绍自己的背景",
+    "row1After": "设置一次块，AI 永远记住你",
+    "row2Before": "对话结束后上下文消失，每次从头开始",
+    "row2After": "重要内容自动保存为块，下次继续",
+    "row3Before": "AI 每次都像第一次见面一样陌生",
+    "row3After": "根据你的情况直接开始核心对话"
+  },
   "demo": {
     "placeholder": "向 BlockMind 发送消息...",
     "sectionTitle": "看看它如何工作",
     "sectionSubtitle": "每次对话后，AI 会自动将上下文保存为块",
-    "newChat": "+ 新对话",
+    "newChat": "新对话",
     "recent": "最近",
     "blockCreatedPrefix": "已创建块 —",
     "scenarios": [
       {
-        "sessionTitle": "推荐附近餐厅",
-        "otherSessions": ["明天天气怎样", "帮我规划周末"],
-        "userMessage": "推荐3家附近好吃的餐厅",
-        "aiResponse": "为您推荐几家人气餐厅！平壤冷面馆以清淡的汤底著称。寿司匠是性价比极高的怀石料理。意式餐厅氛围绝佳 非常适合约会。",
-        "blockLabel": "附近餐厅推荐"
+        "sessionTitle": "审阅Q2营销企划书",
+        "otherSessions": ["团队周会记录整理", "客户提案反馈"],
+        "userMessage": "从我上传的Q2企划书里提取核心数据",
+        "aiResponse": "Q2企划书核心数据如下：目标MAU 15万、广告预算32万元、预期转化率4.2%。核心目标是比上季度MAU增长23%。",
+        "blockLabel": "Q2营销企划"
       },
       {
-        "sessionTitle": "欧洲旅行预算计划",
-        "otherSessions": ["巴黎景点推荐", "意大利签证信息"],
-        "userMessage": "去欧洲旅行两周需要多少预算？",
-        "aiResponse": "欧洲两周旅行机票约6000元 住宿约3000元 餐饮交通约2500元。总预算11000到14000元左右就能舒适出行！",
-        "blockLabel": "欧洲旅行预算"
+        "sessionTitle": "准备产品经理面试",
+        "otherSessions": ["简历最终版审阅", "核心能力关键词整理"],
+        "userMessage": "明天有PM面试，帮我列出可能被问到的问题",
+        "aiResponse": "三个必备PM面试题：'你如何确定功能优先级？'、'请分享一个数据驱动决策的经历'、'举例说明你如何发现并改善用户痛点'。重点准备这三个问题。",
+        "blockLabel": "PM面试准备"
       },
       {
-        "sessionTitle": "理财入门指南",
-        "otherSessions": ["定期存款 vs ETF", "月薪管理方法"],
-        "userMessage": "我刚开始理财，从哪里入手？",
-        "aiResponse": "首先准备3个月生活费的应急资金存入高收益账户。然后开通指数基金账户 从小额投入标普500 ETF开始。养成投资习惯是最重要的一步！",
-        "blockLabel": "理财入门指南"
+        "sessionTitle": "毕业论文第二章反馈",
+        "otherSessions": ["APA参考文献整理", "导师修改意见"],
+        "userMessage": "第二章理论框架的逻辑好像有点混乱，帮我看看",
+        "aiResponse": "问题在于从概念定义直接跳到实证研究，中间缺少过渡。加一个'现有研究的局限性'小节，就能自然引出为何需要本研究。",
+        "blockLabel": "毕业论文结构"
+      },
+      {
+        "sessionTitle": "如何处理和上司的冲突",
+        "otherSessions": ["如何克服职业倦怠", "什么时候开始跳槽准备"],
+        "userMessage": "上司总是无视我的想法，我该怎么办？",
+        "aiResponse": "上司快速否定想法通常是信任不足的问题。下次提案前先展示一个小成果，再用数据支撑你的建议，这样被采纳的概率会大幅提升。",
+        "blockLabel": "职场人际关系"
       }
     ]
   },
