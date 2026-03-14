@@ -150,7 +150,7 @@ export function useChatSession({
           const res = await fetch('/api/sessions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: userMessage.slice(0, 40) }),
+            body: JSON.stringify({ message: userMessage }),
           });
           if (!res.ok) {
             console.error('[useChatSession] 세션 생성 실패:', res.status);

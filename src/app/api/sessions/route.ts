@@ -1,11 +1,25 @@
+import { google } from '@ai-sdk/google';
+import { generateText } from 'ai';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 
 const createSessionSchema = z.object({
-  title: z.string().max(100).optional(),
+  message: z.string().min(1).max(2000),
 });
+
+async function generateSessionTitle(message: string): Promise<string> {
+  try {
+    const result = await generateText({
+      model: google('gemini-2.5-flash'),
+      prompt: `다음 메시지의 핵심 주제를 10자 이내로 요약해줘. 제목만 반환하고 다른 말은 하지 마.\n메시지: "${message}"`,
+    });
+    return result.text.trim().slice(0, 40) || message.slice(0, 40);
+  } catch {
+    return message.slice(0, 40);
+  }
+}
 
 const SESSION_PAGE_SIZE = 20;
 
@@ -60,7 +74,7 @@ export async function GET(req: Request) {
 }
 
 // POST /api/sessions — 새 채팅 세션 생성
-// body: { title?: string }
+// body: { message: string }
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -72,11 +86,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 
+  const title = await generateSessionTitle(parsed.data.message);
+
   const chatSession = await prisma.chatSession.create({
-    data: {
-      userId: session.user.id,
-      title: parsed.data.title ?? null,
-    },
+    data: { userId: session.user.id, title },
   });
 
   return NextResponse.json(chatSession, { status: 201 });
