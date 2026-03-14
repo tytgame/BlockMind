@@ -128,6 +128,8 @@
     "settings": "설정",
     "recents": "최근",
     "noRecentChats": "최근 대화 없음",
+    "searchResults": "검색 결과",
+    "noSearchResults": "검색 결과가 없어요",
     "noPinnedChats": "고정된 대화 없음",
     "noFolders": "폴더 없음",
     "pin": "고정",

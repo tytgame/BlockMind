@@ -154,14 +154,14 @@ export function ChatInputComposer({
                   {charCount} / {charLimit}
                 </span>
               )}
-              <Button
+              {/* <Button
                 type="button"
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
               >
                 <Settings className="h-4 w-4" />
-              </Button>
+              </Button> */}
               {isLoading ? (
                 <Button
                   type="button"

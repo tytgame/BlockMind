@@ -128,6 +128,8 @@
     "settings": "設定",
     "recents": "最近",
     "noRecentChats": "最近のチャットはありません",
+    "searchResults": "検索結果",
+    "noSearchResults": "検索結果がありません",
     "noPinnedChats": "固定されたチャットはありません",
     "noFolders": "フォルダはありません",
     "pin": "固定",

@@ -128,6 +128,8 @@
     "settings": "设置",
     "recents": "最近",
     "noRecentChats": "暂无最近对话",
+    "searchResults": "搜索结果",
+    "noSearchResults": "无搜索结果",
     "noPinnedChats": "暂无置顶对话",
     "noFolders": "暂无文件夹",
     "pin": "置顶",

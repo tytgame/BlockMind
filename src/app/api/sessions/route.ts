@@ -32,10 +32,8 @@ const SESSION_SELECT = {
 } as const;
 
 // GET /api/sessions — 내 채팅 세션 목록
-// 응답: { pinnedSessions: [...], sessions: [...], hasMore: boolean }
-// - pinnedSessions: 고정된 세션 전체 (pinnedAt desc)
-// - sessions: 고정 안 된 세션 cursor 페이지네이션 (updatedAt desc)
-// ?cursor=ISO_DATETIME&limit=20
+// ?cursor=ISO_DATETIME&limit=20  (일반 목록)
+// ?q=검색어                       (제목 검색, cursor/limit 무시)
 export async function GET(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -43,6 +41,22 @@ export async function GET(req: Request) {
   }
 
   const { searchParams } = new URL(req.url);
+  const q = searchParams.get('q')?.trim();
+
+  // 검색 모드: 전체 DB에서 title ILIKE 검색, pagination 없음
+  if (q) {
+    const sessions = await prisma.chatSession.findMany({
+      where: {
+        userId: session.user.id,
+        title: { contains: q, mode: 'insensitive' },
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: 50,
+      select: SESSION_SELECT,
+    });
+    return NextResponse.json({ pinnedSessions: [], sessions, hasMore: false });
+  }
+
   const cursor = searchParams.get('cursor');
   const limit = Math.min(Number(searchParams.get('limit') ?? SESSION_PAGE_SIZE), 50);
 

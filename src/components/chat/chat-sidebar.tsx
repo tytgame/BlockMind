@@ -26,7 +26,6 @@ import {
 import {
   Plus,
   Search,
-  Settings,
   Pin,
   PinOff,
   Trash2,
@@ -65,7 +64,7 @@ interface ChatSidebarProps {
 }
 
 const iconRailButtonClass =
-  'h-10 w-10 text-gray-300 hover:text-white hover:bg-white/10';
+  'h-10 w-10 rounded-lg text-gray-300 hover:text-white hover:bg-white/20';
 
 export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: ChatSidebarProps) {
   const effectiveCollapsed = forceCollapsed ?? collapsed;
@@ -78,6 +77,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: Cha
   const { clearPendingMessages, lastCreatedSessionId, setLastCreatedSessionId } = useChatStore();
   const { navigateToSession } = useSessionNavigation();
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [debouncedQuery, setDebouncedQuery] = React.useState('');
 
   // 고정 세션 (전체), 미고정 세션 (pagination)
   const [pinnedSessions, setPinnedSessions] = React.useState<ChatSessionItem[]>([]);
@@ -87,6 +87,8 @@ export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: Cha
   const [isLoadingMore, setIsLoadingMore] = React.useState(false);
   const [newSessionId, setNewSessionId] = React.useState<string | null>(null);
   const [deleteTargetId, setDeleteTargetId] = React.useState<string | null>(null);
+  const [shouldFocusSearch, setShouldFocusSearch] = React.useState(false);
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   const t = useTranslations('chatSidebar');
   const tNav = useTranslations('nav');
@@ -120,6 +122,41 @@ export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: Cha
     } catch { /* silent */ }
     finally { setIsLoadingMore(false); }
   }, []);
+
+  // 패널 펼친 후 검색창 포커스
+  React.useEffect(() => {
+    if (!effectiveCollapsed && shouldFocusSearch) {
+      const timer = setTimeout(() => {
+        searchInputRef.current?.focus();
+        setShouldFocusSearch(false);
+      }, 300); // 펼침 애니메이션 후
+      return () => clearTimeout(timer);
+    }
+  }, [effectiveCollapsed, shouldFocusSearch]);
+
+  // 검색어 debounce (300ms)
+  React.useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(searchQuery.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // debounced query 변경 시 검색 또는 초기화
+  React.useEffect(() => {
+    if (debouncedQuery) {
+      void (async () => {
+        try {
+          const res = await fetch(`/api/sessions?q=${encodeURIComponent(debouncedQuery)}`);
+          if (!res.ok) return;
+          const data = (await res.json()) as SessionsResponse;
+          setPinnedSessions([]);
+          setSessions(data.sessions);
+          setHasMore(false);
+        } catch { /* silent */ }
+      })();
+    } else {
+      void loadInitial();
+    }
+  }, [debouncedQuery, loadInitial]);
 
   React.useEffect(() => { void loadInitial(); }, [loadInitial]);
 
@@ -293,29 +330,18 @@ export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: Cha
           </Button>
         </div>
         <div className="flex flex-1 flex-col items-center gap-2 px-2 py-3">
-          <Link
-            href="/"
-            className={`mb-2 rounded-lg flex items-center justify-center ${iconRailButtonClass}`}
-            aria-label={t('goToHome')}
-            title={t('goToHome')}
-          >
+          <Button variant="ghost" size="icon" className={`mb-2 ${iconRailButtonClass}`} aria-label={t('goToHome')} title={t('goToHome')} onClick={() => router.push('/')}>
             <Home className="h-5 w-5" />
-          </Link>
+          </Button>
           <Button variant="ghost" size="icon" className={iconRailButtonClass} title={t('newChat')} aria-label={t('newChat')} onClick={handleNewChat}>
             <Plus className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className={iconRailButtonClass} title={t('search')} aria-label={t('search')}>
+          <Button variant="ghost" size="icon" className={iconRailButtonClass} title={t('search')} aria-label={t('search')} onClick={() => { onToggleCollapse(); setShouldFocusSearch(true); }}>
             <Search className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon" className={iconRailButtonClass} title={t('pinned')} aria-label={t('pinned')}>
-            <Pin className="h-5 w-5" />
           </Button>
         </div>
         <div className="border-t border-white/10 p-2">
           <div className="flex flex-col items-center gap-2">
-            <Button variant="ghost" size="icon" className={iconRailButtonClass} title={t('settings')} aria-label={t('settings')}>
-              <Settings className="h-5 w-5" />
-            </Button>
             {session?.user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -400,7 +426,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: Cha
 
       {/* New Chat Button */}
       <div className="p-3">
-        <Button onClick={handleNewChat} className="w-full bg-blue-600 hover:bg-blue-700 text-white gap-2">
+        <Button onClick={handleNewChat} className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm gap-2">
           <Plus className="h-4 w-4" />
           {t('newChat')}
         </Button>
@@ -411,6 +437,7 @@ export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: Cha
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
+            ref={searchInputRef}
             placeholder={t('searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -423,11 +450,13 @@ export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: Cha
       <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-3">
         <div className="mb-2">
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1 px-2">
-            {t('recents')}
+            {debouncedQuery ? t('searchResults') : t('recents')}
           </h3>
           <div className="space-y-0.5">
             {pinnedSessions.length === 0 && sessions.length === 0 && (
-              <p className="px-2 py-1 text-xs text-gray-500">{t('noRecentChats')}</p>
+              <p className="px-2 py-1 text-xs text-gray-500">
+                {debouncedQuery ? t('noSearchResults') : t('noRecentChats')}
+              </p>
             )}
             {/* 고정된 세션 (맨 위) */}
             {pinnedSessions.map((chat) => (
@@ -451,10 +480,6 @@ export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: Cha
 
       {/* Bottom */}
       <div className="border-t border-white/10 p-3 space-y-2">
-        <button className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-left text-gray-300 hover:bg-white/5 transition-colors">
-          <Settings className="h-4 w-4" />
-          <span className="text-sm">{t('settings')}</span>
-        </button>
         {session?.user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

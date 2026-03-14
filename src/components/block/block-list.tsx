@@ -171,13 +171,13 @@ export function BlockList({ collapsed, onToggleCollapse, forceCollapsed }: Block
       <div className="px-4 py-4 border-b border-white/10 flex justify-between items-center">
         <h2 className="font-semibold text-white">{t('currentBlocks')}</h2>
         <div className="flex items-center gap-1">
-          <Button
+          {/* <Button
             variant="ghost"
             size="icon"
             className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
           >
             <Settings className="h-4 w-4" />
-          </Button>
+          </Button> */}
           <Button
             variant="ghost"
             size="icon"
