@@ -1,4 +1,4 @@
-# BlockMind
+# BlockMind: 대화 정보를 블록 형태로 저장하는 방법
 
 <p align="center">
   <img src="public/newTextLogo.png" alt="BlockMind Logo" width="600" />
