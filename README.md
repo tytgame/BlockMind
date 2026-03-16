@@ -1,10 +1,10 @@
-# BlockMind: 대화 맥락을 블록 형태로 저장하는 방법
+# BlockMind
 
 <p align="center">
   <img src="public/newTextLogo.png" alt="BlockMind Logo" width="600" />
 </p>
 
-> AI가 지금 무엇을 기준으로 답하고 있는지 직접 확인하고 제어하는 컨텍스트 중심 AI 채팅 서비스
+> AI가 지금 무엇을 기준으로 답하고 있는지 직접 확인하고 맥락을 관리하는 메모리 중심 AI 채팅 서비스
 
 ![Next.js](https://img.shields.io/badge/Next.js_16.1-000000?style=flat-square&logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
