@@ -13,7 +13,7 @@
     "headingLine1": "AI에게 또 처음부터 설명했나요?",
     "headingLine2prefix": "",
     "headingLine2suffix": "",
-    "subtitle": "BlockMind에서 AI의 기억을 블록으로 만들고 직접 보면서 대화하세요. ",
+    "subtitle": "BlockMind에서 메모리 블록을 만들고 기억을 확인하며 대화하세요. ",
     "startChatting": "무료로 시작하기",
     "viewDocs": "API 문서"
   },
@@ -86,7 +86,7 @@
   },
   "demo": {
     "placeholder": "BlockMind에게 메시지 보내기...",
-    "sectionTitle": "실제로 어떻게 작동할까요?",
+    "sectionTitle": "실제로 이렇게 작동해요",
     "sectionSubtitle": "대화 후 AI가 자동으로 맥락을 블록으로 저장합니다",
     "newChat": "새 채팅",
     "recent": "최근",
@@ -209,7 +209,10 @@
     "invalidEmail": "올바른 이메일 주소를 입력해 주세요.",
     "sendingCode": "코드 전송 중...",
     "sendError": "이메일 발송에 실패했습니다. 다시 시도해 주세요.",
-    "tooManyRequests": "잠시 후 다시 시도해 주세요. (1분 후 재요청 가능)"
+    "tooManyRequests": "잠시 후 다시 시도해 주세요. (1분 후 재요청 가능)",
+    "inAppBrowserWarning": "카카오톡 등 앱 내 브라우저에서는 Google 로그인이 지원되지 않습니다.",
+    "openInBrowser": "외부 브라우저에서 열기",
+    "useEmailInstead": "이메일로 로그인해 주세요."
   },
   "verify": {
     "title": "받은 편지함을 확인하세요",

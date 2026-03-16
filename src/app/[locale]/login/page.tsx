@@ -7,8 +7,25 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { AlertTriangle, ExternalLink } from 'lucide-react';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function isInAppBrowser(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent;
+  return /KAKAOTALK|Instagram|FBAN|FBAV|Line\/|MicroMessenger|Snapchat/.test(ua);
+}
+
+function getExternalBrowserUrl(): string {
+  // Android: intent URL scheme으로 기본 브라우저 강제 실행
+  if (/Android/i.test(navigator.userAgent)) {
+    const url = window.location.href;
+    return `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;action=android.intent.action.VIEW;end;`;
+  }
+  // iOS / 기타: 그냥 현재 URL (사용자가 직접 복사해서 Safari 열어야 함)
+  return window.location.href;
+}
 
 export default function LoginPage() {
   const params = useParams();
@@ -20,6 +37,11 @@ export default function LoginPage() {
   const [emailError, setEmailError] = React.useState('');
   const [isSending, setIsSending] = React.useState(false);
   const [sendError, setSendError] = React.useState('');
+  const [inAppBrowser, setInAppBrowser] = React.useState(false);
+
+  React.useEffect(() => {
+    setInAppBrowser(isInAppBrowser());
+  }, []);
 
   const callbackUrl = locale === 'ko' ? '/chat' : `/${locale}/chat`;
 
@@ -86,11 +108,32 @@ export default function LoginPage() {
                 <p className="text-gray-400">{t('subtitle')}</p>
               </div>
 
+              {/* In-App Browser Warning */}
+              {inAppBrowser && (
+                <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 shrink-0 text-amber-400 mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-amber-200 mb-2">{t('inAppBrowserWarning')}</p>
+                      <p className="text-xs text-amber-300/70 mb-3">{t('useEmailInstead')}</p>
+                      <a
+                        href={getExternalBrowserUrl()}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-300 hover:text-amber-100 transition-colors"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                        {t('openInBrowser')}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Google Sign In */}
               <Button
                 onClick={handleGoogleSignIn}
+                disabled={inAppBrowser}
                 size="lg"
-                className="w-full bg-white hover:bg-gray-100 text-gray-900 font-medium py-6 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-white/10"
+                className="w-full bg-white hover:bg-gray-100 text-gray-900 font-medium py-6 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-white/10 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />

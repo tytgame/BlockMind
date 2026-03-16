@@ -209,7 +209,10 @@
     "invalidEmail": "有効なメールアドレスを入力してください。",
     "sendingCode": "コード送信中...",
     "sendError": "メール送信に失敗しました。もう一度お試しください。",
-    "tooManyRequests": "しばらくしてからお試しください。（1分後に再試行可能）"
+    "tooManyRequests": "しばらくしてからお試しください。（1分後に再試行可能）",
+    "inAppBrowserWarning": "KakaoTalkやInstagramなどのアプリ内ブラウザではGoogleログインがご利用いただけません。",
+    "openInBrowser": "ブラウザで開く",
+    "useEmailInstead": "メールでログインしてください。"
   },
   "verify": {
     "title": "受信トレイを確認してください",

@@ -209,7 +209,10 @@
     "invalidEmail": "请输入有效的电子邮件地址。",
     "sendingCode": "发送中...",
     "sendError": "发送失败，请重试。",
-    "tooManyRequests": "请稍后再试。（1分钟后可重新请求）"
+    "tooManyRequests": "请稍后再试。（1分钟后可重新请求）",
+    "inAppBrowserWarning": "在应用内浏览器（如KakaoTalk、Instagram等）中不支持Google登录。",
+    "openInBrowser": "在浏览器中打开",
+    "useEmailInstead": "请使用邮箱登录。"
   },
   "verify": {
     "title": "请查看您的收件箱",

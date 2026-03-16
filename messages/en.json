@@ -209,7 +209,10 @@
     "invalidEmail": "Please enter a valid email address.",
     "sendingCode": "Sending code...",
     "sendError": "Failed to send email. Please try again.",
-    "tooManyRequests": "Please wait before trying again. (Retry available after 1 minute)"
+    "tooManyRequests": "Please wait before trying again. (Retry available after 1 minute)",
+    "inAppBrowserWarning": "Google sign-in is not supported in in-app browsers (KakaoTalk, Instagram, etc.).",
+    "openInBrowser": "Open in Browser",
+    "useEmailInstead": "Please use email sign-in instead."
   },
   "verify": {
     "title": "Check your inbox",
