@@ -174,7 +174,7 @@ export default function VerifyPage() {
                   type="submit"
                   size="lg"
                   disabled={otpValue.length !== 6 || isVerifying}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-6 rounded-xl transition-all duration-200 disabled:opacity-50"
+                  className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-sm font-semibold py-6 rounded-xl transition-all duration-200 disabled:opacity-50"
                 >
                   {isVerifying ? t('verifying') : t('submit')}
                 </Button>
