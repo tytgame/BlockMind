@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { createAdminClient, STORAGE_BUCKET } from '@/lib/supabase/admin';
+import { getUserBlocks } from '@/lib/get-user-blocks';
 
 const createBlockSchema = z.object({
   type: z.enum(['data', 'image', 'file']),
@@ -28,45 +29,8 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const blocks = await prisma.block.findMany({
-    where: { userId: session.user.id },
-    orderBy: { order: 'asc' },
-    include: { sourceSession: { select: { title: true } } },
-  });
-
-  // sourceSessionTitle을 flat하게 주입, sourceSession 관계 제거
-  const flatBlocks = blocks.map(({ sourceSession, ...b }) => ({
-    ...b,
-    sourceSessionTitle: sourceSession?.title ?? null,
-  }));
-
-  // 파일이 있는 블록에 signedUrl 주입 — 5개씩 청크로 처리 (동시 호출 제한 + 단일 실패 격리)
-  const CONCURRENCY = 5;
-  const fileIndices = flatBlocks.reduce<number[]>((acc, b, i) => {
-    if (b.fileUrl) acc.push(i);
-    return acc;
-  }, []);
-
-  if (fileIndices.length === 0) {
-    return NextResponse.json(flatBlocks);
-  }
-
-  const supabase = createAdminClient();
-  const withSignedUrls = flatBlocks.map((b) => ({ ...b, signedUrl: null as string | null }));
-
-  for (let i = 0; i < fileIndices.length; i += CONCURRENCY) {
-    const chunk = fileIndices.slice(i, i + CONCURRENCY);
-    await Promise.allSettled(
-      chunk.map(async (idx) => {
-        const { data } = await supabase.storage
-          .from(STORAGE_BUCKET)
-          .createSignedUrl(flatBlocks[idx].fileUrl!, 3600);
-        withSignedUrls[idx].signedUrl = data?.signedUrl ?? null;
-      })
-    );
-  }
-
-  return NextResponse.json(withSignedUrls);
+  const blocks = await getUserBlocks(session.user.id);
+  return NextResponse.json(blocks);
 }
 
 // POST /api/blocks — 블록 생성
