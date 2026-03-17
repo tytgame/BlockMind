@@ -4,7 +4,7 @@
   <img src="public/newTextLogo.png" alt="BlockMind Logo" width="600" />
 </p>
 
-> AI가 지금 무엇을 기준으로 답하고 있는지 직접 확인하고 맥락을 관리하는 메모리 중심 AI 채팅 서비스
+> AI가 지금 무엇을 기준으로 답하고 있는지 확인하고 맥락을 관리하는 AI 채팅 서비스
 
 ![Next.js](https://img.shields.io/badge/Next.js_16.1-000000?style=flat-square&logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
@@ -30,12 +30,10 @@ BlockMind는 이 문제를 UI 레벨에서 다룹니다.
 
 | 기능 | 설명 |
 |------|------|
-| **자동 블록 추출** | AI 응답 완료 후 durable context를 자동으로 추출해 블록으로 저장 |
-| **블록 활성** | 블록 적용 토글, dnd로 블록 순서 조정 |
-| **스트리밍 채팅** | Google LLM 기반 응답, Markdown/GFM 형식으로 출력 |
-| **파일 첨부** | 이미지, PDF, DOCX 업로드 지원. 파일이 메시지와 블록에 연결됨 |
-| **채팅 관리** | 채팅 CRUD, 현재 세션 자동 복원 |
-| **컨텍스트 리셋** | 블록 활성화 변경 시 해당 시점 이전 대화는 AI 컨텍스트에서 제외 |
+| **자동 블록 추출** | AI 응답 완료 후 주요 정보를 자동으로 추출해 블록으로 저장 |
+| **블록 활성** | 블록 적용 토글, 블록 순서 조정 |
+| **파일 첨부** | 이미지, PDF, DOCX 업로드 지원. 파일이 메시지와 블록에 연결 |
+| **맥락 리셋** | 블록 비활성화 시 해당 블록 정보는 AI 메모리에서 제외 |
 | **다국어 지원** | 한국어, 영어, 중국어, 일본어 |
 | **인증** | Google OAuth + 이메일 OTP 로그인 |
 
@@ -57,9 +55,9 @@ BlockMind는 이 문제를 UI 레벨에서 다룹니다.
 - **File Processing**: Mammoth (DOCX 텍스트 추출), Files API (PDF)
 
 ### Infra & 기타
-- **i18n**: next-intl v4 (URL 기반 라우팅, `localePrefix: as-needed`)
+- **i18n**: next-intl v4 (URL 기반 라우팅)
 - **Email**: Resend
-- **Testing**: Jest + ts-jest (단위 테스트 176개), Playwright (E2E)
+- **Testing**: Jest + ts-jest (단위 테스트 176개), Playwright (E2E 2건)
 
 ---
 
@@ -82,46 +80,8 @@ AI 응답 완료
 
 ---
 
-## 프로젝트 구조
 
-```text
-.
-├─ prisma/
-│  └─ schema.prisma          # User, ChatSession, Message, Block, DailyUsage
-├─ messages/                 # i18n 번역 파일
-│  ├─ ko.json
-│  ├─ en.json
-│  ├─ zh.json
-│  └─ ja.json
-├─ src/
-│  ├─ app/
-│  │  ├─ [locale]/
-│  │  │  ├─ page.tsx         # 랜딩 페이지
-│  │  │  ├─ login/           # Google OAuth + Email OTP
-│  │  │  └─ chat/            # 3-column 채팅 레이아웃
-│  │  │     └─ [sessionId]/  # 세션별 채팅 페이지
-│  │  └─ api/
-│  │     ├─ auth/            # send-otp
-│  │     ├─ chat/            # Gemini 스트리밍
-│  │     ├─ sessions/        # 세션 CRUD + 메시지 저장
-│  │     ├─ blocks/          # 블록 CRUD + 자동 추출 + reorder
-│  │     ├─ files/           # 업로드 URL 발급 + 다운로드
-│  │     └─ upload/          # 텍스트 추출 + Gemini Files API
-│  ├─ components/
-│  │  ├─ chat/               # ChatInterface, ChatSidebar, 메시지 렌더링
-│  │  ├─ block/              # BlockList, BlockItem, BlockDetailDialog
-│  │  └─ ui/                 # shadcn/ui 기반 공통 컴포넌트
-│  ├─ hooks/                 # use-chat-session, use-file-attachment 등
-│  ├─ lib/                   # build-system-prompt, slice-messages-by-reset 등
-│  ├─ store/                 # Zustand: block-store, chat-store, ui-store
-│  ├─ types/
-│  └─ __tests__/unit/        # Jest 단위 테스트
-└─ next.config.ts
-```
-
----
-
-## 로컬 실행
+## 실행 방법
 
 ### 사전 준비
 
