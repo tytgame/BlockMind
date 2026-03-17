@@ -203,6 +203,7 @@ export function BlockItem({ block }: BlockItemProps) {
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6 text-gray-500 hover:text-white hover:bg-white/10"
+                data-testid="block-visibility-toggle"
                 onClick={(e) => {
                   e.stopPropagation();
                   const newVisibility = !block.isVisible;

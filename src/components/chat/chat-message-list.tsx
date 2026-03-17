@@ -75,7 +75,7 @@ export function ChatMessageList({
           const msgFiles: SentFileInfo[] = messageFilesMap[m.id] ?? [];
 
           return (
-            <div key={m.id} data-message-id={m.id}>
+            <div key={m.id} data-message-id={m.id} data-role={m.role}>
               {index === 0 && (
                 <div className="flex justify-center mb-6">
                   <span className="text-xs text-gray-500 bg-[#1a1d21] px-3 py-1 rounded-full">
