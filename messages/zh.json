@@ -157,7 +157,8 @@
     "deleteConfirmTitle": "删除此对话？",
     "deleteConfirmDescription": "此操作永久不可撤销。聊天记录、附件以及从此对话中创建的所有块将被永久删除。",
     "deleteConfirmCancel": "取消",
-    "deleteConfirmDelete": "删除"
+    "deleteConfirmDelete": "删除",
+    "syncFailed": "保存失败，请重试。"
   },
   "blockList": {
     "expandSidebar": "展开块面板",
@@ -181,7 +182,8 @@
     "download": "下载",
     "source": "块来源",
     "goToSource": "查看来源对话",
-    "noSource": "无来源"
+    "noSource": "无来源",
+    "syncFailed": "保存失败，请重试。"
   },
   "fileUpload": {
     "errorSizeImage": "图片大小不能超过 10MB。",

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useSession, signOut } from 'next-auth/react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -216,17 +217,19 @@ export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: Cha
     void fetch(`/api/sessions/${id}`, { method: 'DELETE' });
   }
 
-  // 고정 토글 (optimistic update)
+  // 고정 토글 (optimistic update + rollback)
   async function handleTogglePin(e: React.MouseEvent, chat: ChatSessionItem) {
     e.stopPropagation();
     const newIsPinned = !chat.isPinned;
 
+    // 이전 상태 캡처 (rollback용)
+    const prevPinned = [...pinnedSessions];
+    const prevSessions = [...sessions];
+
     if (newIsPinned) {
-      // 미고정 → 고정: sessions에서 제거, pinnedSessions 맨 앞에 추가
       setSessions((prev) => prev.filter((s) => s.id !== chat.id));
       setPinnedSessions((prev) => [{ ...chat, isPinned: true, pinnedAt: new Date().toISOString() }, ...prev]);
     } else {
-      // 고정 → 미고정: pinnedSessions에서 제거, sessions 적절한 위치에 삽입
       setPinnedSessions((prev) => prev.filter((s) => s.id !== chat.id));
       setSessions((prev) => {
         const unpinned = { ...chat, isPinned: false, pinnedAt: null };
@@ -238,12 +241,19 @@ export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: Cha
       });
     }
 
-    // fire-and-forget DB 동기화
-    void fetch(`/api/sessions/${chat.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ isPinned: newIsPinned }),
-    });
+    // DB 동기화 — 실패 시 rollback
+    try {
+      const res = await fetch(`/api/sessions/${chat.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isPinned: newIsPinned }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      setPinnedSessions(prevPinned);
+      setSessions(prevSessions);
+      toast.error(t('syncFailed'));
+    }
   }
 
   // 채팅 아이템 공통 렌더링

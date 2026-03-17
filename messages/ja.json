@@ -157,7 +157,8 @@
     "deleteConfirmTitle": "チャットを削除しますか？",
     "deleteConfirmDescription": "この操作は永久に元に戻せません。チャット履歴、添付ファイル、このチャットから作成されたブロックがすべて削除されます。",
     "deleteConfirmCancel": "キャンセル",
-    "deleteConfirmDelete": "削除"
+    "deleteConfirmDelete": "削除",
+    "syncFailed": "変更の保存に失敗しました。もう一度お試しください。"
   },
   "blockList": {
     "expandSidebar": "ブロックパネルを展開",
@@ -181,7 +182,8 @@
     "download": "ダウンロード",
     "source": "ブロック出典",
     "goToSource": "出典の会話を見る",
-    "noSource": "出典なし"
+    "noSource": "出典なし",
+    "syncFailed": "変更の保存に失敗しました。もう一度お試しください。"
   },
   "fileUpload": {
     "errorSizeImage": "画像は10MB以下にしてください。",

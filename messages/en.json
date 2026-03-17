@@ -157,7 +157,8 @@
     "deleteConfirmTitle": "Delete this chat?",
     "deleteConfirmDescription": "This action is permanent and cannot be undone. The chat history, attachments, and all blocks created from this chat will be permanently deleted.",
     "deleteConfirmCancel": "Cancel",
-    "deleteConfirmDelete": "Delete"
+    "deleteConfirmDelete": "Delete",
+    "syncFailed": "Failed to save changes. Please try again."
   },
   "blockList": {
     "expandSidebar": "Expand blocks panel",
@@ -181,7 +182,8 @@
     "download": "Download",
     "source": "Block Source",
     "goToSource": "View source chat",
-    "noSource": "No source"
+    "noSource": "No source",
+    "syncFailed": "Failed to save changes. Please try again."
   },
   "fileUpload": {
     "errorSizeImage": "Images must be 10MB or less.",

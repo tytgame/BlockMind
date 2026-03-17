@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { GripVertical, X, Eye, EyeOff, FileText, FileType, Download, RefreshCw, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Block } from '@/types/block';
 import { useBlockStore } from '@/store/block-store';
 import { cn } from '@/lib/utils';
@@ -216,11 +217,17 @@ export function BlockItem({ block }: BlockItemProps) {
                       return;
                     }
                   }
+                  const previousVisibility = block.isVisible;
                   updateBlock(block.id, { isVisible: newVisibility });
-                  void fetch(`/api/blocks/${block.id}`, {
+                  fetch(`/api/blocks/${block.id}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ isVisible: newVisibility }),
+                  }).then((res) => {
+                    if (!res.ok) throw new Error();
+                  }).catch(() => {
+                    updateBlock(block.id, { isVisible: previousVisibility });
+                    toast.error(t('syncFailed'));
                   });
                 }}
               >
