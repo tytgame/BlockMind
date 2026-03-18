@@ -79,15 +79,15 @@ export function IntegrationSection() {
           </p>
         </div>
 
-        {/* Block Type Cards */}
+        {/* Block Types */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {blockTypes.map((block, index) => (
             <div
               key={index}
-              className="group relative p-6 rounded-xl border border-gray-800 bg-gray-900/50 hover:border-gray-700 transition-all duration-300 text-center"
+              className="p-6 text-center"
             >
               {/* Icon */}
-              <div className="mb-4 mx-auto inline-flex p-4 rounded-xl group-hover:scale-110 transition-transform duration-300">
+              <div className="mb-4 mx-auto inline-flex p-4">
                 {block.cycling ? (
                   <CyclingIcon />
                 ) : (
@@ -100,9 +100,6 @@ export function IntegrationSection() {
 
               {/* Description */}
               <p className="text-xs text-gray-400">{block.description}</p>
-
-              {/* Hover effect */}
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/0 to-white/0 group-hover:from-white/5 group-hover:to-white/5 transition-all duration-300" />
             </div>
           ))}
         </div>
