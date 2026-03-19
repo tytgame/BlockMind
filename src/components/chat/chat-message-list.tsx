@@ -5,7 +5,7 @@ import { isTextUIPart } from 'ai';
 import type { UIMessage } from 'ai';
 import type { Session } from 'next-auth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { FileText, FileType, Loader2 } from 'lucide-react';
+import { FileText, FileType, Loader2, User } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
 import { MessageContent } from './message-content';
 import { type SentFileInfo } from './file-preview-modal';
@@ -89,8 +89,8 @@ export function ChatMessageList({
                 {isUser && (
                   <Avatar className="h-10 w-10 flex-shrink-0">
                     <AvatarImage src={session?.user?.image || ''} />
-                    <AvatarFallback className="bg-gradient-to-br from-orange-400 to-pink-500 text-white">
-                      {session?.user?.name?.charAt(0) || 'U'}
+                    <AvatarFallback className="bg-[#3a3f47] text-gray-400">
+                      <User className="h-5 w-5" />
                     </AvatarFallback>
                   </Avatar>
                 )}

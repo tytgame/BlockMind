@@ -35,6 +35,7 @@ import {
   ChevronRight,
   Home,
   LogOut,
+  User,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
@@ -358,8 +359,8 @@ export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: Cha
                   <button className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60">
                     <Avatar className="h-10 w-10 border border-white/10 cursor-pointer hover:opacity-80 transition-opacity">
                       <AvatarImage src={session.user.image || ''} />
-                      <AvatarFallback className="bg-gradient-to-br from-orange-400 to-pink-500 text-white text-xs">
-                        {session.user.name?.charAt(0) || 'U'}
+                      <AvatarFallback className="bg-[#3a3f47] text-gray-400">
+                        <User className="h-5 w-5" />
                       </AvatarFallback>
                     </Avatar>
                   </button>
@@ -495,12 +496,12 @@ export function ChatSidebar({ collapsed, onToggleCollapse, forceCollapsed }: Cha
               <div className="flex items-center gap-3 px-2 py-2 rounded-lg bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={session.user.image || ''} />
-                  <AvatarFallback className="bg-gradient-to-br from-orange-400 to-pink-500 text-white text-xs">
-                    {session.user.name?.charAt(0) || 'U'}
+                  <AvatarFallback className="bg-[#3a3f47] text-gray-400">
+                    <User className="h-4 w-4" />
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{session.user.name || 'User'}</p>
+                  <p className="text-sm font-medium text-white truncate">{session.user.name || ''}</p>
                   <p className="text-xs text-gray-400 truncate">{session.user.email || ''}</p>
                 </div>
               </div>

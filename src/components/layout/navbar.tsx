@@ -121,8 +121,8 @@ export function Navbar() {
                           src={session.user?.image || ''}
                           alt={session.user?.name || ''}
                         />
-                        <AvatarFallback className="bg-blue-600">
-                          <User className="h-4 w-4 text-white" />
+                        <AvatarFallback className="bg-[#3a3f47] text-gray-400">
+                          <User className="h-4 w-4" />
                         </AvatarFallback>
                       </Avatar>
                     </Button>
@@ -137,8 +137,8 @@ export function Navbar() {
                           src={session.user?.image || ''}
                           alt={session.user?.name || ''}
                         />
-                        <AvatarFallback className="bg-blue-600">
-                          <User className="h-3 w-3 text-white" />
+                        <AvatarFallback className="bg-[#3a3f47] text-gray-400">
+                          <User className="h-3 w-3" />
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col space-y-0.5">

@@ -57,13 +57,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.picture = user.image;
       }
       return token;
     },
-    // 세션에 사용자 ID 추가
+    // 세션에 사용자 ID + 이미지 추가
     session({ session, token }) {
       if (session.user && token.id) {
         session.user.id = token.id as string;
+        session.user.image = (token.picture as string) ?? null;
       }
       return session;
     },
