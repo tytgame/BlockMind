@@ -31,11 +31,14 @@ interface BlockListProps {
   collapsed: boolean;
   onToggleCollapse: () => void;
   forceCollapsed?: boolean;
+  initialBlocks?: Block[];
 }
 
-export function BlockList({ collapsed, onToggleCollapse, forceCollapsed }: BlockListProps) {
+export function BlockList({ collapsed, onToggleCollapse, forceCollapsed, initialBlocks }: BlockListProps) {
   const effectiveCollapsed = forceCollapsed ?? collapsed;
-  const { blocks, reorderBlocks } = useBlockStore();
+  const { blocks: storeBlocks, reorderBlocks } = useBlockStore();
+  // SSR: store 비어있으면 서버에서 받은 initialBlocks 사용 → 서버 HTML에 블록 포함 → flash 제거
+  const blocks = storeBlocks.length > 0 ? storeBlocks : (initialBlocks ?? []);
   const [selectedBlock, setSelectedBlock] = React.useState<Block | null>(null);
   const [isDetailOpen, setIsDetailOpen] = React.useState(false);
   const [tooltip, setTooltip] = React.useState<{ label: string; top: number; right: number } | null>(null);

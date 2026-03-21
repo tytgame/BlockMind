@@ -81,6 +81,7 @@ export function ClientChatLayout({ children, initialBlocks }: ClientChatLayoutPr
                 : () => setBlockSidebarCollapsed(!isBlockSidebarCollapsed)
             }
             forceCollapsed={isDesktop ? undefined : true}
+            initialBlocks={initialBlocks}
           />
         </div>
       </div>
@@ -106,6 +107,7 @@ export function ClientChatLayout({ children, initialBlocks }: ClientChatLayoutPr
           <BlockList
             collapsed={false}
             onToggleCollapse={() => setMobileBlockPanelOpen(false)}
+            initialBlocks={initialBlocks}
           />
         </SheetContent>
       </Sheet>
