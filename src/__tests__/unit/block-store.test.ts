@@ -231,6 +231,51 @@ describe('block-store — 블록 상태 관리', () => {
 
       expect(useBlockStore.getState().lastResetAt).toBeNull();
     });
+
+    // ── isVisibilityChange 멱등성 — 같은 값으로 업데이트해도 리셋 안 함 ──
+    it('이미 invisible인 블록을 다시 false로 설정해도 lastResetAt이 갱신되지 않는다', () => {
+      useBlockStore.getState().addBlock({ type: 'data', label: '이름', content: '홍길동' });
+      const blockId = useBlockStore.getState().blocks[0].id;
+
+      // 첫 번째 비활성화 — isVisibilityChange=true, lastResetAt 갱신
+      useBlockStore.getState().updateBlock(blockId, { isVisible: false });
+      const firstResetAt = useBlockStore.getState().lastResetAt;
+
+      // 이미 false인 상태에서 다시 false — isVisibilityChange=false, lastResetAt 그대로
+      useBlockStore.getState().updateBlock(blockId, { isVisible: false });
+
+      expect(useBlockStore.getState().lastResetAt).toBe(firstResetAt);
+    });
+
+    it('이미 visible인 블록을 다시 true로 설정해도 lastResetAt이 갱신되지 않는다', () => {
+      useBlockStore.getState().addBlock({ type: 'data', label: '이름', content: '홍길동' });
+      const blockId = useBlockStore.getState().blocks[0].id;
+      // 초기 isVisible=true 상태에서 다시 true — isVisibilityChange=false
+      useBlockStore.getState().updateBlock(blockId, { isVisible: true });
+
+      expect(useBlockStore.getState().lastResetAt).toBeNull();
+    });
+
+    it('appendBlock은 lastResetAt을 변경하지 않는다', () => {
+      useBlockStore.getState().appendBlock({
+        id: 'ssr-block-1',
+        type: 'data',
+        label: '서버 초기 블록',
+        content: '서버에서 주입된 블록',
+        isVisible: true,
+      });
+
+      expect(useBlockStore.getState().lastResetAt).toBeNull();
+    });
+
+    it('setBlocks는 lastResetAt을 변경하지 않는다', () => {
+      useBlockStore.getState().setBlocks([
+        { id: 'b1', type: 'data', label: '이름', content: '홍길동', isVisible: true },
+        { id: 'b2', type: 'data', label: '직업', content: '개발자', isVisible: false },
+      ]);
+
+      expect(useBlockStore.getState().lastResetAt).toBeNull();
+    });
   });
 
   // ──────────────────────────────────────────
