@@ -59,9 +59,17 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
         api: '/api/chat',
         body: () => {
           const { blocks, pivotIndex } = useBlockStore.getState();
-          return { systemPrompt: buildSystemPrompt(blocks), pivotIndex };
+          const fileMeta = pendingFileMetaRef.current;
+          return {
+            systemPrompt: buildSystemPrompt(blocks),
+            pivotIndex,
+            fileMetadata: fileMeta
+              ? { fileName: fileMeta.fileName, fileType: fileMeta.fileType }
+              : undefined,
+          };
         },
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -142,7 +150,21 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
 
       if (!userMessage) return;
 
-      void handleFinish({ userMessage, assistantMessage, userMessageId, fileMeta, filesForDb });
+      // tool part에서 추출된 블록 수집 (saveMemoryBlock tool use)
+      // AI SDK는 tool part type을 "tool-{toolName}" 형식으로 생성함
+      type ExtractedBlock = { label: string; content: string; attachFile?: boolean; category?: string };
+      const extractedBlocks: ExtractedBlock[] = [];
+      for (const part of message.parts) {
+        if (
+          part.type === 'tool-saveMemoryBlock' &&
+          'input' in part &&
+          part.input != null
+        ) {
+          extractedBlocks.push(part.input as ExtractedBlock);
+        }
+      }
+
+      void handleFinish({ userMessage, assistantMessage, userMessageId, fileMeta, filesForDb, extractedBlocks });
     },
   });
 

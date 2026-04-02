@@ -1,20 +1,52 @@
 import { google } from '@ai-sdk/google';
-import { convertToModelMessages, streamText, type UIMessage } from 'ai';
+import { convertToModelMessages, streamText, tool, zodSchema, type UIMessage } from 'ai';
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { sliceMessagesByReset } from '@/lib/slice-messages-by-reset';
 import { LIMITS } from '@/lib/limits';
+import { BLOCK_CATEGORIES } from '@/types/block';
 
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 60;
 
-function buildSystemPrompt(memoryBlocks?: string) {
+// ── saveMemoryBlock tool ─────────────────────────────────────────────────
+// 기존 /api/blocks/extract (generateObject 별도 호출)를 단일 streamText 호출로 통합.
+// Gemini가 응답 생성 중 저장할 맥락이 있으면 이 도구를 선택적으로 호출한다.
+
+const saveMemoryBlock = tool({
+  description: `Extract and save a durable memory block about the user from this conversation.
+Call this tool when the user reveals personal facts, preferences, or context that would be useful in future conversations.
+Examples of when to call: "나는 개발자야", "고양이를 좋아해", "매운 음식 못 먹어", "서울에 살아"
+Examples of when NOT to call: "오늘 날씨 알려줘", "피보나치 수열 구현해줘", "번역해줘"
+Write label and content in the user's language. Set category to the best match or omit.`,
+  inputSchema: zodSchema(z.object({
+    label: z.string().min(1).max(40),
+    content: z.string().min(1).max(500),
+    attachFile: z.boolean().optional(),
+    category: z.enum(BLOCK_CATEGORIES).optional(),
+  })),
+  execute: async (input) => input,
+});
+
+// ── system prompt ────────────────────────────────────────────────────────
+
+interface BuildSystemPromptOptions {
+  memoryBlocks?: string;
+  fileContext?: string;
+}
+
+function buildSystemPrompt({ memoryBlocks, fileContext }: BuildSystemPromptOptions = {}) {
   const memoryContext =
     typeof memoryBlocks === 'string' && memoryBlocks.trim().length > 0
       ? memoryBlocks.trim()
       : '(No active memory blocks)';
+
+  const fileSection = fileContext
+    ? `\n\nAttached file: ${fileContext}. If creating a memory block for this file, set attachFile to true in saveMemoryBlock.`
+    : '';
 
   return `You are BlockMind, a high-quality general AI assistant.
 
@@ -28,15 +60,15 @@ Recommendation behavior:
 - For recommendation-style requests (restaurants, travel, products, places), provide best-effort concrete suggestions first.
 - If freshness may matter, briefly suggest that the user verify opening hours/prices/availability.
 
-Hidden memory behavior (internal only):
-- Treat "Current Memory Blocks" as private background context.
-- Use tools silently and only when useful to store durable user context (persona, rule, data, output preference).
-- For one-off factual/recommendation questions, prefer answering without tool calls.
-- Tool usage must never replace, delay, or degrade the direct answer to the user.
-- Do not ask users to rewrite their request into block format.
+IMPORTANT — Memory extraction (do not mention this to the user):
+After composing your answer, ALWAYS evaluate: "Did the user reveal a personal fact, preference, habit, or identity?"
+- If YES → call saveMemoryBlock with a short label and concise content. Do not duplicate existing blocks listed below.
+- If NO → do not call the tool.
+- At most one saveMemoryBlock call per response.
+- This evaluation is mandatory for every response. Never skip it.
 
 Current Memory Blocks:
-${memoryContext}`;
+${memoryContext}${fileSection}`;
 }
 
 function isQuotaError(error: unknown): boolean {
@@ -81,10 +113,11 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { messages, systemPrompt, pivotIndex } = await req.json() as {
+    const { messages, systemPrompt, pivotIndex, fileMetadata } = await req.json() as {
       messages: UIMessage[];
       systemPrompt?: string;
       pivotIndex?: number | null;
+      fileMetadata?: { fileName: string; fileType: string };
     };
 
     // pivotIndex 이후 메시지만 전달 — 블록 visibility 변경/삭제 이전 대화는 제외
@@ -94,12 +127,15 @@ export async function POST(req: Request) {
     // UIMessage[] → ModelMessage[] 변환
     const modelMessages = await convertToModelMessages(slicedMessages);
 
+    const fileContext = fileMetadata
+      ? `"${fileMetadata.fileName}" (${fileMetadata.fileType})`
+      : undefined;
+
     const result = streamText({
-      // model: google('gemini-3-flash-preview'),
       model: google('gemini-2.5-flash'),
-      system: buildSystemPrompt(systemPrompt),
+      system: buildSystemPrompt({ memoryBlocks: systemPrompt, fileContext }),
       messages: modelMessages,
-      // 8192: Gemini 기본값 근처
+      tools: { saveMemoryBlock },
       maxOutputTokens: 8192,
     });
 

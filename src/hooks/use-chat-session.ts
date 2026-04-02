@@ -24,8 +24,11 @@ type ExtractedBlock = {
   category?: string;
 };
 
-type ExtractBlocksResponse = {
-  blocks?: ExtractedBlock[];
+type ToolExtractedBlock = {
+  label: string;
+  content: string;
+  attachFile?: boolean;
+  category?: string;
 };
 
 export type HandleFinishParams = {
@@ -34,6 +37,7 @@ export type HandleFinishParams = {
   userMessageId: string | undefined;
   fileMeta: PendingFileMeta | undefined;
   filesForDb: Array<{ fileName: string; fileType: string; storagePath: string }> | undefined;
+  extractedBlocks: ToolExtractedBlock[];
 };
 
 interface UseChatSessionOptions {
@@ -142,7 +146,7 @@ export function useChatSession({
 
   // AI 응답 완료 후 세션 저장 · 메시지 저장 · 블록 추출 처리
   const handleFinish = React.useCallback(
-    async ({ userMessage, assistantMessage, userMessageId, fileMeta, filesForDb }: HandleFinishParams) => {
+    async ({ userMessage, assistantMessage, userMessageId, fileMeta, filesForDb, extractedBlocks }: HandleFinishParams) => {
       // 1. 세션 생성 (신규 채팅인 경우에만)
       let currentSessionId = sessionIdRef.current;
       if (!currentSessionId) {
@@ -196,34 +200,35 @@ export function useChatSession({
         return;
       }
 
-      // 3. 블록 자동 추출 — 실패해도 사용자에게 알리지 않음
-      //    !response.ok → 서버/네트워크 오류 (console.error로 기록)
-      //    data.blocks가 없거나 비어있음 → LLM이 추출할 내용 없다고 판단한 것 (정상)
-      const { blocks: currentBlocks } = useBlockStore.getState();
-      try {
-        const response = await fetch('/api/blocks/extract', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userMessage,
-            assistantMessage,
-            existingBlocks: currentBlocks.map((b) => ({ label: b.label, content: b.content })),
-            ...(fileMeta ? { fileMetadata: fileMeta } : {}),
-          }),
-        });
-        if (!response.ok) {
-          console.error('[useChatSession] 블록 추출 API 실패:', response.status);
-          return;
+      // 3. tool use로 추출된 블록 적용 — 실패해도 사용자에게 알리지 않음
+      if (extractedBlocks.length > 0) {
+        try {
+          // 파일 첨부 enrichment: attachFile=true + fileMeta → 파일 블록으로 변환
+          const enriched: ExtractedBlock[] = extractedBlocks.slice(0, MAX_BLOCKS_PER_CYCLE).map((block) => {
+            if (block.attachFile && fileMeta) {
+              const blockType = fileMeta.fileType.startsWith('image/') ? 'image' : 'file';
+              return {
+                label: block.label,
+                content: block.content,
+                type: blockType,
+                fileUrl: fileMeta.storagePath,
+                fileName: fileMeta.fileName,
+                fileType: fileMeta.fileType,
+                fileSize: fileMeta.fileSize,
+                ...(fileMeta.geminiFileUri ? { geminiFileUri: fileMeta.geminiFileUri } : {}),
+                ...(fileMeta.geminiExpiresAt !== undefined ? { geminiExpiresAt: fileMeta.geminiExpiresAt } : {}),
+              };
+            }
+            return {
+              label: block.label,
+              content: block.content,
+              ...(block.category ? { category: block.category } : {}),
+            };
+          });
+          await applyExtractedBlocks(enriched, currentSessionId, userMessageId ?? null);
+        } catch (err) {
+          console.error('[useChatSession] 블록 적용 오류:', err);
         }
-        const data = (await response.json()) as ExtractBlocksResponse;
-        if (!data.blocks?.length) return;
-        await applyExtractedBlocks(
-          data.blocks.slice(0, MAX_BLOCKS_PER_CYCLE),
-          currentSessionId,
-          userMessageId ?? null
-        );
-      } catch (err) {
-        console.error('[useChatSession] 블록 추출 네트워크 오류:', err);
       }
     },
     [sessionIdRef, locale, router, onError, errorSaveFailed, applyExtractedBlocks]
