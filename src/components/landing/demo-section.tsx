@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { CheckCircle, Briefcase, GraduationCap, BookOpen, Heart, type LucideIcon } from 'lucide-react';
+import { Check, Briefcase, GraduationCap, BookOpen, Heart, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 interface BlockIcon {
@@ -223,7 +223,9 @@ export function DemoSection() {
                 }`}
               >
                 <div className="flex items-center gap-2 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 shadow-xl whitespace-nowrap">
-                  <CheckCircle className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
+                  <div className="w-3.5 h-3.5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-2.5 h-2.5 text-white stroke-[3]" />
+                  </div>
                   <span className="text-xs text-gray-300">
                     {t('blockCreatedPrefix')}{' '}
                     <span className="text-white font-medium">{sc?.blockLabel}</span>

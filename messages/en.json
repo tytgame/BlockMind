@@ -133,7 +133,8 @@
     "thinking": "Thinking...",
     "greeting": "How can I help you today?",
     "greetingSubtitle": "Start chatting to build your context!",
-    "disclaimer": "BlockMind may display inaccurate info, including about people, so double-check its responses."
+    "disclaimer": "BlockMind may display inaccurate info, including about people, so double-check its responses.",
+    "addFileOrPhoto": "Add photos and files"
   },
   "chatSidebar": {
     "expandSidebar": "Expand sidebar",

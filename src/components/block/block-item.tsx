@@ -153,16 +153,13 @@ export function BlockItem({ block }: BlockItemProps) {
               {/* PDF 만료 상태 */}
               {isPdf && (
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className={cn('h-1.5 w-1.5 rounded-full flex-shrink-0', expired ? 'bg-red-400' : 'bg-green-400')} />
                   {expired ? (
                     <span className="text-xs text-red-400">{t('memoryExpired')}</span>
                   ) : hoursLeft !== null ? (
                     <span className="text-xs text-green-400">
-                      {t('memoryActive')} · {t('hoursLeft', { hours: hoursLeft })}
+                      {t('hoursLeft', { hours: hoursLeft })}
                     </span>
-                  ) : (
-                    <span className="text-xs text-green-400">{t('memoryActive')}</span>
-                  )}
+                  ) : null}
                 </div>
               )}
             </div>

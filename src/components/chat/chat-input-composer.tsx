@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, ArrowUp, Plus, Settings, Square, X } from 'lucide-react';
+import { AlertTriangle, ArrowUp, Paperclip, Plus, Square } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useChatStore } from '@/store/chat-store';
 import { FileAttachmentPreview, type AttachedFile } from './file-attachment-preview';
@@ -17,7 +17,6 @@ interface ChatInputComposerProps {
   onStop: () => void;
   isLoading: boolean;
   apiError: string | null;
-  onErrorClose: () => void;
   charLimit?: number;
   limitBanner?: string | null;
   limitError?: string | null;
@@ -34,7 +33,6 @@ export function ChatInputComposer({
   onStop,
   isLoading,
   apiError,
-  onErrorClose,
   charLimit,
   limitBanner,
   limitError,
@@ -49,6 +47,19 @@ export function ChatInputComposer({
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+  const menuRef = React.useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!menuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [menuOpen]);
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
@@ -93,14 +104,6 @@ export function ChatInputComposer({
         <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-3">
           <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-red-300 flex-1">{apiError}</p>
-          <button
-            type="button"
-            onClick={onErrorClose}
-            className="text-red-400 hover:text-red-300 transition-colors flex-shrink-0"
-            aria-label="닫기"
-          >
-            <X className="h-4 w-4" />
-          </button>
         </div>
       )}
 
@@ -134,16 +137,30 @@ export function ChatInputComposer({
 
           {/* 하단 아이콘 행 */}
           <div className="flex items-center justify-between">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isFullyDisabled}
-            >
-              <Plus className="h-5 w-5" />
-            </Button>
+            <div ref={menuRef} className="relative">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10"
+                onClick={() => setMenuOpen((v) => !v)}
+                disabled={isFullyDisabled}
+              >
+                <Plus className="h-5 w-5" />
+              </Button>
+              {menuOpen && (
+                <div className="absolute bottom-full left-0 mb-2 bg-[#2f3235] border border-white/10 rounded-xl shadow-xl px-1 py-1 min-w-[180px] z-50">
+                  <button
+                    type="button"
+                    onClick={() => { fileInputRef.current?.click(); setMenuOpen(false); }}
+                    className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-gray-200 hover:bg-white/5 rounded-lg"
+                  >
+                    <Paperclip className="w-4 h-4 flex-shrink-0" />
+                    {t('addFileOrPhoto')}
+                  </button>
+                </div>
+              )}
+            </div>
             <div className="flex items-center gap-3">
               {/* 글자 수 카운터 */}
               {charLimit !== undefined && (isCharWarn || isCharOver) && (

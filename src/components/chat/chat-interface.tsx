@@ -34,6 +34,12 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
   const { data: session } = useSession();
   const { input, resetInput, pendingMessages, clearPendingMessages, scrollToMessageId } = useChatStore();
   const [apiError, setApiError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!apiError) return;
+    const timer = setTimeout(() => setApiError(null), 5000);
+    return () => clearTimeout(timer);
+  }, [apiError]);
   const [cooldownActive, setCooldownActive] = React.useState(false);
   const t = useTranslations('chatInterface');
   const tFile = useTranslations('fileUpload');
@@ -305,7 +311,6 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
       onStop={handleStop}
       isLoading={isLoading}
       apiError={apiError}
-      onErrorClose={() => setApiError(null)}
       charLimit={LIMITS.MESSAGE_MAX_CHARS}
       isDisabled={isInputDisabled}
     />
@@ -322,7 +327,6 @@ export function ChatInterface({ sessionId: initialSessionId }: ChatInterfaceProp
       onStop={handleStop}
       isLoading={isLoading}
       apiError={apiError}
-      onErrorClose={() => setApiError(null)}
       charLimit={LIMITS.MESSAGE_MAX_CHARS}
       limitBanner={limitBanner}
       limitError={limitError}

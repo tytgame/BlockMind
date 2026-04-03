@@ -133,7 +133,8 @@
     "thinking": "考え中...",
     "greeting": "今日は何をお手伝いしましょうか？",
     "greetingSubtitle": "チャットを始めてコンテキストを作りましょう！",
-    "disclaimer": "BlockMindは人物に関する情報を含め、不正確な情報を表示する可能性があります。回答をご確認ください。"
+    "disclaimer": "BlockMindは人物に関する情報を含め、不正確な情報を表示する可能性があります。回答をご確認ください。",
+    "addFileOrPhoto": "写真とファイルを追加"
   },
   "chatSidebar": {
     "expandSidebar": "サイドバーを展開",
@@ -176,7 +177,7 @@
     "delete": "削除",
     "memoryActive": "記憶アクティブ中",
     "memoryExpired": "記憶が期限切れ",
-    "hoursLeft": "{hours}時間残り",
+    "hoursLeft": "あと{hours}時間",
     "refreshMemory": "再記憶",
     "refreshing": "アップロード中...",
     "download": "ダウンロード",

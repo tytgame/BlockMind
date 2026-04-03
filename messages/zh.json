@@ -133,7 +133,8 @@
     "thinking": "思考中...",
     "greeting": "今天有什么可以帮您？",
     "greetingSubtitle": "开始聊天以构建您的上下文！",
-    "disclaimer": "BlockMind 可能会显示不准确的信息，包括有关人物的信息，请仔细核实其回答。"
+    "disclaimer": "BlockMind 可能会显示不准确的信息，包括有关人物的信息，请仔细核实其回答。",
+    "addFileOrPhoto": "添加照片和文件"
   },
   "chatSidebar": {
     "expandSidebar": "展开侧边栏",
@@ -176,7 +177,7 @@
     "delete": "删除",
     "memoryActive": "记忆活跃中",
     "memoryExpired": "记忆已过期",
-    "hoursLeft": "剩余{hours}小时",
+    "hoursLeft": "还有{hours}小时",
     "refreshMemory": "重新记忆",
     "refreshing": "上传中...",
     "download": "下载",

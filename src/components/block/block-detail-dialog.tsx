@@ -31,6 +31,10 @@ function isPdfExpired(block: Block): boolean {
   return new Date(block.geminiExpiresAt) < new Date();
 }
 
+function getHoursLeft(expiresAt: string): number {
+  return Math.max(0, Math.ceil((new Date(expiresAt).getTime() - Date.now()) / 3600000));
+}
+
 export function BlockDetailDialog({
   block,
   open,
@@ -45,6 +49,9 @@ export function BlockDetailDialog({
 
   const isPdf = block.type === 'file' && block.fileType === 'application/pdf';
   const expired = isPdf && isPdfExpired(block);
+  const hoursLeft = isPdf && block.geminiExpiresAt && !expired
+    ? getHoursLeft(block.geminiExpiresAt)
+    : null;
 
   const handleDownload = () => {
     if (!block.fileUrl) return;
@@ -103,9 +110,8 @@ export function BlockDetailDialog({
               {/* PDF 만료 상태 */}
               {isPdf && (
                 <div className="mt-3 flex items-center gap-1.5">
-                  <span className={cn('h-1.5 w-1.5 rounded-full', expired ? 'bg-red-400' : 'bg-green-400')} />
                   <span className={cn('text-xs', expired ? 'text-red-400' : 'text-green-400')}>
-                    {expired ? t('memoryExpired') : t('memoryActive')}
+                    {expired ? t('memoryExpired') : hoursLeft !== null ? t('hoursLeft', { hours: hoursLeft }) : t('memoryActive')}
                   </span>
                 </div>
               )}

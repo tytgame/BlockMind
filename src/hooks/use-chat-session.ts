@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { toast } from 'sonner';
-import { CheckCircle } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useBlockStore } from '@/store/block-store';
 import { useChatStore } from '@/store/chat-store';
@@ -55,7 +55,11 @@ function BlockToast({ label, text }: { label: string; text: string }) {
   return React.createElement(
     'div',
     { className: 'flex items-center gap-2 bg-[#2f3235] border border-white/10 rounded-lg px-3 py-2 shadow-xl whitespace-nowrap' },
-    React.createElement(CheckCircle, { className: 'w-3.5 h-3.5 text-green-500 flex-shrink-0' }),
+    React.createElement(
+      'div',
+      { className: 'w-3.5 h-3.5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0' },
+      React.createElement(Check, { className: 'w-2.5 h-2.5 text-white stroke-[3]' })
+    ),
     React.createElement(
       'span',
       { className: 'text-xs text-gray-300' },

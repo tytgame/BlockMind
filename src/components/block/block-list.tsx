@@ -182,15 +182,9 @@ export function BlockList({ collapsed, onToggleCollapse, forceCollapsed, initial
         </div>
       </div>
 
-      {/* Active Memory Label */}
-      <div className="px-4 py-3">
-        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-          {t('activeMemory')}
-        </h3>
-      </div>
 
       {/* Block List */}
-      <ScrollArea className="flex-1 px-4">
+      <ScrollArea className="flex-1 px-4 pt-3">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -204,7 +198,7 @@ export function BlockList({ collapsed, onToggleCollapse, forceCollapsed, initial
                 <BlockItem key={block.id} block={block} />
               ))}
               {blocks.length === 0 && (
-                <div className="text-center py-10 text-gray-500 border-2 border-dashed border-white/10 rounded-lg">
+                <div className="text-center py-10 text-gray-500">
                   <p className="text-sm">{t('noBlocks')}</p>
                   <p className="text-xs mt-1">{t('noBlocksSubtitle')}</p>
                 </div>
