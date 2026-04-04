@@ -12,7 +12,6 @@
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma_7-2D3748?style=flat-square&logo=prisma&logoColor=white)
 
----
 
 ## 서비스 소개
 
@@ -25,19 +24,7 @@ BlockMind는 이 문제를 UI 레벨에서 다룹니다.
 - 지속될 만한 정보는 대화 이후 **자동으로 추출해 블록으로 쌓습니다.**
 
 
-
-## 주요 기능
-
-| 기능 | 설명 |
-|------|------|
-| **자동 블록 추출** | AI 응답 완료 후 주요 정보를 자동으로 추출해 블록으로 저장 |
-| **블록 활성** | 블록 적용 토글, 블록 순서 조정 |
-| **파일 첨부** | 이미지, PDF, DOCX 업로드 지원. 파일이 메시지와 블록에 연결 |
-| **맥락 리셋** | 블록 비활성화 시 해당 블록 정보는 AI 메모리에서 제외 |
-| **다국어 지원** | 한국어, 영어, 중국어, 일본어 |
-| **인증** | Google OAuth + 이메일 OTP 로그인 |
-
----
+<br/>
 
 ## 기술 스택
 
@@ -59,27 +46,7 @@ BlockMind는 이 문제를 UI 레벨에서 다룹니다.
 - **Email**: Resend
 - **Testing**: Jest + ts-jest (단위 테스트 176개), Playwright (E2E 2건)
 
----
-
-## 아키텍처 개요
-
-```
-사용자 메시지 전송
-    │
-    ├─ /api/chat       → 활성 블록을 system prompt로 직렬화 → Gemini 스트리밍
-    │
-AI 응답 완료
-    │
-    ├─ /api/sessions   → 세션 생성 (신규인 경우)
-    ├─ /api/sessions/[id]/messages → user/assistant 메시지 저장
-    └─ /api/blocks/extract → 대화에서 durable context 추출 → /api/blocks POST
-                                                              (블록 패널에 자동 추가)
-```
-
-블록의 `isVisible` 상태와 `order`가 system prompt 구성에 직접 반영됩니다. 블록이 비활성화되거나 삭제된 시점은 `pivotIndex`로 기록되어, 이후 AI 호출에서 그 이전 대화는 제외됩니다.
-
----
-
+<br/>
 
 ## 실행 방법
 
