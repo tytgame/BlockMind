@@ -39,14 +39,14 @@
     "sectionTitle": "블록으로 구성하기",
     "sectionSubtitle": "세 가지 블록 타입으로 AI의 기억을 구성하세요. 각 블록은 개별적으로 동작합니다.",
     "blocks": [
-      { "name": "데이터", "description": "작성한 정보, 관심사, 배경 지식" },
+      { "name": "정보", "description": "작성한 정보, 관심사, 배경 지식" },
       { "name": "이미지", "description": "AI에게 보여줄 이미지 파일" },
       { "name": "파일", "description": "PDF, 문서 등 참조할 파일" }
     ],
     "tip": "블록은 드래그하여 순서를 변경하고, 클릭하여 활성화/비활성화 및 삭제할 수 있습니다."
   },
   "footer": {
-    "description": "AI의 맥락을 블록으로 조립하여 완벽한 대화를 설계하는 차세대 플랫폼",
+    "description": "AI의 맥락을 블록으로 저장하여 원활한 대화를 이끌어가는 플랫폼",
     "product": {
       "title": "제품",
       "features": "기능",
@@ -196,7 +196,7 @@
     "uploadError": "파일 업로드에 실패했습니다. 다시 시도해 주세요."
   },
   "login": {
-    "title": "다시 오셨군요",
+    "title": "로그인 또는 회원가입",
     "subtitle": "BlockMind로 계속하려면 로그인하세요",
     "continueWithGoogle": "Google로 계속하기",
     "secureAuth": "안전한 인증",
