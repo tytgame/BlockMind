@@ -11,7 +11,7 @@
   "hero": {
     "badge": "BlockMind 1.0 is now available",
     "headingLine1": "Explained it to AI from scratch again?",
-    "headingLine2prefix": "of ",
+    "headingLine2prefix": "",
     "headingLine2suffix": "",
     "subtitle": "Design perfect conversations by assembling AI context with blocks. A new way to communicate with AI through visual control of personas, rules, and data.",
     "startChatting": "Start Chatting Free",
