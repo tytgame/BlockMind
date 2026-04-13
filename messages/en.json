@@ -93,32 +93,32 @@
     "blockCreatedPrefix": "Block created —",
     "scenarios": [
       {
-        "sessionTitle": "Review Q2 Marketing Plan",
-        "otherSessions": ["Weekly team meeting notes", "Client proposal feedback"],
-        "userMessage": "Pull the key numbers from the Q2 plan I uploaded",
-        "aiResponse": "Here are the key figures from the Q2 plan. Target MAU 150K, ad budget $24K, projected conversion rate 4.2%. The core goal is 23% MAU growth from last quarter.",
-        "blockLabel": "Q2 Marketing Plan"
+        "sessionTitle": "Planning a 4-day Jeju trip",
+        "otherSessions": ["Busan weekend getaway", "Travel budget breakdown"],
+        "userMessage": "I'm heading to Jeju for 4 days next month — how should I plan the itinerary?",
+        "aiResponse": "**Here's a solid 4-day route.**\n\n- **Day 1** Seongsan Ilchulbong + Seopjikoji (east coast)\n- **Day 2** Hyeopjae Beach + Aewol cafe strip (west side)\n- **Day 3** Hallasan hike or an oreum — pick by fitness level\n- **Day 4** Black pork in Jeju City, then head home\n\nRenting a car from **day one is essential** — public transport alone is really tough. Book accommodation **3 weeks early** in peak season or your choices disappear fast.",
+        "blockLabel": "Jeju Trip Itinerary"
       },
       {
-        "sessionTitle": "Kakao PM Interview Prep",
-        "otherSessions": ["Resume final review", "Key competency keywords"],
-        "userMessage": "I have a Kakao PM interview tomorrow — give me likely questions",
-        "aiResponse": "Three must-prep PM questions: 'How do you prioritize features?', 'Tell me about a data-driven decision you made', and 'Share an example where you identified and fixed user pain.' Focus on these three.",
-        "blockLabel": "Kakao PM Interview"
+        "sessionTitle": "Just signed up for the gym",
+        "otherSessions": ["Diet tips for beginners", "Cardio vs weights"],
+        "userMessage": "I joined a gym but have no idea what to actually do when I get there",
+        "aiResponse": "**Month one is all about form, not weight.**\n\n- **Split** Chest / back / legs / shoulders — 3–4 sessions/week\n- **Cardio** 20 min treadmill or bike after every session\n- **Protein** Chicken or shake immediately after training\n\nGoing too hard early leads to injuries that set you back weeks. Your only month-one goal is showing up consistently. Body changes don't kick in until **month two** — don't stress the scale yet.",
+        "blockLabel": "Beginner Gym Routine"
       },
       {
-        "sessionTitle": "Thesis Chapter 2 Feedback",
-        "otherSessions": ["APA reference list", "Advisor revision notes"],
-        "userMessage": "The logic flow in Chapter 2 feels off — can you check it?",
-        "aiResponse": "The issue is jumping straight from concept definitions to empirical studies without a transition. Add a 'Limitations of Prior Research' section in between — it'll naturally lead into why your study is needed.",
-        "blockLabel": "Thesis Structure"
+        "sessionTitle": "I want a hobby after work",
+        "otherSessions": ["Making the most of weekends", "Feeling burnt out lately"],
+        "userMessage": "I just watch YouTube and fall asleep after work — I want to actually start something meaningful",
+        "aiResponse": "**Start with something that costs you no energy.**\n\n- **Drawing / reading** 15 min, no setup, instant sense of progress\n- **Ukulele** Way faster than guitar — playing a song within a week\n- **Bouldering** Solo-friendly, huge payoff when you clear a problem\n\nYouTube feels easy because it needs no effort to start. **Fun first** is the only rule that makes a hobby last. The ones you start too seriously tend to get abandoned fastest.",
+        "blockLabel": "After-work Hobby Ideas"
       },
       {
-        "sessionTitle": "Conflict with my manager",
-        "otherSessions": ["Dealing with burnout", "When to start job hunting"],
-        "userMessage": "My manager always dismisses my ideas — how do I handle this?",
-        "aiResponse": "When managers dismiss ideas quickly it's often a trust issue. Next time, show a small win first and back your proposal with data. That alone can dramatically increase how often your ideas land.",
-        "blockLabel": "Workplace Relationships"
+        "sessionTitle": "Where does my paycheck even go",
+        "otherSessions": ["How to start saving", "Stopping impulse buys"],
+        "userMessage": "Every month my salary disappears and I can't even figure out where it went",
+        "aiResponse": "**Start by auditing your automatic charges.**\n\n- **Subscriptions / delivery / card fees** — check your banking app\n- **Pay yourself first** Move savings out the moment salary hits\n- **Three buckets** Fixed costs, food, and leisure — that's enough\n\nLiving on what's left naturally builds a spending sense. **Automated saving** beats any budgeting app for consistency. Money habits change faster with better systems, not more willpower.",
+        "blockLabel": "Paycheck Management"
       }
     ]
   },

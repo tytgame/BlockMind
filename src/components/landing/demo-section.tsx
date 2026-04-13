@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check, Briefcase, GraduationCap, BookOpen, Heart, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface BlockIcon {
   Icon: LucideIcon;
@@ -24,7 +26,7 @@ const SCENARIO_ICONS = [
   { newBlock: BLOCK_ICONS[3], existingBlocks: [BLOCK_ICONS[0], BLOCK_ICONS[2]] },
 ];
 
-const WORD_MS = 90;
+const WORD_MS = 70;
 
 interface ScenarioText {
   sessionTitle: string;
@@ -117,7 +119,6 @@ export function DemoSection() {
 
   const aiWords = sc ? sc.aiResponse.split(' ') : [];
   const displayedText = aiWords.slice(0, wordCount).join(' ');
-  const isStreaming = wordCount > 0 && wordCount < aiWords.length;
 
   return (
     <section ref={sectionRef} className="py-16 px-6">
@@ -207,11 +208,28 @@ export function DemoSection() {
 
                 {/* AI streaming response */}
                 {wordCount > 0 && (
-                  <div className="text-sm text-gray-200 leading-relaxed max-w-[85%]">
-                    {displayedText}
-                    {isStreaming && (
-                      <span className="inline-block w-0.5 h-3.5 bg-blue-400 ml-0.5 align-middle animate-pulse" />
-                    )}
+                  <div className="text-sm max-w-[85%]">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        p: ({ children }) => (
+                          <p className="text-gray-100 leading-relaxed mb-2 last:mb-0">{children}</p>
+                        ),
+                        strong: ({ children }) => (
+                          <strong className="font-semibold text-white">{children}</strong>
+                        ),
+                        ul: ({ children }) => (
+                          <ul className="space-y-0.5 mb-2 text-gray-100 pl-4 list-disc marker:text-gray-500">
+                            {children}
+                          </ul>
+                        ),
+                        li: ({ children }) => (
+                          <li className="leading-relaxed">{children}</li>
+                        ),
+                      }}
+                    >
+                      {displayedText}
+                    </ReactMarkdown>
                   </div>
                 )}
               </div>
