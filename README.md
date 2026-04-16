@@ -29,22 +29,22 @@ BlockMind는 이 문제를 해결하기 위해 맥락을 블록으로 저장하�
 ## 기술 스택
 
 ### Frontend
-- **Framework**: Next.js 16 App Router, React, TypeScript (strict)
-- **UI**: Tailwind CSS v4, shadcn/ui, Radix UI, Lucide Icons
+- **Framework**: Next.js, React, TypeScript
+- **UI**: Tailwind CSS, shadcn ui, Radix UI, Lucide Icons
 - **State**: Zustand
-- **DnD**: @dnd-kit/core, @dnd-kit/sortable
+- **DnD**: dnd-kit
 
 ### Backend & AI
-- **AI**: Vercel AI SDK + LLM API
-- **Auth**: NextAuth.js v5, Google OAuth, Credentials (Email OTP)
-- **Database**: Prisma 7 + PostgreSQL (Supabase)
-- **Storage**: Supabase Storage (signed URL 방식)
-- **File Processing**: Mammoth (DOCX 텍스트 추출), Files API (PDF)
+- **AI**: Vercel AI SDK
+- **Auth**: NextAuth.js, Google OAuth, Credentials (Email OTP)
+- **Database**: Prisma + PostgreSQL (Supabase)
+- **Storage**: Supabase Storage
+- **File Processing**: Mammoth (DOCX), Files API (PDF)
 
 ### Infra & 기타
-- **i18n**: next-intl v4 (URL 기반 라우팅)
+- **i18n**: next-intl (다국어 지원)
 - **Email**: Resend
-- **Testing**: Jest + ts-jest (단위 테스트 176개), Playwright (E2E 2건)
+- **Testing**: Jest + ts-jest (단위 테스트), Playwright (E2E)
 
 <br/>
 
